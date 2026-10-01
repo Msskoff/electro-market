@@ -35,20 +35,20 @@ export function ProductCard({ product, brandName, headingLevel: Heading = "h3" }
   const singlePrice = min === max;
 
   return (
-    <article className="group relative flex w-full flex-col rounded-xl border border-border bg-surface p-3 transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md">
-      <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-lg bg-surface-2 p-6 min-[480px]:aspect-square">
+    <article className="group relative flex w-full flex-col rounded-xl border border-border bg-surface p-2 transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md sm:p-3">
+      <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-surface-2 p-4 sm:p-6">
         <DeviceIllustration
           kind={product.kind}
           color={variant.color.hex}
           className="max-h-full w-auto max-w-[78%] text-fg transition-transform duration-300 ease-out group-hover:scale-[1.04]"
         />
         {discount > 0 && singlePrice && (
-          <span className="absolute left-3 top-3 rounded-full bg-danger px-2.5 py-1 text-xs font-semibold text-on-accent tabular">
+          <span className="absolute left-2 top-2 rounded-full bg-danger px-2 py-0.5 text-xs font-semibold text-on-accent tabular sm:left-3 sm:top-3 sm:px-2.5 sm:py-1">
             {t.product.discount(discount)}
           </span>
         )}
         {colors.length > 1 && (
-          <ul className="absolute bottom-3 right-3 flex -space-x-1" aria-label={`${colors.length} coloris`}>
+          <ul className="absolute bottom-2.5 left-2.5 flex -space-x-1 sm:bottom-3 sm:left-3" aria-label={`${colors.length} coloris`}>
             {colors.map((c) => (
               <li
                 key={c.name}
@@ -59,12 +59,17 @@ export function ProductCard({ product, brandName, headingLevel: Heading = "h3" }
             ))}
           </ul>
         )}
+        {variant.stock > 0 && (
+          <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3">
+            <QuickAddButton sku={variant.sku} label={`${product.name} (${variant.label})`} />
+          </div>
+        )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2.5 px-1.5 pb-1 pt-4">
+      <div className="flex flex-1 flex-col gap-2 px-1 pb-1 pt-3 sm:gap-2.5 sm:px-1.5 sm:pt-4">
         <div>
           <p className="eyebrow text-muted">{brandName}</p>
-          <Heading className="mt-1 font-sans text-base font-semibold leading-snug tracking-normal">
+          <Heading className="mt-1 line-clamp-2 font-sans text-sm font-semibold leading-snug tracking-normal sm:text-base">
             <Link
               href={productPath(product)}
               className="after:absolute after:inset-0 after:rounded-xl after:content-[''] focus-visible:outline-none group-has-[a:focus-visible]:underline"
@@ -74,23 +79,19 @@ export function ProductCard({ product, brandName, headingLevel: Heading = "h3" }
           </Heading>
         </div>
 
+        {/* Mobile : une seule caractéristique (la plus parlante) ; toutes à partir de 640 px */}
         <ul className="flex flex-wrap gap-1.5" aria-label="Caractéristiques clés">
-          {product.highlights.map((h) => (
-            <li key={h}>
+          {product.highlights.map((h, i) => (
+            <li key={h} className={i > 0 ? "hidden sm:block" : undefined}>
               <SpecChip>{h}</SpecChip>
             </li>
           ))}
         </ul>
 
-        <div className="mt-auto flex flex-wrap items-end justify-between gap-3 pt-1">
-          <div className="min-w-0">
-            {!singlePrice && <p className="text-xs text-muted">{t.product.from}</p>}
-            <Price amount={min} compareAt={singlePrice ? variant.compareAtPrice : undefined} size="sm" />
-            <StockStatus stock={totalStock(product)} className="mt-1 text-xs" />
-          </div>
-          {variant.stock > 0 && (
-            <QuickAddButton sku={variant.sku} label={`${product.name} (${variant.label})`} />
-          )}
+        <div className="mt-auto pt-1">
+          {!singlePrice && <p className="text-xs text-muted">{t.product.from}</p>}
+          <Price amount={min} compareAt={singlePrice ? variant.compareAtPrice : undefined} size="sm" />
+          <StockStatus stock={totalStock(product)} className="mt-1 text-xs" />
         </div>
       </div>
     </article>

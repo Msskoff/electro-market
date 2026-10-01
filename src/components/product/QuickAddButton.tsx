@@ -44,7 +44,7 @@ export function QuickAddButton({ sku, label }: { sku: string; label: string }) {
         aria-label={t.product.quickAdd(label)}
         title={t.product.quickAdd(label)}
         className={cn(
-          "relative z-10 inline-flex size-10 shrink-0 items-center justify-center rounded-full transition-[background-color,transform] duration-150 ease-out active:scale-95 disabled:opacity-60",
+          "relative z-10 inline-flex size-10 shrink-0 items-center justify-center rounded-full shadow-md transition-[background-color,transform] duration-150 ease-out active:scale-95 disabled:opacity-60",
           added ? "bg-signal text-on-accent" : "bg-accent text-on-accent hover:bg-accent-strong",
         )}
       >

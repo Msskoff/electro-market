@@ -9,16 +9,16 @@ const tones = ["bg-tile-sage", "bg-tile-sand", "bg-tile-sky"];
 /** Trois encarts éditoriaux menant aux catégories phares. */
 export function PromoTiles({ categories, products }: { categories: Category[]; products: Product[] }) {
   return (
-    <ul className="grid gap-5 md:grid-cols-3">
+    <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0">
       {categories.slice(0, 3).map((c, i) => (
-        <li key={c.slug}>
+        <li key={c.slug} className="w-[84%] shrink-0 snap-start md:w-auto">
           <Link
             href={categoryPath(c.slug)}
-            className={`group relative flex h-full min-h-44 items-center overflow-hidden rounded-xl ${tones[i]} p-6 transition-shadow hover:shadow-md`}
+            className={`group relative flex h-full min-h-36 items-center overflow-hidden rounded-xl ${tones[i]} p-5 transition-shadow hover:shadow-md sm:min-h-44 sm:p-6`}
           >
             <div className="relative z-10 max-w-[58%]">
               <p className="eyebrow text-muted">{c.name}</p>
-              <h3 className="mt-2 text-h2">{c.tagline}</h3>
+              <h3 className="mt-2 text-h3 sm:text-h2">{c.tagline}</h3>
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
                 Découvrir
                 <Icon name="arrowRight" size={16} className="transition-transform duration-200 group-hover:translate-x-1" />

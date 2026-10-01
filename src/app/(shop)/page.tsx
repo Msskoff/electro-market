@@ -86,7 +86,7 @@ export default async function HomePage() {
   const selection = [...products.filter((p) => p.featured), ...products.filter((p) => !p.featured)].slice(0, 8);
 
   return (
-    <div className="space-y-14 sm:space-y-16">
+    <div className="space-y-10 sm:space-y-16">
       <HeroShowcase slides={buildShowcase(products, categories)} />
 
       <Container as="section" aria-label="Catégories">
@@ -94,14 +94,14 @@ export default async function HomePage() {
       </Container>
 
       <Container as="section" aria-labelledby="selection-title">
-        <div className="rounded-xl border border-border bg-surface p-5 sm:p-8">
+        <div className="rounded-xl border border-border bg-surface p-4 sm:p-8">
           <SectionTitle id="selection-title">
             Notre sélection
             <Icon name="sparkle" size={20} className="text-star" />
           </SectionTitle>
-          <p className="mt-2 text-muted">Des appareils que nous conseillerions à un proche, dans chaque catégorie.</p>
-          <div className="mt-6">
-            <ProductGrid products={selection} brands={brands} />
+          <p className="mt-2 hidden text-muted sm:block">Des appareils que nous conseillerions à un proche, dans chaque catégorie.</p>
+          <div className="mt-4 sm:mt-6">
+            <ProductGrid products={selection} brands={brands} layout="rail" />
           </div>
         </div>
       </Container>
@@ -128,10 +128,10 @@ export default async function HomePage() {
         >
           Guides d&apos;achat
         </SectionTitle>
-        <ul className="mt-6 grid gap-5 md:grid-cols-2">
+        <ul className="mt-4 grid gap-3 sm:mt-6 md:grid-cols-2 md:gap-5">
           {guides.map((g) => (
             <li key={g.slug}>
-              <article className="group relative h-full rounded-xl border border-border bg-surface p-6 transition-shadow hover:shadow-md">
+              <article className="group relative h-full rounded-xl border border-border bg-surface p-5 transition-shadow hover:shadow-md sm:p-6">
                 <p className="eyebrow text-muted">
                   Mis à jour le {formatDate(g.updatedAt)}
                 </p>
@@ -140,7 +140,7 @@ export default async function HomePage() {
                     {g.title}
                   </Link>
                 </h3>
-                <p className="mt-2 text-muted">{g.description}</p>
+                <p className="mt-2 line-clamp-2 text-muted sm:line-clamp-none">{g.description}</p>
               </article>
             </li>
           ))}

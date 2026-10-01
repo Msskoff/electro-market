@@ -15,17 +15,17 @@ export function SpecTable({ groups, caption }: { groups: SpecGroup[]; caption: s
               <th
                 scope="colgroup"
                 colSpan={2}
-                className="eyebrow bg-surface-2 px-5 py-2.5 text-muted"
+                className="eyebrow bg-surface-2 px-4 py-2 text-muted sm:px-5 sm:py-2.5"
               >
                 {group.label}
               </th>
             </tr>
             {group.specs.map((spec) => (
               <tr key={spec.label} className="border-t border-border first:border-t-0">
-                <th scope="row" className="w-2/5 px-5 py-3 align-top font-normal text-muted">
+                <th scope="row" className="w-2/5 px-4 py-2.5 align-top font-normal text-muted sm:px-5 sm:py-3">
                   {spec.label}
                 </th>
-                <td className="px-5 py-3 font-medium tabular text-fg">{spec.value}</td>
+                <td className="px-4 py-2.5 font-medium tabular text-fg sm:px-5 sm:py-3">{spec.value}</td>
               </tr>
             ))}
           </tbody>

@@ -53,9 +53,9 @@ export function ProductHero({ product, brandName, assurances }: ProductHeroProps
 
   return (
     <>
-      <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
         {/* Visuel */}
-        <div className="bg-glow relative flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-border bg-surface-2 p-10 lg:sticky lg:top-24 lg:self-start">
+        <div className="bg-glow relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-lg border border-border bg-surface-2 p-6 sm:aspect-square sm:p-10 lg:sticky lg:top-24 lg:self-start">
           <span className="label-mono absolute left-4 top-4 text-muted">{variant.sku}</span>
           <span className="label-mono absolute bottom-4 right-4 text-muted">{variant.color.name}</span>
           <DeviceIllustration

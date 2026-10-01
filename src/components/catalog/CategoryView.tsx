@@ -44,10 +44,10 @@ export async function CategoryView({ category, page }: { category: Category; pag
         totalPages={total}
       />
 
-      <section aria-labelledby="liste-produits" className="pb-10 pt-10">
+      <section aria-labelledby="liste-produits" className="pb-10 pt-6 sm:pt-10">
         {visible.length > 0 ? (
           <>
-            <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2 border-b border-border pb-4">
+            <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2 border-b border-border pb-3 sm:mb-6 sm:pb-4">
               <h2 id="liste-produits" className="font-sans text-base font-semibold tracking-normal">
                 {products.length} références
               </h2>

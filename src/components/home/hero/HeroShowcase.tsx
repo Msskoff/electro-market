@@ -95,7 +95,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerCancel={() => (pointerStart.current = null)}
-      className="relative isolate h-[640px] touch-pan-y overflow-hidden bg-inverse text-on-inverse sm:h-[700px] lg:h-[clamp(600px,calc(100svh-11rem),740px)]"
+      className="relative isolate h-[540px] touch-pan-y overflow-hidden bg-inverse text-on-inverse sm:h-[700px] lg:h-[clamp(600px,calc(100svh-11rem),740px)]"
     >
       {slides.map((s, i) => {
         const active = i === index;
@@ -119,7 +119,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
             <div className="absolute inset-y-0 left-0 hidden w-[64%] bg-gradient-to-r from-inverse from-30% via-inverse/80 to-transparent lg:block" />
             <div className="absolute inset-x-0 bottom-0 h-[66%] bg-gradient-to-t from-inverse from-45% via-inverse/80 to-transparent lg:hidden" />
 
-            <Container className="relative flex h-full flex-col justify-end pb-32 sm:pb-36 lg:justify-center lg:pb-10">
+            <Container className="relative flex h-full flex-col justify-end pb-28 sm:pb-36 lg:justify-center lg:pb-10">
               <div className="hero-content max-w-xl">
                 <p className="flex flex-wrap items-center gap-2">
                   <span className="eyebrow rounded-full border border-on-inverse/25 px-3 py-1 text-on-inverse-muted">
@@ -130,7 +130,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
                   )}
                 </p>
                 <h2 className="mt-3 text-display text-on-inverse sm:mt-5">{frenchSpacing(s.title)}</h2>
-                <p className="mt-3 line-clamp-3 max-w-lg text-sm leading-relaxed text-on-inverse-muted sm:mt-5 sm:line-clamp-none sm:text-base lg:text-lg">{frenchSpacing(s.text)}</p>
+                <p className="mt-5 hidden max-w-lg leading-relaxed text-on-inverse-muted sm:block lg:text-lg">{frenchSpacing(s.text)}</p>
                 <p className="mt-4 text-xs sm:mt-6 sm:text-sm">
                   <span className="font-semibold text-on-inverse">{s.productName}</span>
                   <span className="mx-2 text-on-inverse-muted">·</span>

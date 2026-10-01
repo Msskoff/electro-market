@@ -16,7 +16,7 @@ export const t = {
   },
   search: {
     label: "Rechercher un produit",
-    placeholder: "Rechercher un produit, une marque…",
+    placeholder: "Produit, marque, caractéristique…",
     submit: "Lancer la recherche",
     title: "Recherche",
     results: (n: number, q: string) => `${n} résultat${n > 1 ? "s" : ""} pour « ${q} »`,

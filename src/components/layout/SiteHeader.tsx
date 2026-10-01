@@ -31,7 +31,7 @@ export async function SiteHeader() {
     <>
       {/* Bandeau de réassurance */}
       <div className="bg-inverse text-on-inverse">
-        <Container className="flex h-9 items-center justify-center gap-6 text-xs font-medium">
+        <Container className="flex h-8 items-center justify-center gap-6 text-xs font-medium sm:h-9">
           {siteConfig.demoMode && (
             <span className="shrink-0 whitespace-nowrap rounded-full bg-on-inverse/15 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.06em]">
               <span className="sm:hidden">Démo</span>
@@ -50,7 +50,7 @@ export async function SiteHeader() {
       </div>
 
       <header className="z-40 border-b border-border bg-bg/90 backdrop-blur-md md:sticky md:top-0">
-        <Container className="flex h-20 items-center justify-between gap-6">
+        <Container className="flex h-16 items-center justify-between gap-6 md:h-20">
           <Logo />
           <SearchForm className="hidden max-w-xl flex-1 md:block" />
           <div className="flex items-center gap-1">

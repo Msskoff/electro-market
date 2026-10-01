@@ -32,12 +32,12 @@ export function SearchForm({
         placeholder={t.search.placeholder}
         autoComplete="off"
         enterKeyHint="search"
-        className="h-12 w-full rounded-full border border-border bg-surface pl-5 pr-14 text-base shadow-sm transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
+        className="h-11 w-full rounded-full border border-border bg-surface pl-5 pr-14 text-base md:h-12 shadow-sm transition-colors placeholder:text-muted focus:border-accent focus:outline-none"
       />
       <button
         type="submit"
         aria-label={t.search.submit}
-        className="absolute right-1 top-1 inline-flex size-10 items-center justify-center rounded-full bg-accent text-on-accent transition-colors hover:bg-accent-strong"
+        className="absolute right-1 top-1 inline-flex size-9 items-center md:size-10 justify-center rounded-full bg-accent text-on-accent transition-colors hover:bg-accent-strong"
       >
         <Icon name="search" size={18} />
       </button>

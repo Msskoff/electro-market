@@ -125,7 +125,7 @@ export function HeroScene({
             ))}
 
             {/* Appareil */}
-            <div className="absolute left-1/2 top-[25%] aspect-square w-[min(54vw,250px)] -translate-x-1/2 -translate-y-1/2 sm:top-[30%] sm:w-[min(50vw,320px)] lg:left-[70%] lg:top-1/2 lg:w-[min(36vw,500px)]">
+            <div className="absolute left-1/2 top-[27%] aspect-square w-[min(50vw,220px)] -translate-x-1/2 -translate-y-1/2 sm:top-[30%] sm:w-[min(50vw,320px)] lg:left-[70%] lg:top-1/2 lg:w-[min(36vw,500px)]">
               {withRings.includes(kind) &&
                 [0, 1.2, 2.4].map((delay) => (
                   <span

@@ -53,7 +53,7 @@ export function CategoryHeader({ category, tile, products, brands, guides, page,
   return (
     <header>
       <div className={cn("relative overflow-hidden rounded-xl", tile)}>
-        <div className="grid items-center gap-8 p-6 sm:p-10 lg:grid-cols-[1.5fr_1fr] lg:gap-12">
+        <div className="grid items-center gap-8 p-5 sm:p-10 lg:grid-cols-[1.5fr_1fr] lg:gap-12">
           <div className="relative z-10">
             {updatedAt && (
               <p className="eyebrow text-accent">
@@ -67,7 +67,7 @@ export function CategoryHeader({ category, tile, products, brands, guides, page,
             </h1>
 
             {page === 1 ? (
-              <p className="measure mt-4 text-base leading-relaxed text-muted sm:text-lg">{frenchSpacing(category.intro)}</p>
+              <p className="measure mt-3 line-clamp-3 text-base leading-relaxed text-muted sm:mt-4 sm:line-clamp-none sm:text-lg">{frenchSpacing(category.intro)}</p>
             ) : (
               <p className="mt-3 text-muted">
                 Page {page} sur {totalPages} ·{" "}
@@ -77,18 +77,18 @@ export function CategoryHeader({ category, tile, products, brands, guides, page,
               </p>
             )}
 
-            <dl className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <dl className="mt-5 grid grid-cols-2 gap-2 sm:mt-7 sm:grid-cols-4 sm:gap-3">
               {stats.map((s) => (
-                <div key={s.label} className="rounded-lg bg-surface/80 px-4 py-3 backdrop-blur-sm">
+                <div key={s.label} className="rounded-lg bg-surface/80 px-3 py-2 backdrop-blur-sm sm:px-4 sm:py-3">
                   <dt className="text-xs font-medium text-muted">{s.label}</dt>
                   <dd className="mt-1 text-base font-semibold leading-tight tabular sm:text-lg">{s.value}</dd>
-                  <dd className="mt-0.5 text-xs text-muted">{s.hint}</dd>
+                  <dd className="mt-0.5 hidden text-xs text-muted sm:block">{s.hint}</dd>
                 </div>
               ))}
             </dl>
 
             {guides.length > 0 && (
-              <ul className="mt-6 flex flex-col gap-2">
+              <ul className="mt-5 flex flex-col gap-2 sm:mt-6">
                 {guides.map((g) => (
                   <li key={g.slug}>
                     <Link

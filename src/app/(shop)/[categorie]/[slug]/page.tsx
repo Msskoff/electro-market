@@ -78,7 +78,7 @@ export default async function ProductPage({ params }: PageProps<"/[categorie]/[s
 
         <ProductHero product={product} brandName={brand.name} assurances={assurances} />
 
-        <div className="mt-20 grid gap-16 lg:grid-cols-[1fr_1.1fr]">
+        <div className="mt-12 grid gap-12 sm:mt-20 sm:gap-16 lg:grid-cols-[1fr_1.1fr]">
           <section aria-labelledby="presentation">
             <h2 id="presentation" className="text-h2">
               {t.product.description}
@@ -117,16 +117,16 @@ export default async function ProductPage({ params }: PageProps<"/[categorie]/[s
         <Faq
           items={product.faq}
           title={`${t.product.faq} sur ${product.name}`}
-          className="mt-20 max-w-3xl"
+          className="mt-12 max-w-3xl sm:mt-20"
         />
 
         {related.length > 0 && (
-          <section aria-labelledby="related" className="mt-20">
+          <section aria-labelledby="related" className="mt-12 sm:mt-20">
             <h2 id="related" className="text-h2">
               {t.product.related}
             </h2>
             <div className="mt-6">
-              <ProductGrid products={related} brands={brands} columns={3} />
+              <ProductGrid products={related} brands={brands} columns={3} layout="rail" />
             </div>
           </section>
         )}

@@ -30,15 +30,15 @@ export const trustItems: { icon: IconName; title: string; text: string }[] = [
 /** Bandeau de réassurance — engagements vérifiables uniquement. */
 export function TrustBar() {
   return (
-    <ul className="grid grid-cols-1 gap-6 rounded-xl border border-border bg-surface p-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4 lg:p-8">
+    <ul className="grid grid-cols-2 gap-x-3 gap-y-5 rounded-xl border border-border bg-surface p-4 sm:gap-6 sm:p-6 lg:grid-cols-4 lg:gap-4 lg:p-8">
       {trustItems.map((item) => (
-        <li key={item.title} className="flex items-center gap-4">
-          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
+        <li key={item.title} className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent sm:size-12">
             <Icon name={item.icon} size={22} />
           </span>
           <div>
-            <p className="font-semibold">{item.title}</p>
-            <p className="text-sm text-muted">{item.text}</p>
+            <p className="text-sm font-semibold sm:text-base">{item.title}</p>
+            <p className="text-xs text-muted sm:text-sm">{item.text}</p>
           </div>
         </li>
       ))}

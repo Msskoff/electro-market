@@ -189,9 +189,16 @@ Animations courtes (150–250 ms), `ease-out`, uniquement fonctionnelles (feedba
 
 **Exception : le hero de l'accueil.** Ses scènes animées en boucle (flottement, rotation 3D, lueurs, particules) et ses vidéos sont voulues pour un rendu immersif. Elles n'utilisent que `transform`/`opacity`, sont mises en pause sur les diapositives inactives et entièrement coupées avec `prefers-reduced-motion` (vidéo non lue, poster affiché).
 
-### 5.6 Responsive
+### 5.6 Responsive — mobile concis
 
 Mobile first. Points de rupture : 640 / 768 / 1024 / 1280 / 1536. Le CTA « Ajouter au panier » reste accessible en permanence sur mobile (barre basse collante).
+
+Objectif : une page doit rester **courte sur mobile** (accueil ≈ 4 écrans, catégorie ≈ 7, fiche ≈ 5 à 375 px). Règles :
+- Grilles produit en **2 colonnes** dès 320 px (`ProductGrid`), carte compacte : 1 seule caractéristique, nom sur 2 lignes max, bouton d'ajout dans le coin de l'image.
+- Aperçus courts (sélection, produits similaires, catégories, encarts) en **rangée défilante** (`layout="rail"`, `snap-x`) sur mobile, grille à partir de 640 px. La carte suivante dépasse pour inviter au glissement.
+- Textes d'accompagnement masqués ou limités (`line-clamp`) sur mobile ; jamais le titre, le prix ni l'action principale.
+- Pied de page en **accordéons** sous 768 px.
+- Aucun débordement horizontal de page (seules les rangées défilent).
 
 ---
 
