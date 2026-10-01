@@ -25,7 +25,7 @@ export const viewport: Viewport = {
   // Thème clair uniquement pour l'instant (mode sombre retiré).
   colorScheme: "light",
   themeColor: [
-    { color: "#0f2e22" },
+    { color: "#2e1406" },
   ],
 };
 

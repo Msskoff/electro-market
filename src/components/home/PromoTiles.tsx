@@ -4,7 +4,7 @@ import { Icon } from "@/components/ui/Icon";
 import { categoryPath, defaultVariant } from "@/lib/catalog/selectors";
 import type { Category, Product } from "@/lib/catalog/types";
 
-const tones = ["bg-tile-sage", "bg-tile-sand", "bg-tile-sky"];
+const tones = ["bg-tile-peach", "bg-tile-sand", "bg-tile-sky"];
 
 /** Trois encarts éditoriaux menant aux catégories phares. */
 export function PromoTiles({ categories, products }: { categories: Category[]; products: Product[] }) {

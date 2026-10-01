@@ -17,7 +17,7 @@ interface OgInput {
 /** Gabarit unique des images de partage (Open Graph / Twitter) et image produit schema.org. */
 export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInput): ImageResponse {
   const grid =
-    "radial-gradient(circle at 80% 20%, #E2EADB 0%, #F6F4EE 60%)";
+    "radial-gradient(circle at 80% 20%, #FBE1CC 0%, #F6F4EE 60%)";
 
   const element: ReactElement = (
     <div
@@ -27,7 +27,7 @@ export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInp
         display: "flex",
         background: "#F6F4EE",
         backgroundImage: grid,
-        color: "#16211B",
+        color: "#21170F",
         padding: 64,
         fontFamily: "sans-serif",
       }}
@@ -39,7 +39,7 @@ export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInp
               width: 56,
               height: 56,
               borderRadius: 14,
-              background: "#1D4A37",
+              background: "#A63F0A",
               color: "white",
               display: "flex",
               alignItems: "center",
@@ -53,11 +53,11 @@ export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInp
           <div style={{ fontSize: 34, fontWeight: 700 }}>{siteConfig.name}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", maxWidth: visual ? 640 : 1000 }}>
-          <div style={{ fontSize: 22, letterSpacing: 3, textTransform: "uppercase", color: "#1D4A37" }}>
+          <div style={{ fontSize: 22, letterSpacing: 3, textTransform: "uppercase", color: "#A63F0A" }}>
             {eyebrow}
           </div>
           <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.05, marginTop: 16 }}>{title}</div>
-          {subtitle && <div style={{ fontSize: 28, color: "#5C665F", marginTop: 20 }}>{subtitle}</div>}
+          {subtitle && <div style={{ fontSize: 28, color: "#6A5C52", marginTop: 20 }}>{subtitle}</div>}
         </div>
         <div style={{ display: "flex", fontSize: 36, fontWeight: 700 }}>{price ?? siteConfig.tagline}</div>
       </div>

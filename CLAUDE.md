@@ -113,7 +113,7 @@ tests/                                 # Tests Vitest
 
 ### 5.1 Direction artistique
 
-**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance vert sapin, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil sombre, pied de page vert sapin. Palette vert sapin + crème, accents corail réservés aux remises. Titres en serif éditoriale, specs techniques toujours en micro-étiquettes mono.
+**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance orange foncé, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil sombre, pied de page brun-orange. Palette orange foncé (terre cuite) + crème, rouge carmin réservé aux remises, vert réservé à l'état « en stock ». Titres en serif éditoriale, specs techniques toujours en micro-étiquettes mono.
 
 À éviter absolument : carrousels automatiques, pop-ups agressifs, bannières clignotantes, fausses urgences (« plus que 2 h ! »), promotions ou avis inventés, look « marketplace discount » surchargé.
 
@@ -124,15 +124,15 @@ Couleurs principales (thème clair) :
 | Token | Valeur | Usage |
 |---|---|---|
 | `--bg` / `--surface` / `--surface-2` | `#F6F4EE` / `#FFFFFF` / `#F1EFE8` | Fond crème, cartes, fonds de visuels |
-| `--text` / `--text-muted` | `#16211B` / `#5C665F` | Texte |
-| `--accent` / `--accent-strong` / `--accent-soft` | `#1D4A37` / `#123326` / `#E3EBE2` | Vert sapin : boutons, liens, actif |
-| `--inverse` / `--on-inverse` / `--on-inverse-muted` | `#0F2E22` / `#EEF3EE` / `#A9BDB0` | Bandeau haut, pied de page, bande conseil |
-| `--tile-sage/sand/sky/rose/lilac` | pastels | Pastilles de catégories, hero, encarts promo |
-| `--danger` | `#B93A32` | Badge de remise « -X % » et prix remisé |
-| `--signal` / `--warning` | `#23744A` / `#9A5B00` | Stock disponible / stock faible |
+| `--text` / `--text-muted` | `#21170F` / `#6A5C52` | Texte |
+| `--accent` / `--accent-strong` / `--accent-soft` | `#A63F0A` / `#82300A` / `#FBE7D8` | Orange foncé : boutons, liens, actif |
+| `--inverse` / `--on-inverse` / `--on-inverse-muted` | `#2E1406` / `#FBF1EA` / `#D9B8A3` | Brun-orange très foncé : bandeau haut, hero, pied de page, bande conseil |
+| `--tile-peach/sand/sky/rose/lilac` | pastels | Pastilles de catégories, hero, encarts promo |
+| `--danger` | `#B0213A` | Badge de remise « -X % » et prix remisé (carmin, distinct de l'orange) |
+| `--signal` / `--warning` | `#23744A` / `#9A5B00` | Stock disponible (vert conservé : code d'état universel) / stock faible |
 | `--star` | `#D99A1E` | Étoiles des avis (vérifiés uniquement) |
 
-- Classes Tailwind correspondantes : `bg-accent`, `bg-inverse`, `text-on-inverse-muted`, `bg-tile-sage`, `text-danger`…
+- Classes Tailwind correspondantes : `bg-accent`, `bg-inverse`, `text-on-inverse-muted`, `bg-tile-peach`, `text-danger`…
 - Rayons : 6 / 10 / 16 / 24 px (`rounded-xl` pour les grandes cartes et sections).
 - **Thème sombre : retiré pour l'instant.** Site en thème clair uniquement (`colorScheme: "light"`), même si l'appareil du visiteur est en mode sombre. Pas de sélecteur de thème. Les anciennes valeurs sombres et `ThemeToggle` sont dans l'historique git (commit `fc278d2`) en cas de réactivation.
 - Tout contraste texte/fond respecte **WCAG AA** (vérifié pour toutes les paires ci-dessus en thème clair).

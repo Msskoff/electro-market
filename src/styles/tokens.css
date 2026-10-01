@@ -3,7 +3,7 @@
  * Les composants n'utilisent JAMAIS de couleur en dur : uniquement ces variables
  * (exposées à Tailwind via `@theme inline` dans globals.css).
  *
- * Direction : vert sapin profond + crème chaud, accents corail pour les offres.
+ * Direction : orange foncé (terre cuite) + crème chaud, rouge carmin pour les offres.
  *
  * Thème clair uniquement : le mode sombre est retiré pour l'instant (ses anciennes
  * valeurs restent dans l'historique git si on le réactive).
@@ -20,34 +20,34 @@
   --border-strong: #cdc7b8;
 
   /* Texte */
-  --text: #16211b;
-  --text-muted: #5c665f;
+  --text: #21170f;
+  --text-muted: #6a5c52;
 
   /* Marque */
-  --accent: #1d4a37;
-  --accent-strong: #123326;
-  --accent-soft: #e3ebe2;
+  --accent: #a63f0a;
+  --accent-strong: #82300a;
+  --accent-soft: #fbe7d8;
   --on-accent: #ffffff;
 
   /* Zones inversées (bandeau haut, pied de page, encarts) */
-  --inverse: #0f2e22;
-  --inverse-2: #173d2e;
-  --on-inverse: #eef3ee;
-  --on-inverse-muted: #a9bdb0;
+  --inverse: #2e1406;
+  --inverse-2: #45200b;
+  --on-inverse: #fbf1ea;
+  --on-inverse-muted: #d9b8a3;
 
   /* Fonds de tuiles (catégories, encarts promo) */
-  --tile-sage: #e2eadb;
+  --tile-peach: #fbe1cc;
   --tile-sand: #f2e7d7;
   --tile-sky: #dde8f0;
   --tile-rose: #f5e1dc;
   --tile-lilac: #e8e3f0;
 
   /* Statuts */
-  --signal: #23744a;
+  --signal: #23744a; /* vert conservé : « en stock » est un code d'état universel */
   --signal-soft: #e1f0e6;
   --warning: #9a5b00;
   --warning-soft: #fbefd9;
-  --danger: #b93a32; /* prix remisés, badges d'offre */
+  --danger: #b0213a; /* prix remisés, badges d'offre (carmin, distinct de l'orange) */
   --danger-soft: #fbe5e1;
   --star: #d99a1e;
 }

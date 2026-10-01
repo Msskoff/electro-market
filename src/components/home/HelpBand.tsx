@@ -27,7 +27,7 @@ export function HelpBand() {
       <div className="flex flex-wrap gap-3">
         <Link
           href="/guides"
-          className="inline-flex h-11 items-center gap-2 rounded-full bg-tile-sage px-5 text-sm font-semibold sm:h-12 sm:px-6 text-accent transition-opacity hover:opacity-90"
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-tile-peach px-5 text-sm font-semibold sm:h-12 sm:px-6 text-accent transition-opacity hover:opacity-90"
         >
           Lire les guides
           <Icon name="arrowRight" size={16} />

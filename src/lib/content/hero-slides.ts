@@ -18,7 +18,7 @@ export interface HeroSlide {
   categorySlug: string;
   productSlug: string;
   /** Teinte d'ambiance de la scène (token de tuile). */
-  tone: "sage" | "sand" | "sky" | "rose" | "lilac";
+  tone: "peach" | "sand" | "sky" | "rose" | "lilac";
   title: string;
   text: string;
   video?: HeroVideo;
@@ -49,7 +49,7 @@ export const heroSlides: HeroSlide[] = [
   {
     categorySlug: "tablettes",
     productSlug: "stratos-tab-11",
-    tone: "sage",
+    tone: "peach",
     title: "Votre carnet de notes, en mieux.",
     text: "Écran 11 pouces 120 Hz et stylet à faible latence : prise de notes, dessin et multimédia sur une seule tablette.",
   },

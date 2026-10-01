@@ -59,9 +59,9 @@ export function DeviceIllustrationSvg({
     >
       <defs>
         <linearGradient id={`${id}-screen`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#0c1a14" />
-          <stop offset="0.55" stopColor="#173d2e" />
-          <stop offset="1" stopColor="#4f9a74" />
+          <stop offset="0" stopColor="#1a0c05" />
+          <stop offset="0.55" stopColor="#4a1e08" />
+          <stop offset="1" stopColor="#d9732e" />
         </linearGradient>
         <linearGradient id={`${id}-body`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor={light} />
@@ -120,7 +120,7 @@ export function DeviceIllustrationSvg({
           <circle cx="100" cy="100" r="2.5" fill="#fff" opacity="0.9" />
           <rect x="99" y="76" width="2" height="25" rx="1" fill="#fff" opacity="0.9" />
           <rect x="99" y="99" width="2" height="18" rx="1" fill="#fff" opacity="0.7" transform="rotate(-60 100 100)" />
-          <circle cx="100" cy="66" r="1.5" fill="#7fc4a0" />
+          <circle cx="100" cy="66" r="1.5" fill="#f4a261" />
         </g>
       )}
 
@@ -139,7 +139,7 @@ export function DeviceIllustrationSvg({
         <g>
           <rect x="50" y="98" width="100" height="74" rx="32" fill={`url(#${id}-body)`} />
           <path d="M52 124h96" stroke={dark} strokeWidth="1.5" opacity="0.5" />
-          <circle cx="100" cy="148" r="2.5" fill="#7fc4a0" />
+          <circle cx="100" cy="148" r="2.5" fill="#f4a261" />
           <g>
             <circle cx="78" cy="62" r="17" fill={color} stroke={dark} strokeWidth="1" />
             <rect x="72" y="66" width="11" height="34" rx="5.5" fill={color} stroke={dark} strokeWidth="1" />
