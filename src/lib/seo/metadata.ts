@@ -45,8 +45,8 @@ export function buildMetadata({
       images,
     },
     twitter: { card: "summary_large_image", title: fullTitle, description, images },
-    robots: noindex
-      ? { index: false, follow: true }
+    robots: noindex || !siteConfig.indexable
+      ? { index: false, follow: siteConfig.indexable }
       : { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
   };
 }

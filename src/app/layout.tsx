@@ -12,6 +12,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
+  ...(siteConfig.indexable ? {} : { robots: { index: false, follow: false } }),
   title: {
     default: `${siteConfig.name} — ${siteConfig.tagline}`,
     template: `%s – ${siteConfig.name}`,

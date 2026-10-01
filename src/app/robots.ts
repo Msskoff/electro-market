@@ -21,6 +21,10 @@ const AI_CRAWLERS = [
 ];
 
 export default function robots(): MetadataRoute.Robots {
+  // Démo / préproduction : aucun robot ne doit indexer le catalogue fictif.
+  if (!siteConfig.indexable) {
+    return { rules: [{ userAgent: "*", disallow: "/" }] };
+  }
   return {
     rules: [
       { userAgent: "*", allow: "/", disallow: PRIVATE_PATHS },

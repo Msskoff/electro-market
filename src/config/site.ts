@@ -8,13 +8,24 @@ export const siteConfig = {
   tagline: "L'électronique choisie, testée, expliquée.",
   description:
     "ElectroMarket est une boutique en ligne basée à Lomé (Togo), spécialisée en appareils électroniques : smartphones, ordinateurs portables, audio, tablettes et montres connectées, avec fiches techniques détaillées et conseils d'achat.",
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
+  /** URL publique : variable explicite, sinon domaine de production Vercel, sinon local. */
+  url: (
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "http://localhost:3000")
+  ).replace(/\/$/, ""),
   locale: "fr-TG",
   language: "fr",
   /** Code ISO 4217. XOF = franc CFA (UEMOA), sans subdivision. */
   currency: process.env.NEXT_PUBLIC_CURRENCY ?? "XOF",
   /** Affiche un bandeau signalant que le catalogue contient des données fictives. */
   demoMode: true,
+  /**
+   * Indexation par les moteurs et assistants IA. Désactivée par défaut (démo,
+   * préproduction) : il faut définir SITE_INDEXING=true au lancement réel.
+   */
+  indexable: process.env.SITE_INDEXING === "true",
   contact: {
     email: "contact@votre-domaine.com",
     phone: "+228 00 00 00 00",
