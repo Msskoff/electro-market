@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
 
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-
 /* Expose les tokens à Tailwind : bg-surface, text-muted, border-border, etc. */
 @theme inline {
   --color-bg: var(--bg);

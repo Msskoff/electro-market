@@ -23,7 +23,7 @@ Chaque décision technique ou visuelle doit servir au moins un de ces trois obje
 | Couche | Choix | Raison |
 |---|---|---|
 | Framework | **Next.js 16 (App Router, Turbopack)**, TypeScript strict | Rendu serveur (SSR/SSG/ISR) indispensable au SEO et aux robots IA |
-| Style | **Tailwind CSS v4** + design tokens en variables CSS | Cohérence du design system, thème clair/sombre |
+| Style | **Tailwind CSS v4** + design tokens en variables CSS | Cohérence du design system (thème clair uniquement pour l'instant) |
 | Composants | Composants maison (+ Radix UI pour l'accessibilité des primitives) | Design distinctif, pas de look « kit UI » |
 | Base de données | **PostgreSQL** (Supabase) + ORM (Drizzle ou Prisma) — *MVP : données en mémoire derrière `repository.ts`* | Catalogue relationnel, variantes, stocks |
 | Authentification | Supabase Auth (ou Auth.js) | Comptes clients, admin |
@@ -82,7 +82,7 @@ src/
     content/   # Faq, TrustBar
     home/      # hero/ (HeroShowcase, HeroScene), CategoryCircles, PromoTiles, ReviewsSection, HelpBand
     catalog/   # CategoryView (contenu d'une page de catégorie), Pagination
-    layout/    # SiteHeader, SiteFooter, SearchForm, CategoryMenu, NavLink, Breadcrumbs, ThemeToggle, CartLink, Logo
+    layout/    # SiteHeader, SiteFooter, SearchForm, CategoryMenu, NavLink, Breadcrumbs, CartLink, Logo
     cart/      # CartLineControls
     seo/       # JsonLd
   config/site.ts                       # Identité, URL, politiques commerciales (source unique)
@@ -93,7 +93,7 @@ src/
     content/   # guides.ts, site-faq.ts, hero-slides.ts (diapositives du hero + vidéos)
     i18n/fr.ts # Textes d'interface
     utils/     # cn, format (prix en unité mineure de la devise, dates)
-  styles/tokens.css                    # Design tokens (clair/sombre)
+  styles/tokens.css                    # Design tokens (thème clair)
 tests/                                 # Tests Vitest
 ```
 
@@ -134,7 +134,7 @@ Couleurs principales (thème clair) :
 
 - Classes Tailwind correspondantes : `bg-accent`, `bg-inverse`, `text-on-inverse-muted`, `bg-tile-sage`, `text-danger`…
 - Rayons : 6 / 10 / 16 / 24 px (`rounded-xl` pour les grandes cartes et sections).
-- **Thème sombre :** conservé en l'état pour le moment (simple réalignement sur la teinte verte, pas encore retravaillé).
+- **Thème sombre : retiré pour l'instant.** Site en thème clair uniquement (`colorScheme: "light"`), même si l'appareil du visiteur est en mode sombre. Pas de sélecteur de thème. Les anciennes valeurs sombres et `ThemeToggle` sont dans l'historique git (commit `fc278d2`) en cas de réactivation.
 - Tout contraste texte/fond respecte **WCAG AA** (vérifié pour toutes les paires ci-dessus en thème clair).
 
 ### 5.3 Typographie
@@ -280,7 +280,7 @@ Les assistants IA citent les sources claires, factuelles, structurées et à jou
 - Navigation complète au clavier, focus visible et stylé.
 - `alt` descriptifs sur toutes les images produit (« Smartphone X noir, vue de face »), `alt=""` pour les images décoratives.
 - Libellés sur tous les champs de formulaire, messages d'erreur reliés aux champs.
-- Contrastes vérifiés dans les deux thèmes.
+- Contrastes vérifiés (thème clair ; à refaire si le thème sombre est réactivé).
 
 ---
 
@@ -320,7 +320,7 @@ Toute modification du schéma passe par une migration.
 Une tâche est terminée seulement si :
 
 - [ ] `lint`, `typecheck` et tests passent
-- [ ] Rendu correct mobile + desktop, thèmes clair et sombre
+- [ ] Rendu correct mobile + desktop
 - [ ] Pour toute page indexable : métadonnées, canonical, JSON-LD valides, h1 unique
 - [ ] Contenu visible sans JavaScript (vérifié au `curl`)
 - [ ] Pas de régression Lighthouse (≥ 95 Perf/SEO/A11y)
@@ -358,7 +358,7 @@ Valeurs centralisées dans `src/config/site.ts`.
 
 **Catalogue de démonstration :** 8 fiches rédigées + 492 produits générés par `demo-generator.ts` (déterministe, URL stables), soit 100 par catégorie. Tout est fictif et signalé par le bandeau « Démo » : à remplacer par la base réelle avant lancement. Marquées « À VALIDER » : frais de livraison (2 000 F CFA), seuil de gratuité (50 000 F CFA), délai (24–48 h à Lomé), retours (30 j), garantie (2 ans), adresse et téléphone.
 
-**Mode sombre :** conservé en l'état pour le moment (pas de retouche des tokens sombres).
+**Mode sombre :** retiré pour l'instant (thème clair uniquement).
 
 Mettre à jour ce fichier dès que ces décisions sont prises.
 

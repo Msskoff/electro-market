@@ -4,6 +4,9 @@
  * (exposées à Tailwind via `@theme inline` dans globals.css).
  *
  * Direction : vert sapin profond + crème chaud, accents corail pour les offres.
+ *
+ * Thème clair uniquement : le mode sombre est retiré pour l'instant (ses anciennes
+ * valeurs restent dans l'historique git si on le réactive).
  */
 
 :root {
@@ -47,72 +50,4 @@
   --danger: #b93a32; /* prix remisés, badges d'offre */
   --danger-soft: #fbe5e1;
   --star: #d99a1e;
-}
-
-/*
- * Thème sombre : conservé en l'état (non retravaillé pour l'instant),
- * seulement réaligné sur la teinte verte pour rester cohérent.
- */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: #0b110e;
-    --surface: #121a16;
-    --surface-2: #19231e;
-    --border: #26332c;
-    --border-strong: #37483e;
-    --text: #edf2ee;
-    --text-muted: #9aa8a0;
-    --accent: #7fc4a0;
-    --accent-strong: #a3d8bb;
-    --accent-soft: #16291f;
-    --on-accent: #08130d;
-    --inverse: #07100b;
-    --inverse-2: #0f1c15;
-    --on-inverse: #edf2ee;
-    --on-inverse-muted: #93a59a;
-    --tile-sage: #18251d;
-    --tile-sand: #241f17;
-    --tile-sky: #16202a;
-    --tile-rose: #2a1a17;
-    --tile-lilac: #1f1b28;
-    --signal: #5fc78f;
-    --signal-soft: #10261a;
-    --warning: #f0b14a;
-    --warning-soft: #2a1d07;
-    --danger: #ff7b6e;
-    --danger-soft: #2c1412;
-    --star: #f0b84a;
-  }
-}
-
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #0b110e;
-  --surface: #121a16;
-  --surface-2: #19231e;
-  --border: #26332c;
-  --border-strong: #37483e;
-  --text: #edf2ee;
-  --text-muted: #9aa8a0;
-  --accent: #7fc4a0;
-  --accent-strong: #a3d8bb;
-  --accent-soft: #16291f;
-  --on-accent: #08130d;
-  --inverse: #07100b;
-  --inverse-2: #0f1c15;
-  --on-inverse: #edf2ee;
-  --on-inverse-muted: #93a59a;
-  --tile-sage: #18251d;
-  --tile-sand: #241f17;
-  --tile-sky: #16202a;
-  --tile-rose: #2a1a17;
-  --tile-lilac: #1f1b28;
-  --signal: #5fc78f;
-  --signal-soft: #10261a;
-  --warning: #f0b14a;
-  --warning-soft: #2a1d07;
-  --danger: #ff7b6e;
-  --danger-soft: #2c1412;
-  --star: #f0b84a;
 }

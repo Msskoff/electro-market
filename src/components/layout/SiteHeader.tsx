@@ -10,7 +10,6 @@ import { CategoryMenu } from "./CategoryMenu";
 import { Logo } from "./Logo";
 import { NavLink } from "./NavLink";
 import { SearchForm } from "./SearchForm";
-import { ThemeToggle } from "./ThemeToggle";
 
 const { policies } = siteConfig;
 
@@ -54,7 +53,6 @@ export async function SiteHeader() {
           <Logo />
           <SearchForm className="hidden max-w-xl flex-1 md:block" />
           <div className="flex items-center gap-1">
-            <ThemeToggle />
             <CartLink />
           </div>
         </Container>

@@ -61,8 +61,4 @@ export const t = {
     increase: "Augmenter la quantité",
     decrease: "Diminuer la quantité",
   },
-  theme: {
-    toLight: "Activer le thème clair",
-    toDark: "Activer le thème sombre",
-  },
 } as const;

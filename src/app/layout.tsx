@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { themeInitScript } from "@/components/layout/ThemeToggle";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteConfig } from "@/config/site";
 import { t } from "@/lib/i18n/fr";
@@ -23,9 +22,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // Thème clair uniquement pour l'instant (mode sombre retiré).
+  colorScheme: "light",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#0f2e22" },
-    { media: "(prefers-color-scheme: dark)", color: "#07100b" },
+    { color: "#0f2e22" },
   ],
 };
 
@@ -33,12 +33,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={siteConfig.language}
-      suppressHydrationWarning
       className={cn(inter.variable, sourceSerif.variable, jetbrainsMono.variable, "antialiased")}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
       <body className="flex min-h-dvh flex-col">
         <a
           href="#contenu"
