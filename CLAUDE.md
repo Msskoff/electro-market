@@ -347,6 +347,8 @@ TRANSPORTEURS=
 
 Valeurs centralisées dans `src/config/site.ts`.
 
+**Déploiement :** Vercel, projet `electro-market` (espace « Hubert's projects »), relié au dépôt GitHub `Msskoff/electro-market`. Chaque push sur `main` = déploiement de production. Démo client : https://electro-market-one.vercel.app — non indexée tant que `SITE_INDEXING` n'est pas `true` (à n'activer qu'au lancement réel, avec le vrai catalogue).
+
 **Catalogue de démonstration :** 8 fiches rédigées + 492 produits générés par `demo-generator.ts` (déterministe, URL stables), soit 100 par catégorie. Tout est fictif et signalé par le bandeau « Démo » : à remplacer par la base réelle avant lancement. Marquées « À VALIDER » : frais de livraison (2 000 F CFA), seuil de gratuité (50 000 F CFA), délai (24–48 h à Lomé), retours (30 j), garantie (2 ans), adresse et téléphone.
 
 **Mode sombre :** conservé en l'état pour le moment (pas de retouche des tokens sombres).
