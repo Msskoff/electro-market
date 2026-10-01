@@ -1,0 +1,253 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Expose les tokens à Tailwind : bg-surface, text-muted, border-border, etc. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg: var(--text);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-inverse: var(--inverse);
+  --color-inverse-2: var(--inverse-2);
+  --color-on-inverse: var(--on-inverse);
+  --color-on-inverse-muted: var(--on-inverse-muted);
+  --color-tile-sage: var(--tile-sage);
+  --color-tile-sand: var(--tile-sand);
+  --color-tile-sky: var(--tile-sky);
+  --color-tile-rose: var(--tile-rose);
+  --color-tile-lilac: var(--tile-lilac);
+  --color-star: var(--star);
+  --color-signal: var(--signal);
+  --color-signal-soft: var(--signal-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-source-serif), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+@theme {
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-sm: 0 1px 2px rgb(22 33 27 / 0.06);
+  --shadow-md: 0 10px 30px -8px rgb(22 33 27 / 0.14);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /*
+   * Échelle typographique des titres — fluide entre 320 px et ~1 300 px de large.
+   * Texte courant : échelle Tailwind (xs 12 · sm 14 · base 16 · lg 18 · xl 20).
+   *   text-display  34 → 64 px  titre du hero
+   *   text-h1       32 → 48 px  titre de page
+   *   text-h2       24 → 34 px  titre de section
+   *   text-h3       19 → 22 px  sous-section, titre de carte éditoriale
+   */
+  --text-display: clamp(2.125rem, 1.45rem + 3.4vw, 4rem);
+  --text-display--line-height: 1.04;
+  --text-display--letter-spacing: -0.02em;
+  --text-h1: clamp(2rem, 1.65rem + 1.75vw, 3rem);
+  --text-h1--line-height: 1.08;
+  --text-h1--letter-spacing: -0.015em;
+  --text-h2: clamp(1.5rem, 1.3rem + 1vw, 2.125rem);
+  --text-h2--line-height: 1.15;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h3: clamp(1.1875rem, 1.1rem + 0.4vw, 1.375rem);
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.005em;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    /* 16 px minimum pour le texte courant, interlignage confortable */
+    font-size: 1rem;
+    line-height: 1.6;
+    font-kerning: normal;
+    /* Inter : « a » simple (cv11), chiffres ouverts (ss01), ligatures contextuelles */
+    font-feature-settings: "cv11", "ss01", "calt";
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  /* Évite les mots isolés en fin de paragraphe */
+  p,
+  li,
+  dd,
+  blockquote,
+  figcaption {
+    text-wrap: pretty;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+}
+
+@layer utilities {
+  /* Lueur douce derrière un visuel produit */
+  .bg-glow {
+    background-image: radial-gradient(60% 60% at 50% 45%, var(--surface) 0%, transparent 100%);
+  }
+  /* Masque la barre de défilement d'une rangée horizontale */
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Surtitre en capitales : 12 px minimum, interlettrage modéré (lisibilité) */
+  .eyebrow {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  /* Micro-étiquette technique (références, SKU) */
+  .label-mono {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  /*
+   * Longueur de ligne idéale pour la lecture : 60–75 caractères.
+   * 1ch = largeur du « 0 », plus large qu'une lettre moyenne en Inter :
+   * 60ch ≈ 70–75 caractères réels.
+   */
+  .measure {
+    max-width: 60ch;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Hero immersif : scènes animées (remplacent la vidéo tant qu'aucune   */
+/* n'est fournie). Uniquement transform/opacity : animées par le GPU.   */
+/* ------------------------------------------------------------------ */
+
+@keyframes hero-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -14px, 0); }
+}
+@keyframes hero-turn {
+  0%, 100% { transform: perspective(900px) rotateY(-18deg) rotateZ(-2deg); }
+  50% { transform: perspective(900px) rotateY(18deg) rotateZ(2deg); }
+}
+@keyframes hero-tilt {
+  0%, 100% { transform: perspective(900px) rotateX(8deg) rotateY(-10deg); }
+  50% { transform: perspective(900px) rotateX(-2deg) rotateY(10deg); }
+}
+@keyframes hero-sway {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+@keyframes hero-ring {
+  0% { transform: translate(-50%, -50%) scale(0.55); opacity: 0.55; }
+  100% { transform: translate(-50%, -50%) scale(1.7); opacity: 0; }
+}
+@keyframes hero-sweep {
+  0% { transform: translateX(-120%) skewX(-18deg); }
+  60%, 100% { transform: translateX(260%) skewX(-18deg); }
+}
+@keyframes hero-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(4%, -3%, 0) scale(1.12); }
+}
+@keyframes hero-rise {
+  0% { transform: translateY(0); opacity: 0; }
+  15% { opacity: 0.9; }
+  100% { transform: translateY(-320px); opacity: 0; }
+}
+@keyframes hero-kenburns {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+@keyframes hero-shadow {
+  0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.45; }
+  50% { transform: translateX(-50%) scaleX(0.82); opacity: 0.25; }
+}
+
+@layer components {
+  .hero-float { animation: hero-float 6s ease-in-out infinite; }
+  .hero-turn { animation: hero-turn 9s ease-in-out infinite; }
+  .hero-tilt { animation: hero-tilt 10s ease-in-out infinite; }
+  .hero-sway { animation: hero-sway 8s ease-in-out infinite; }
+  .hero-ring { animation: hero-ring 3.6s ease-out infinite; }
+  .hero-sweep { animation: hero-sweep 7s ease-in-out infinite; }
+  .hero-drift { animation: hero-drift 16s ease-in-out infinite; }
+  .hero-rise { animation: hero-rise linear infinite; }
+  .hero-shadow { animation: hero-shadow 6s ease-in-out infinite; }
+  .hero-kenburns { animation: hero-kenburns 12s ease-out both; }
+
+  /* Diapositive inactive : animations en pause (économie de batterie/CPU). */
+  [data-active="false"] .hero-scene,
+  [data-active="false"] .hero-scene * {
+    animation-play-state: paused;
+  }
+
+  /* Entrée du contenu marketing, en cascade. */
+  .hero-content > * {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 600ms var(--ease-out),
+      transform 600ms var(--ease-out);
+  }
+  [data-active="true"] .hero-content > * {
+    opacity: 1;
+    transform: none;
+  }
+  [data-active="true"] .hero-content > :nth-child(2) { transition-delay: 80ms; }
+  [data-active="true"] .hero-content > :nth-child(3) { transition-delay: 160ms; }
+  [data-active="true"] .hero-content > :nth-child(4) { transition-delay: 240ms; }
+  [data-active="true"] .hero-content > :nth-child(5) { transition-delay: 320ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scene,
+  .hero-scene * {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

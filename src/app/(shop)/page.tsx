@@ -1,0 +1,163 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { Faq } from "@/components/content/Faq";
+import { TrustBar } from "@/components/content/TrustBar";
+import { CategoryCircles } from "@/components/home/CategoryCircles";
+import { HelpBand } from "@/components/home/HelpBand";
+import { HeroShowcase, type ShowcaseSlide } from "@/components/home/hero/HeroShowcase";
+import { PromoTiles } from "@/components/home/PromoTiles";
+import { ReviewsSection } from "@/components/home/ReviewsSection";
+import { ProductGrid } from "@/components/product/ProductGrid";
+import { Container } from "@/components/ui/Container";
+import { Icon } from "@/components/ui/Icon";
+import { siteConfig } from "@/config/site";
+import { getAllProducts, getBrands, getCategories, getVerifiedReviews } from "@/lib/catalog/repository";
+import { categoryPath, defaultVariant, discountPercent, priceRange, productPath } from "@/lib/catalog/selectors";
+import type { Category, Product } from "@/lib/catalog/types";
+import { heroSlides } from "@/lib/content/hero-slides";
+import { getGuides } from "@/lib/content/guides";
+import { siteFaq } from "@/lib/content/site-faq";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { formatDate, formatPrice } from "@/lib/utils/format";
+
+export const metadata = buildMetadata({
+  title: `${siteConfig.name} — Smartphones, ordinateurs, audio et objets connectés`,
+  description:
+    "Boutique d'électronique à Lomé : smartphones, ordinateurs portables, casques, tablettes et montres connectées. Fiches techniques détaillées, livraison en 24 à 48 h.",
+  path: "/",
+  absoluteTitle: true,
+});
+
+function SectionTitle({ id, children, action }: { id: string; children: ReactNode; action?: ReactNode }) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <h2 id={id} className="flex items-center gap-2 text-h2">
+        {children}
+      </h2>
+      {action}
+    </div>
+  );
+}
+
+/** « l'Aurion One 5G », « le Nuvia Book 14 Air », « la Stratos Tab 11 ». */
+function withArticle(name: string, feminine: boolean): string {
+  return /^[aeiouyhéè]/i.test(name) ? `l'${name}` : `${feminine ? "la" : "le"} ${name}`;
+}
+
+const FEMININE_CATEGORIES = new Set(["tablettes", "montres-connectees"]);
+
+/** Associe chaque diapositive éditoriale à son produit et à sa catégorie réels. */
+function buildShowcase(products: Product[], categories: Category[]): ShowcaseSlide[] {
+  return heroSlides.flatMap((slide) => {
+    const product = products.find((p) => p.category === slide.categorySlug && p.slug === slide.productSlug);
+    const category = categories.find((c) => c.slug === slide.categorySlug);
+    if (!product || !category) return [];
+    const variant = defaultVariant(product);
+    const { min, max } = priceRange(product);
+    return [
+      {
+        ...slide,
+        categoryName: category.name,
+        categoryHref: categoryPath(category.slug),
+        productName: product.name,
+        productHref: productPath(product),
+        productCta: withArticle(product.name, FEMININE_CATEGORIES.has(category.slug)),
+        kind: product.kind,
+        color: variant.color.hex,
+        priceLabel: min === max ? formatPrice(min) : `à partir de ${formatPrice(min)}`,
+        discount: discountPercent(variant),
+      },
+    ];
+  });
+}
+
+export default async function HomePage() {
+  const [categories, products, brands, reviews] = await Promise.all([
+    getCategories(),
+    getAllProducts(),
+    getBrands(),
+    getVerifiedReviews(),
+  ]);
+  const guides = getGuides();
+  const counts = Object.fromEntries(
+    categories.map((c) => [c.slug, products.filter((p) => p.category === c.slug).length]),
+  );
+  // Produits mis en avant d'abord, puis le reste du catalogue.
+  const selection = [...products.filter((p) => p.featured), ...products.filter((p) => !p.featured)].slice(0, 8);
+
+  return (
+    <div className="space-y-14 sm:space-y-16">
+      <HeroShowcase slides={buildShowcase(products, categories)} />
+
+      <Container as="section" aria-label="Catégories">
+        <CategoryCircles categories={categories} counts={counts} />
+      </Container>
+
+      <Container as="section" aria-labelledby="selection-title">
+        <div className="rounded-xl border border-border bg-surface p-5 sm:p-8">
+          <SectionTitle id="selection-title">
+            Notre sélection
+            <Icon name="sparkle" size={20} className="text-star" />
+          </SectionTitle>
+          <p className="mt-2 text-muted">Des appareils que nous conseillerions à un proche, dans chaque catégorie.</p>
+          <div className="mt-6">
+            <ProductGrid products={selection} brands={brands} />
+          </div>
+        </div>
+      </Container>
+
+      <Container as="section" aria-label="Nos univers">
+        <PromoTiles categories={categories} products={products} />
+      </Container>
+
+      {reviews.length > 0 && (
+        <Container>
+          <ReviewsSection reviews={reviews} />
+        </Container>
+      )}
+
+      <Container as="section" aria-labelledby="guides-title">
+        <SectionTitle
+          id="guides-title"
+          action={
+            <Link href="/guides" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline underline-offset-4">
+              Tous les guides
+              <Icon name="arrowRight" size={16} />
+            </Link>
+          }
+        >
+          Guides d&apos;achat
+        </SectionTitle>
+        <ul className="mt-6 grid gap-5 md:grid-cols-2">
+          {guides.map((g) => (
+            <li key={g.slug}>
+              <article className="group relative h-full rounded-xl border border-border bg-surface p-6 transition-shadow hover:shadow-md">
+                <p className="eyebrow text-muted">
+                  Mis à jour le {formatDate(g.updatedAt)}
+                </p>
+                <h3 className="mt-3 text-h3">
+                  <Link href={`/guides/${g.slug}`} className="after:absolute after:inset-0">
+                    {g.title}
+                  </Link>
+                </h3>
+                <p className="mt-2 text-muted">{g.description}</p>
+              </article>
+            </li>
+          ))}
+        </ul>
+      </Container>
+
+      <Container>
+        <HelpBand />
+      </Container>
+
+      <Container className="max-w-3xl">
+        <Faq items={siteFaq} />
+      </Container>
+
+      <Container as="section" aria-label="Nos engagements">
+        <TrustBar />
+      </Container>
+    </div>
+  );
+}

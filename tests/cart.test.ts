@@ -1,0 +1,75 @@
+import { describe, expect, it } from "vitest";
+import { products } from "@/lib/catalog/data";
+import { priceCart } from "@/lib/cart/pricing";
+import { MAX_QTY_PER_LINE, addLine, countItems, parseCart, setLineQty } from "@/lib/cart/schema";
+
+const rules = { freeShippingThreshold: 50000, shippingCost: 2000 };
+
+function lookupFor(skus: string[]) {
+  const map = new Map();
+  for (const product of products)
+    for (const variant of product.variants)
+      if (skus.includes(variant.sku)) map.set(variant.sku, { product, variant });
+  return map;
+}
+
+describe("parseCart", () => {
+  it("retourne un panier vide pour un cookie absent ou corrompu", () => {
+    expect(parseCart(undefined)).toEqual([]);
+    expect(parseCart("pas du json")).toEqual([]);
+    expect(parseCart(JSON.stringify([{ sku: "<script>", qty: 1 }]))).toEqual([]);
+    expect(parseCart(JSON.stringify([{ sku: "ABC-1", qty: 999 }]))).toEqual([]);
+  });
+
+  it("accepte un panier valide", () => {
+    expect(parseCart(JSON.stringify([{ sku: "ABC-1", qty: 2 }]))).toEqual([{ sku: "ABC-1", qty: 2 }]);
+  });
+});
+
+describe("addLine / setLineQty", () => {
+  it("cumule les quantités et respecte le plafond", () => {
+    let lines = addLine([], "ABC-1", 4);
+    lines = addLine(lines, "ABC-1", 20);
+    expect(lines).toEqual([{ sku: "ABC-1", qty: MAX_QTY_PER_LINE }]);
+  });
+
+  it("supprime la ligne quand la quantité vaut 0", () => {
+    const lines = setLineQty([{ sku: "A", qty: 2 }, { sku: "B", qty: 1 }], "A", 0);
+    expect(lines).toEqual([{ sku: "B", qty: 1 }]);
+    expect(countItems(lines)).toBe(1);
+  });
+});
+
+describe("priceCart", () => {
+  it("recalcule les montants à partir du catalogue, jamais du client", () => {
+    const cart = priceCart([{ sku: "AUR-ONE-128-GRA", qty: 2 }], lookupFor(["AUR-ONE-128-GRA"]), rules);
+    expect(cart.subtotal).toBe(458500 * 2);
+    expect(cart.shipping).toBe(0);
+    expect(cart.total).toBe(917000);
+  });
+
+  it("facture la livraison sous le seuil", () => {
+    const sku = "AUR-PODS-BLA";
+    const cart = priceCart([{ sku, qty: 1 }], lookupFor([sku]), { ...rules, freeShippingThreshold: 500000 });
+    expect(cart.shipping).toBe(2000);
+    expect(cart.remainingForFreeShipping).toBe(500000 - 117500);
+  });
+
+  it("ignore les SKU inconnus et les produits épuisés, ajuste au stock", () => {
+    const cart = priceCart(
+      [
+        { sku: "INCONNU-1", qty: 1 },
+        { sku: "KEL-NEO6A-128-SAU", qty: 1 }, // stock 0
+        { sku: "AUR-ONE-256-GRA", qty: 9 }, // stock 3
+      ],
+      lookupFor(["KEL-NEO6A-128-SAU", "AUR-ONE-256-GRA"]),
+      rules,
+    );
+    expect(cart.lines).toHaveLength(1);
+    expect(cart.lines[0]).toMatchObject({ qty: 3, adjusted: true });
+  });
+
+  it("panier vide : aucun frais de port", () => {
+    expect(priceCart([], new Map(), rules).total).toBe(0);
+  });
+});

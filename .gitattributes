@@ -1,0 +1,5 @@
+# Fins de ligne Unix (LF) pour tout le dépôt, quel que soit le système
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff2 binary
