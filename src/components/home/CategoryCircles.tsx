@@ -39,7 +39,7 @@ export function CategoryCircles({ categories, counts }: { categories: Category[]
         </li>
       ))}
       <li className="w-24 sm:w-36">
-        <Circle href="/guides" label={t.nav.guides} icon="book" tile="bg-surface" meta="Conseils" />
+        <Circle href="/compte" label={t.nav.account} icon="user" tile="bg-surface" meta="Profil, commandes" />
       </li>
     </ul>
   );

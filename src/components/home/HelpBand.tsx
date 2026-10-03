@@ -20,16 +20,16 @@ export function HelpBand() {
           Besoin d&apos;un conseil avant d&apos;acheter ?
         </h2>
         <p className="mt-2 hidden max-w-xl text-on-inverse-muted sm:block">
-          Nos guides comparent les critères qui comptent vraiment. Une question précise sur un
-          appareil ? Écrivez-nous.
+          Livraison, garantie, compatibilité : les réponses aux questions les plus fréquentes. Une question
+          précise sur un appareil ? Écrivez-nous.
         </p>
       </div>
       <div className="flex flex-wrap gap-3">
         <Link
-          href="/guides"
+          href="/faq"
           className="inline-flex h-11 items-center gap-2 rounded-full bg-tile-peach px-5 text-sm font-semibold sm:h-12 sm:px-6 text-accent transition-opacity hover:opacity-90"
         >
-          Lire les guides
+          Questions fréquentes
           <Icon name="arrowRight" size={16} />
         </Link>
         <a

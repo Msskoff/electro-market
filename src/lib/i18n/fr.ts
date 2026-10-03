@@ -1,11 +1,11 @@
 /**
  * Textes de l'interface, centralisés pour faciliter une future traduction.
- * Le contenu éditorial (produits, guides) vit dans la couche de données.
+ * Le contenu éditorial (produits, FAQ) vit dans la couche de données.
  */
 export const t = {
   nav: {
     home: "Accueil",
-    guides: "Guides d'achat",
+    account: "Mon compte",
     faq: "Aide",
     cart: "Panier",
     skipToContent: "Aller au contenu",

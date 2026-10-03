@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { Faq } from "@/components/content/Faq";
 import { TrustBar } from "@/components/content/TrustBar";
@@ -15,10 +14,9 @@ import { getAllProducts, getBrands, getCategories, getVerifiedReviews } from "@/
 import { categoryPath, defaultVariant, discountPercent, priceRange, productPath } from "@/lib/catalog/selectors";
 import type { Category, Product } from "@/lib/catalog/types";
 import { heroSlides } from "@/lib/content/hero-slides";
-import { getGuides } from "@/lib/content/guides";
 import { siteFaq } from "@/lib/content/site-faq";
 import { buildMetadata } from "@/lib/seo/metadata";
-import { formatDate, formatPrice } from "@/lib/utils/format";
+import { formatPrice } from "@/lib/utils/format";
 
 export const metadata = buildMetadata({
   title: `${siteConfig.name} — Smartphones et ordinateurs portables à Lomé`,
@@ -76,7 +74,6 @@ export default async function HomePage() {
     getBrands(),
     getVerifiedReviews(),
   ]);
-  const guides = getGuides();
   const counts = Object.fromEntries(
     categories.map((c) => [c.slug, products.filter((p) => p.category === c.slug).length]),
   );
@@ -113,37 +110,6 @@ export default async function HomePage() {
           <ReviewsSection reviews={reviews} />
         </Container>
       )}
-
-      <Container as="section" aria-labelledby="guides-title">
-        <SectionTitle
-          id="guides-title"
-          action={
-            <Link href="/guides" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline underline-offset-4">
-              Tous les guides
-              <Icon name="arrowRight" size={16} />
-            </Link>
-          }
-        >
-          Guides d&apos;achat
-        </SectionTitle>
-        <ul className="mt-4 grid gap-3 sm:mt-6 md:grid-cols-2 md:gap-5">
-          {guides.map((g) => (
-            <li key={g.slug}>
-              <article className="group relative h-full rounded-xl border border-border bg-surface p-5 transition-shadow hover:shadow-md sm:p-6">
-                <p className="eyebrow text-muted">
-                  Mis à jour le {formatDate(g.updatedAt)}
-                </p>
-                <h3 className="mt-3 text-h3">
-                  <Link href={`/guides/${g.slug}`} className="after:absolute after:inset-0">
-                    {g.title}
-                  </Link>
-                </h3>
-                <p className="mt-2 line-clamp-2 text-muted sm:line-clamp-none">{g.description}</p>
-              </article>
-            </li>
-          ))}
-        </ul>
-      </Container>
 
       <Container>
         <HelpBand />

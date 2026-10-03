@@ -3,12 +3,10 @@ import { absoluteUrl } from "@/config/site";
 import { getAllProducts, getCategories } from "@/lib/catalog/repository";
 import { categoryPagePath, pageCount } from "@/lib/catalog/pagination";
 import { categoryPath, productPath } from "@/lib/catalog/selectors";
-import { getGuides } from "@/lib/content/guides";
 
 /** Sitemap généré depuis le catalogue : toute nouvelle page publique y apparaît automatiquement. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, products] = await Promise.all([getCategories(), getAllProducts()]);
-  const guides = getGuides();
 
   const latest = (dates: string[]) => (dates.length ? dates.sort().at(-1) : undefined);
   const categoryUpdated = (slug: string) =>
@@ -33,12 +31,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: absoluteUrl(productPath(p)),
       lastModified: p.updatedAt,
       priority: 0.7,
-    })),
-    { url: absoluteUrl("/guides"), lastModified: latest(guides.map((g) => g.updatedAt)), priority: 0.6 },
-    ...guides.map((g) => ({
-      url: absoluteUrl(`/guides/${g.slug}`),
-      lastModified: g.updatedAt,
-      priority: 0.6,
     })),
     { url: absoluteUrl("/faq"), priority: 0.4 },
   ];

@@ -8,7 +8,6 @@ import { getBrands, getCategories, getProductsByCategory } from "@/lib/catalog/r
 import { PAGE_SIZE, categoryPagePath, pageCount, paginate } from "@/lib/catalog/pagination";
 import { categoryPath } from "@/lib/catalog/selectors";
 import type { Category } from "@/lib/catalog/types";
-import { getGuides } from "@/lib/content/guides";
 import { itemListJsonLd } from "@/lib/seo/jsonld";
 import { CategoryHeader } from "./CategoryHeader";
 import { categoryTile } from "./categoryTheme";
@@ -23,7 +22,6 @@ export async function CategoryView({ category, page }: { category: Category; pag
   ]);
   const total = pageCount(products.length);
   const visible = paginate(products, page);
-  const guides = getGuides().filter((g) => g.category === category.slug);
   const first = (page - 1) * PAGE_SIZE + 1;
   const last = first + visible.length - 1;
 
@@ -32,14 +30,13 @@ export async function CategoryView({ category, page }: { category: Category; pag
 
   return (
     <Container>
-      <Breadcrumbs items={crumbs} className="hidden sm:block" />
+      <Breadcrumbs items={crumbs} />
 
       <CategoryHeader
         category={category}
         tile={categoryTile(categories.findIndex((c) => c.slug === category.slug))}
         products={products}
         brands={brands}
-        guides={guides}
         page={page}
         totalPages={total}
       />

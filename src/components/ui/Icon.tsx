@@ -25,8 +25,12 @@ const paths = {
   chat: "M4 5h16v11H8l-4 4V5Zm4 5h.01M12 10h.01M16 10h.01",
   phone: "M8 2h8a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm3 17h2",
   laptop: "M5 5h14v10H5zM2 19h20",
-  book: "M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Zm0 16a2 2 0 0 1 2-2h13v2",
   mail: "M3 5h18v14H3zm0 0 9 7 9-7",
+  user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0",
+  package: "M12 3 4 7v10l8 4 8-4V7l-8-4Zm0 0v0M4 7l8 4 8-4M12 11v10",
+  mapPin: "M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
+  edit: "M4 20h4L19 9l-4-4L4 16v4Zm9-13 4 4",
+  trash: "M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13",
 } as const;
 
 export type IconName = keyof typeof paths;

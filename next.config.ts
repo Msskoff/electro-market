@@ -23,14 +23,12 @@ const nextConfig: NextConfig = {
    * ordinateurs portables) : redirection permanente plutôt que des 404 en masse.
    */
   async redirects() {
-    const retired = ["audio", "tablettes", "montres-connectees"];
-    return [
-      ...retired.flatMap((slug) => [
-        { source: `/${slug}`, destination: "/", permanent: true },
-        { source: `/${slug}/:path*`, destination: "/", permanent: true },
-      ]),
-      { source: "/guides/choisir-casque-reduction-de-bruit", destination: "/guides", permanent: true },
-    ];
+    // Catégories retirées + rubrique « Guides d'achat » supprimée.
+    const retired = ["audio", "tablettes", "montres-connectees", "guides"];
+    return retired.flatMap((slug) => [
+      { source: `/${slug}`, destination: "/", permanent: true },
+      { source: `/${slug}/:path*`, destination: "/", permanent: true },
+    ]);
   },
 };
 

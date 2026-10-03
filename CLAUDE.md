@@ -34,7 +34,7 @@ Chaque décision technique ou visuelle doit servir au moins un de ces trois obje
 | Analytics | Solution respectueuse de la vie privée (Plausible / Vercel Analytics) + Google Search Console + Bing Webmaster Tools | Suivi SEO sans bandeau cookie lourd |
 | Tests | Vitest (unitaire), Playwright (E2E), Lighthouse CI | Qualité et non-régression SEO/perf |
 
-**Règle :** aucun contenu indexable (fiche produit, catégorie, guide, FAQ) ne doit dépendre du JavaScript client pour s'afficher. Tout est rendu côté serveur.
+**Règle :** aucun contenu indexable (fiche produit, catégorie, FAQ) ne doit dépendre du JavaScript client pour s'afficher. Tout est rendu côté serveur.
 
 ---
 
@@ -71,10 +71,10 @@ src/
       [categorie]/page/[page]/page.tsx # Pages 2…n de la catégorie (SSG, 24 produits par page)
       [categorie]/[slug]/page.tsx      # Fiche produit (SSG)
       [categorie]/[slug]/visuel.png/   # Image produit à URL stable (OG + JSON-LD)
-      guides/, guides/[slug]/          # Guides d'achat
       faq/page.tsx                     # Aide : livraison, retours, garantie
       panier/page.tsx                  # Panier (dynamique, noindex)
       recherche/page.tsx               # Recherche interne (dynamique, noindex)
+      compte/page.tsx                  # Espace client « Mon compte » (dynamique, noindex)
     sitemap.ts · robots.ts · llms.txt/route.ts · partage.png/route.tsx · icon.svg · not-found.tsx
   components/
     ui/        # Primitives : Button/ButtonLink, Badge/SpecChip, Price, StockStatus, Container, SectionHeading, Icon
@@ -82,7 +82,8 @@ src/
     content/   # Faq, TrustBar
     home/      # hero/ (HeroShowcase, HeroScene), CategoryCircles, PromoTiles, ReviewsSection, HelpBand
     catalog/   # CategoryView (contenu d'une page de catégorie), Pagination
-    layout/    # SiteHeader, SiteFooter, SearchForm, CategoryMenu, NavLink, Breadcrumbs, CartLink, Logo
+    layout/    # SiteHeader, SiteFooter, SearchForm, CategoryMenu, NavLink, Breadcrumbs, AccountLink, CartLink, Logo
+    account/   # AccountView, ProfileSection, AddressesSection, Field
     cart/      # CartLineControls
     seo/       # JsonLd
   config/site.ts                       # Identité, URL, politiques commerciales (source unique)
@@ -90,7 +91,8 @@ src/
     catalog/   # types.ts, data.ts + demo-generator.ts (DÉMO : 100 produits/catégorie), repository.ts (seul accès aux données), selectors.ts, pagination.ts
     cart/      # schema.ts (Zod + logique pure), pricing.ts, actions.ts (Server Actions), queries.ts, client.ts
     seo/       # metadata.ts (buildMetadata), jsonld.ts, og.tsx
-    content/   # guides.ts, site-faq.ts, hero-slides.ts (diapositives du hero + vidéos)
+    content/   # site-faq.ts, hero-slides.ts (diapositives du hero + vidéos)
+    account/   # schema.ts (Zod : profil, adresses, téléphone +228), store.ts (stockage sur l'appareil)
     i18n/fr.ts # Textes d'interface
     utils/     # cn, format (prix en unité mineure de la devise, dates)
   styles/tokens.css                    # Design tokens (thème clair)
@@ -176,7 +178,8 @@ Budget : ~100 Ko de polices préchargées (réseaux mobiles de Lomé). Ne pas pa
 - **Hero immersif (`components/home/hero/`) :** deux diapositives par catégorie (4 au total) (`lib/content/hero-slides.ts`), liée à un produit réel ; textes marketing fidèles à la fiche. Grand écran : média à droite, dégradé `inverse` à gauche sous le texte. Petit écran : média plein cadre, texte superposé en bas. Navigation volontaire uniquement : chevrons pleins épais, onglets, flèches du clavier, glissement tactile — **jamais de défilement automatique**. `video` (mp4/webm + poster) lue si fournie, sinon scène animée vectorielle (`HeroScene`). Seul `h1` de l'accueil : l'intitulé fixe en haut du hero.
 - **Accueil (`components/home/`) :** `HeroShowcase`, `CategoryCircles`, sélection en `ProductGrid`, `PromoTiles`, `ReviewsSection`, `HelpBand`, FAQ, `TrustBar`.
 - **ProductCard :** visuel sur fond `surface-2`, badge « -X % » si remise réelle, marque, nom, 2–3 specs en micro-étiquettes mono, prix (corail si remisé), état du stock (point + texte), bouton rond `QuickAddButton` (ajoute la variante par défaut, posé au-dessus du lien étiré).
-- **En-tête de catégorie (`CategoryHeader`) :** sur petit écran, seul le `h1` reste visible (bandeau, chiffres, introduction, guide et illustration masqués ; l'introduction reste dans le HTML). À partir de 640 px : bandeau à la teinte de la catégorie (`categoryTile`, identique à sa pastille d'accueil), date de mise à jour (`<time>`), chiffres clés en `<dl>` (prix d'entrée, disponibles, marques, livraison — tous calculés, jamais saisis), lien vers le guide d'achat, illustration de deux produits réels, raccourcis « par marque » vers `/recherche?q=…&categorie=…` (`rel="nofollow"`, page `noindex`). Liste : `h2` « N références » puis cartes en `h3`.
+- **En-tête de catégorie (`CategoryHeader`) :** sur petit écran, seul le `h1` reste visible (bandeau, chiffres, introduction et illustration masqués ; l'introduction reste dans le HTML). À partir de 640 px : bandeau à la teinte de la catégorie (`categoryTile`, identique à sa pastille d'accueil), date de mise à jour (`<time>`), chiffres clés en `<dl>` (prix d'entrée, disponibles, marques, livraison — tous calculés, jamais saisis), illustration de deux produits réels, raccourcis « par marque » vers `/recherche?q=…&categorie=…` (`rel="nofollow"`, page `noindex`). Liste : `h2` « N références » puis cartes en `h3`.
+- **Espace client (`/compte`, `components/account/`) :** rassemble tout ce qui concerne le client — profil (prénom, nom, téléphone +228, e-mail facultatif), adresses de livraison (quartier, ville, point de repère, téléphone, adresse par défaut), commandes (vide tant que le paiement n'est pas branché), panier (lu côté serveur), effacement des données. Accès par l'icône « Compte » de l'en-tête, la pastille de l'accueil et le pied de page. **MVP : données enregistrées uniquement sur l'appareil** (`localStorage`, mention visible) ; les schémas Zod de `lib/account/schema.ts` serviront tels quels à la validation serveur quand l'authentification sera branchée.
 - **Avis (`ReviewsSection`) :** n'affiche RIEN tant que `getVerifiedReviews()` est vide. Jamais d'avis d'exemple.
 - **Newsletter :** remplacée par `HelpBand` tant qu'aucun service d'e-mailing n'est branché (pas de formulaire factice).
 - **Fiche produit :** galerie à gauche, bloc d'achat collant à droite (prix, variantes, stock, délai de livraison, garantie, CTA), puis description, **tableau de caractéristiques**, contenu de la boîte, FAQ, avis.
@@ -208,7 +211,7 @@ Objectif : une page doit rester **courte sur mobile** (accueil ≈ 4 écrans, ca
 
 - URL courtes, en minuscules, avec tirets, sans paramètres pour le contenu indexable : `/categorie/nom-produit-variante-cle`.
 - Une seule URL canonique par produit ; les variantes (couleur, capacité) pointent vers la canonique sauf si elles ont un volume de recherche propre.
-- Maillage interne : fil d'Ariane sur toutes les pages (exception : masqué sur petit écran dans les pages catégorie, qui commencent directement par le titre et les produits), liens catégorie ↔ produits ↔ guides ↔ marques, « produits similaires » et « accessoires compatibles ».
+- Maillage interne : fil d'Ariane sur toutes les pages et tous les écrans, liens catégorie ↔ produits ↔ marques, « produits similaires » et « accessoires compatibles ».
 - Profondeur maximale : tout produit accessible en 3 clics depuis l'accueil.
 
 ### 6.2 Métadonnées (via `generateMetadata`)
@@ -221,7 +224,7 @@ Chaque page indexable définit :
 - `hreflang` si le site devient multilingue
 - Un seul `<h1>` par page, hiérarchie `h2`/`h3` logique
 
-Pages `noindex` : panier, commande, compte, recherche interne, filtres non stratégiques, admin.
+Pages `noindex` : panier, commande, compte (`/compte`), recherche interne, filtres non stratégiques, admin.
 
 ### 6.3 Données structurées (JSON-LD)
 
@@ -232,14 +235,13 @@ Générées par `src/lib/seo/` et injectées via le composant `<JsonLd />`. Touj
 | Toutes | `Organization` (logo, contacts, réseaux), `WebSite` + `SearchAction` |
 | Fiche produit | `Product` (name, brand, sku, gtin/mpn, image, description, `additionalProperty` pour les specs), `Offer` (price, priceCurrency, availability, itemCondition, shippingDetails, hasMerchantReturnPolicy), `AggregateRating` + `Review` (avis réels uniquement), `BreadcrumbList` |
 | Catégorie | `CollectionPage`, `ItemList`, `BreadcrumbList` |
-| Guide | `Article` (auteur, date de publication et de mise à jour), `BreadcrumbList` |
 | FAQ | `FAQPage` |
 
 Valider chaque gabarit avec le test des résultats enrichis de Google et le validateur schema.org.
 
 ### 6.4 Fichiers techniques
 
-- `sitemap.ts` : sitemap index + sitemaps séparés (produits, catégories, guides, marques) avec `lastmod` réel.
+- `sitemap.ts` : sitemap index + sitemaps séparés (produits, catégories, marques) avec `lastmod` réel.
 - `robots.ts` : autorise l'indexation du contenu public, bloque `/panier`, `/commande`, `/compte`, `/admin`, `/api`, la recherche interne ; référence le sitemap.
 - Flux produits XML pour Google Merchant Center et Bing Merchant Center.
 - Gestion des redirections 301 lorsqu'un slug change ; produits retirés → 301 vers la catégorie ou un successeur, jamais de 404 en masse.
@@ -261,12 +263,12 @@ Les assistants IA citent les sources claires, factuelles, structurées et à jou
 
 1. **Accès des robots IA** dans `robots.ts` : autoriser explicitement `GPTBot`, `OAI-SearchBot`, `ChatGPT-User`, `ClaudeBot`, `Claude-User`, `Claude-SearchBot`, `PerplexityBot`, `Google-Extended`, `Applebot-Extended`, `Bingbot` sur le contenu public. Ne jamais bloquer ces robots par erreur via un pare-feu ou un mode anti-bot.
 2. **Rendu sans JavaScript** : vérifier régulièrement qu'un `curl` de chaque gabarit renvoie le contenu complet (nom, prix, specs, description, FAQ).
-3. **`/llms.txt`** : fichier Markdown généré dynamiquement présentant la boutique (qui, quoi, où, politique de livraison/retour/garantie) et listant les pages clés (catégories, guides, FAQ, contact) avec une phrase de description chacune. Optionnellement `/llms-full.txt`.
+3. **`/llms.txt`** : fichier Markdown généré dynamiquement présentant la boutique (qui, quoi, où, politique de livraison/retour/garantie) et listant les pages clés (catégories, FAQ, contact) avec une phrase de description chacune. Optionnellement `/llms-full.txt`.
 4. **Contenu « citable »** :
    - Chaque fiche produit commence par un résumé factuel de 2–3 phrases (ce que c'est, pour qui, point fort).
    - Specs en tableau HTML avec unités ; pas de specs uniquement dans des images.
    - Section **FAQ** par produit et par catégorie, formulée comme les vraies questions des acheteurs (« Ce téléphone est-il compatible 5G ? », « Quelle autonomie réelle ? »).
-   - **Guides d'achat** et comparatifs honnêtes (« Meilleur ordinateur portable pour étudiant », « Quel casque à réduction de bruit choisir ? ») avec critères, tableaux et date de mise à jour visible.
+   - **Guides d'achat** : rubrique **supprimée** à la demande du client (octobre 2026). Les anciennes URL `/guides/*` redirigent en 308 vers l'accueil. À reconsidérer plus tard : c'est un levier important de visibilité dans les assistants IA.
    - Informations de confiance faciles à trouver : mentions légales, adresse/contact, délais et coûts de livraison, politique de retour, garantie.
 5. **Fraîcheur** : prix, stock et dates de mise à jour exacts ; un assistant ne doit jamais citer une information périmée.
 6. **Cohérence d'entité** : même nom de marque, logo, coordonnées et description partout (site, schema `Organization`, réseaux sociaux, annuaires, Google Business Profile si applicable).
@@ -292,6 +294,7 @@ Les assistants IA citent les sources claires, factuelles, structurées et à jou
 - Politique de sécurité de contenu (CSP), en-têtes de sécurité, protection CSRF sur les mutations, limitation de débit sur les API publiques.
 - Conformité à la législation applicable sur les données personnelles (RGPD / loi locale) : consentement pour les traceurs non essentiels, page de politique de confidentialité, droit d'accès/suppression.
 - Pages légales obligatoires : mentions légales, CGV, politique de retour, confidentialité, cookies.
+- Espace client (MVP) : données personnelles stockées **sur l'appareil du client uniquement**, jamais envoyées au serveur ; bouton d'effacement disponible. À migrer vers des comptes serveur (Supabase Auth) avant d'activer les commandes.
 
 ---
 
@@ -309,7 +312,7 @@ Les assistants IA citent les sources claires, factuelles, structurées et à jou
 
 ## 11. Modèle de données (résumé)
 
-`Product` (id, slug, nom, marque, catégorie, résumé, description, specs JSON typées, gtin, mpn, statut, dates) → `Variant` (sku, attributs, prix, prix barré, stock, images) → `Category` (arborescence, slug, contenu SEO, FAQ) → `Brand` → `Review` (vérifié, note, texte, date) → `Order` / `OrderItem` / `Customer` / `Address` → `Guide` (MDX, auteur, dates).
+`Product` (id, slug, nom, marque, catégorie, résumé, description, specs JSON typées, gtin, mpn, statut, dates) → `Variant` (sku, attributs, prix, prix barré, stock, images) → `Category` (arborescence, slug, contenu SEO, FAQ) → `Brand` → `Review` (vérifié, note, texte, date) → `Order` / `OrderItem` / `Customer` / `Address`.
 
 Toute modification du schéma passe par une migration.
 

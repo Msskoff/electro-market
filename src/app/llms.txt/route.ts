@@ -1,7 +1,6 @@
 import { absoluteUrl, siteConfig } from "@/config/site";
 import { getAllProducts, getCategories } from "@/lib/catalog/repository";
 import { categoryPath, defaultVariant, productPath } from "@/lib/catalog/selectors";
-import { getGuides } from "@/lib/content/guides";
 import { siteFaq } from "@/lib/content/site-faq";
 import { formatPrice } from "@/lib/utils/format";
 
@@ -14,7 +13,6 @@ export const dynamic = "force-static";
  */
 export async function GET() {
   const [categories, products] = await Promise.all([getCategories(), getAllProducts()]);
-  const guides = getGuides();
   const { policies } = siteConfig;
 
   const body = [
@@ -43,10 +41,6 @@ export async function GET() {
       const stock = p.variants.some((x) => x.stock > 0) ? "en stock" : "rupture";
       return `- [${p.name}](${absoluteUrl(productPath(p))}): ${p.summary} À partir de ${formatPrice(v.price)}, ${stock}.`;
     }),
-    "",
-    "## Guides d'achat",
-    "",
-    ...guides.map((g) => `- [${g.title}](${absoluteUrl(`/guides/${g.slug}`)}): ${g.tldr}`),
     "",
     "## Questions fréquentes",
     "",

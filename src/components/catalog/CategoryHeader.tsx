@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { DeviceIllustration } from "@/components/product/DeviceIllustration";
-import { Icon } from "@/components/ui/Icon";
 import { siteConfig } from "@/config/site";
 import { defaultVariant, priceRange } from "@/lib/catalog/selectors";
 import type { Brand, Category, Product } from "@/lib/catalog/types";
-import type { Guide } from "@/lib/content/guides";
 import { formatDate, formatPrice } from "@/lib/utils/format";
 import { frenchSpacing } from "@/lib/utils/typography";
 import { cn } from "@/lib/utils/cn";
@@ -15,16 +13,15 @@ interface CategoryHeaderProps {
   tile: string;
   products: Product[];
   brands: Brand[];
-  guides: Guide[];
   page: number;
   totalPages: number;
 }
 
 /**
  * En-tête d'une page catégorie : identité visuelle, chiffres clés lisibles d'un coup d'œil,
- * date de mise à jour (fraîcheur), guide d'achat et raccourcis par marque.
+ * date de mise à jour (fraîcheur) et raccourcis par marque.
  */
-export function CategoryHeader({ category, tile, products, brands, guides, page, totalPages }: CategoryHeaderProps) {
+export function CategoryHeader({ category, tile, products, brands, page, totalPages }: CategoryHeaderProps) {
   const prices = products.flatMap((p) => Object.values(priceRange(p)));
   const minPrice = prices.length ? Math.min(...prices) : 0;
   const maxPrice = prices.length ? Math.max(...prices) : 0;
@@ -88,27 +85,6 @@ export function CategoryHeader({ category, tile, products, brands, guides, page,
               ))}
             </dl>
 
-            {guides.length > 0 && (
-              <ul className="mt-6 hidden flex-col gap-2 sm:flex">
-                {guides.map((g) => (
-                  <li key={g.slug}>
-                    <Link
-                      href={`/guides/${g.slug}`}
-                      className="group inline-flex items-center gap-3 rounded-full bg-surface py-2 pl-2 pr-4 text-sm font-medium shadow-sm transition-shadow hover:shadow-md"
-                    >
-                      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
-                        <Icon name="book" size={16} />
-                      </span>
-                      <span>
-                        <span className="text-muted">Besoin d&apos;aide pour choisir ? </span>
-                        {g.title}
-                      </span>
-                      <Icon name="arrowRight" size={16} className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
 
           {/* Illustration : deux appareils réels de la catégorie */}

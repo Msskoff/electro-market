@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { getCategories } from "@/lib/catalog/repository";
 import { categoryPath } from "@/lib/catalog/selectors";
 import { t } from "@/lib/i18n/fr";
+import { AccountLink } from "./AccountLink";
 import { CartLink } from "./CartLink";
 import { CategoryMenu } from "./CategoryMenu";
 import { Logo } from "./Logo";
@@ -23,7 +24,6 @@ export async function SiteHeader() {
   const categories = await getCategories();
   const menuItems = [
     ...categories.map((c) => ({ href: categoryPath(c.slug), label: c.name, icon: kindIcon[c.kind] })),
-    { href: "/guides", label: t.nav.guides, icon: "book" as const },
   ];
 
   return (
@@ -53,6 +53,7 @@ export async function SiteHeader() {
           <Logo />
           <SearchForm className="hidden max-w-xl flex-1 md:block" />
           <div className="flex items-center gap-1">
+            <AccountLink />
             <CartLink />
           </div>
         </Container>
@@ -76,9 +77,6 @@ export async function SiteHeader() {
                     <NavLink href={categoryPath(c.slug)}>{c.name}</NavLink>
                   </li>
                 ))}
-                <li className="shrink-0">
-                  <NavLink href="/guides">{t.nav.guides}</NavLink>
-                </li>
                 <li className="shrink-0">
                   <NavLink href="/faq">{t.nav.faq}</NavLink>
                 </li>

@@ -4,7 +4,6 @@ import { Icon } from "@/components/ui/Icon";
 import { siteConfig } from "@/config/site";
 import { getCategories } from "@/lib/catalog/repository";
 import { categoryPath } from "@/lib/catalog/selectors";
-import { getGuides } from "@/lib/content/guides";
 import { Logo } from "./Logo";
 
 /**
@@ -42,7 +41,6 @@ function FooterColumn({ title, links }: { title: string; links: { href: string; 
 
 export async function SiteFooter() {
   const categories = await getCategories();
-  const guides = getGuides();
   const year = new Date().getFullYear();
   const { contact } = siteConfig;
 
@@ -73,10 +71,12 @@ export async function SiteFooter() {
           links={categories.map((c) => ({ href: categoryPath(c.slug), label: c.name }))}
         />
         <FooterColumn
-          title="Guides d'achat"
+          title="Mon compte"
           links={[
-            ...guides.map((g) => ({ href: `/guides/${g.slug}`, label: g.title })),
-            { href: "/guides", label: "Tous les guides" },
+            { href: "/compte", label: "Mon profil" },
+            { href: "/compte#commandes", label: "Mes commandes" },
+            { href: "/compte#adresses", label: "Mes adresses" },
+            { href: "/panier", label: "Mon panier" },
           ]}
         />
         <FooterColumn
@@ -85,7 +85,6 @@ export async function SiteFooter() {
             { href: "/faq", label: "Questions fréquentes" },
             { href: "/faq#livraison", label: "Livraison et retours" },
             { href: "/recherche", label: "Rechercher un produit" },
-            { href: "/panier", label: "Mon panier" },
           ]}
         />
       </Container>
