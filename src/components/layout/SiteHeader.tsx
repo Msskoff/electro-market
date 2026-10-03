@@ -68,17 +68,23 @@ export async function SiteHeader() {
               <CategoryMenu items={menuItems} />
             </div>
             <nav aria-label={t.nav.mainNav} className="min-w-0 flex-1">
-              <ul className="no-scrollbar -mx-4 flex gap-6 overflow-x-auto px-4 lg:mx-0 lg:gap-8 lg:px-0">
+              <ul className="no-scrollbar -mx-4 flex gap-5 overflow-x-auto px-4 lg:mx-0 lg:gap-7 lg:px-0">
                 <li className="shrink-0">
-                  <NavLink href="/">{t.nav.home}</NavLink>
+                  <NavLink href="/" icon="home">
+                    {t.nav.home}
+                  </NavLink>
                 </li>
                 {categories.map((c) => (
                   <li key={c.slug} className="shrink-0">
-                    <NavLink href={categoryPath(c.slug)}>{c.name}</NavLink>
+                    <NavLink href={categoryPath(c.slug)} icon={kindIcon[c.kind]}>
+                      {c.name}
+                    </NavLink>
                   </li>
                 ))}
                 <li className="shrink-0">
-                  <NavLink href="/faq">{t.nav.faq}</NavLink>
+                  <NavLink href="/faq" icon="help">
+                    {t.nav.faq}
+                  </NavLink>
                 </li>
               </ul>
             </nav>
