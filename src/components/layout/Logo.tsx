@@ -24,7 +24,7 @@ export function Logo({ inverse = false, className }: { inverse?: boolean; classN
     >
       <LogoMark inverse={inverse} />
       <span className="flex flex-col leading-none">
-        <span className="font-display text-[1.375rem] font-semibold tracking-tight">{siteConfig.name}</span>
+        <span className="font-display text-xl font-bold tracking-tight">{siteConfig.name}</span>
         <span
           className={cn(
             "mt-1 text-xs font-medium",

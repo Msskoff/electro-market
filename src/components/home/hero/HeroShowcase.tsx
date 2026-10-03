@@ -129,7 +129,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
                     <span className="rounded-full bg-danger px-3 py-1 text-xs font-bold text-on-accent tabular">-{s.discount} %</span>
                   )}
                 </p>
-                <h2 className="mt-3 text-display text-on-inverse sm:mt-5">{frenchSpacing(s.title)}</h2>
+                <h2 className="mt-3 text-display font-bold text-on-inverse sm:mt-5">{frenchSpacing(s.title)}</h2>
                 <p className="mt-5 hidden max-w-lg leading-relaxed text-on-inverse sm:block lg:text-lg">{frenchSpacing(s.text)}</p>
                 <p className="mt-4 text-xs sm:mt-6 sm:text-sm">
                   <span className="font-semibold text-on-inverse">{s.productName}</span>
@@ -158,7 +158,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
 
       {/* Intitulé fixe de la page (seul h1) */}
       <Container className="pointer-events-none absolute inset-x-0 top-0 z-20 pt-6 lg:pt-8">
-        <h1 className="eyebrow truncate font-sans text-on-inverse">
+        <h1 className="eyebrow max-w-[80%] font-sans text-on-inverse sm:max-w-none">
           ElectroMarket · Boutique d&apos;électronique à Lomé
         </h1>
       </Container>

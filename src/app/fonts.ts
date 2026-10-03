@@ -6,31 +6,27 @@ import localFont from "next/font/local";
  * secours aux métriques ajustées (`adjustFontFallback`) pour éviter tout
  * décalage de mise en page (CLS) au chargement.
  *
- * Budget (connexions mobiles de Lomé) : ~100 Ko préchargés au total.
- *  - Inter (texte, interface)  : 48 Ko, préchargée
- *  - Source Serif 4 (titres)   : 51 Ko, préchargée (le titre du hero est l'élément LCP)
- *  - JetBrains Mono (specs)    : 40 Ko, chargée à la demande
- * Les fichiers « opsz » (taille optique) pèsent 73 Ko et 122 Ko : gain visuel
- * trop faible pour leur coût réseau, on garde les versions « wght ».
+ * Poppins (non variable) : uniquement les 4 graisses utilisées, jeu « latin »
+ * (couvre le français : accents, « œ », « », espaces fines insécables, …).
+ *   400 Regular  : texte courant
+ *   500 Medium   : libellés, navigation, champs
+ *   600 SemiBold : titres, boutons
+ *   700 Bold     : prix, grands titres
+ * ≈ 31 Ko au total, préchargés (titre du hero = élément LCP).
  */
-
-export const inter = localFont({
-  src: "../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2",
-  variable: "--font-inter",
-  weight: "100 900",
+export const poppins = localFont({
+  src: [
+    { path: "../../node_modules/@fontsource/poppins/files/poppins-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../node_modules/@fontsource/poppins/files/poppins-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../node_modules/@fontsource/poppins/files/poppins-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../node_modules/@fontsource/poppins/files/poppins-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-poppins",
   display: "swap",
   adjustFontFallback: "Arial",
 });
 
-/** Serif éditoriale des titres. */
-export const sourceSerif = localFont({
-  src: "../../node_modules/@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2",
-  variable: "--font-source-serif",
-  weight: "200 900",
-  display: "swap",
-  adjustFontFallback: "Times New Roman",
-});
-
+/** Codes et références (SKU, micro-étiquettes de caractéristiques) : chargée à la demande. */
 export const jetbrainsMono = localFont({
   src: "../../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2",
   variable: "--font-jetbrains-mono",

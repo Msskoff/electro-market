@@ -123,7 +123,7 @@ supabase/migrations/                   # Migrations SQL appliquées au projet Su
 
 ### 5.1 Direction artistique
 
-**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance noir, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil noire, pied de page noir. Palette inspirée des grandes boutiques high-tech : fond blanc / gris clair, noir pour les zones sombres, **bleu vif** pour les actions (boutons en pilule), **rouge** pour les remises et surtitres d'offre, **hero en dégradé corail → violet**, encarts pastel (lavande, beige, gris-bleu), vert réservé à l'état « en stock ». Titres en serif éditoriale, specs techniques toujours en micro-étiquettes mono.
+**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance noir, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil noire, pied de page noir. Palette inspirée des grandes boutiques high-tech : fond blanc / gris clair, noir pour les zones sombres, **bleu vif** pour les actions (boutons en pilule), **rouge** pour les remises et surtitres d'offre, **hero en dégradé corail → violet**, encarts pastel (lavande, beige, gris-bleu), vert réservé à l'état « en stock ». Typographie Poppins (titres et texte), specs techniques en micro-étiquettes mono.
 
 À éviter absolument : carrousels automatiques, pop-ups agressifs, bannières clignotantes, fausses urgences (« plus que 2 h ! »), promotions ou avis inventés, look « marketplace discount » surchargé.
 
@@ -150,35 +150,37 @@ Couleurs principales (thème clair) :
 
 ### 5.3 Typographie
 
-**Polices** (auto-hébergées via `next/font/local` + `@fontsource-variable`, `display: swap`, polices de secours aux métriques ajustées pour éviter le CLS) :
+**Police : Poppins** (auto-hébergée via `next/font/local` + `@fontsource/poppins`, `display: swap`, police de secours Arial aux métriques ajustées pour éviter le CLS), jeu « latin » (couvre le français : accents, « œ », « », espaces fines insécables). Une seule famille pour les titres et le texte, différenciés par la graisse et la taille.
 
-| Rôle | Police | Fichier | Chargement |
-|---|---|---|---|
-| Titres h1–h4 (`font-display`) | Source Serif 4, 600 | `wght`, 51 Ko | préchargée (titre du hero = LCP) |
-| Texte, interface, prix (`font-sans`) | Inter, 400–700, `cv11 ss01 calt` | `wght`, 48 Ko | préchargée |
-| Références, SKU, micro-étiquettes de specs (`font-mono`) | JetBrains Mono | `wght`, 40 Ko | à la demande |
+| Graisse | Usage |
+|---|---|
+| 400 Regular | texte courant, descriptions |
+| 500 Medium | navigation, libellés de champs, liens secondaires |
+| 600 SemiBold | titres (h1–h3), boutons, noms de produits |
+| 700 Bold | titre du hero, prix, logo |
 
-Budget : ~100 Ko de polices préchargées (réseaux mobiles de Lomé). Ne pas passer aux fichiers `opsz` (+95 Ko) sans mesure de gain.
+JetBrains Mono (`font-mono`, chargée à la demande) reste réservée aux codes (SKU) et aux micro-étiquettes de caractéristiques. Budget : ~31 Ko de polices préchargées (4 fichiers Poppins de ~8 Ko). Ne pas ajouter d'autres graisses ni d'italique sans besoin réel.
 
 **Échelle** (définie dans `globals.css`, `@theme`) — ne jamais inventer de taille arbitraire :
 
 | Classe | Taille | Interlignage | Usage |
 |---|---|---|---|
-| `text-display` | 34 → 64 px (fluide) | 1,04 | titre de diapositive du hero |
-| `text-h1` | 32 → 48 px | 1,08 | titre de page (un seul `h1`) |
-| `text-h2` | 24 → 34 px | 1,15 | titre de section |
-| `text-h3` | 19 → 22 px | 1,3 | sous-section, carte éditoriale |
-| `text-lg` / `text-base` | 18 / 16 px | 1,6 | chapô / texte courant |
-| `text-sm` | 14 px | — | texte secondaire, tableaux |
-| `text-xs` / `.eyebrow` | 12 px | — | métadonnées, surtitres en capitales |
+| `text-display` | 30 → 52 px (fluide) | 1,12 | titre de diapositive du hero (Bold) |
+| `text-h1` | 28 → 40 px | 1,15 | titre de page (un seul `h1`) |
+| `text-h2` | 22 → 30 px | 1,25 | titre de section |
+| `text-h3` | 18 → 20 px | 1,35 | sous-section, carte, titre de bloc |
+| `text-lg` / `text-base` | 18 / 16 px | 1,6 / 1,65 | chapô / texte courant |
+| `text-sm` | 14 px | 1,5 | texte secondaire, tableaux, navigation, boutons |
+| `text-xs` / `.eyebrow` | 12 px | 1,45 | métadonnées, surtitres en capitales (interlettrage 0,08 em) |
 
 **Règles :**
 - Texte courant **16 px minimum**, interlignage 1,6. **Rien sous 12 px** (seule exception : le chiffre du compteur panier, 11 px, doublé d'un `aria-label`).
 - Champs de formulaire en **16 px minimum** (sinon iOS zoome au focus).
-- Capitales uniquement via `.eyebrow` (12 px, interlettrage 0,1 em) ; jamais d'interlettrage > 0,12 em.
+- Capitales uniquement via `.eyebrow` (12 px, interlettrage 0,08 em : Poppins est déjà large) ; jamais d'interlettrage > 0,12 em.
+- Poppins est large : textes d'aide et libellés courts sur mobile (vérifier qu'ils tiennent à 375 px).
 - Longueur de ligne : `.measure` (60ch ≈ 70 caractères) sur tout paragraphe long.
 - Titres : `text-wrap: balance` ; paragraphes : `text-wrap: pretty` (pas de mot isolé).
-- Valeurs de tableaux en Inter + `tabular` (chiffres alignés) ; la monospace est réservée aux codes et aux puces de specs courtes.
+- Valeurs de tableaux en Poppins (`font-medium`) ; la monospace est réservée aux codes et aux puces de specs courtes.
 - **Typographie française** : passer les textes éditoriaux par `frenchSpacing()` (`lib/utils/typography.ts`) — espace fine insécable avant `? ! ;`, insécable avant `:` et dans `« »`.
 
 ### 5.4 Composants clés

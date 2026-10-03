@@ -6,7 +6,7 @@ import { siteConfig } from "@/config/site";
 import { t } from "@/lib/i18n/fr";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 import { cn } from "@/lib/utils/cn";
-import { inter, jetbrainsMono, sourceSerif } from "./fonts";
+import { jetbrainsMono, poppins } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -33,7 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={siteConfig.language}
-      className={cn(inter.variable, sourceSerif.variable, jetbrainsMono.variable, "antialiased")}
+      className={cn(poppins.variable, jetbrainsMono.variable, "antialiased")}
     >
       <body className="flex min-h-dvh flex-col">
         <a
