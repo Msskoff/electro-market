@@ -34,8 +34,26 @@ export interface SpecGroup {
   specs: Spec[];
 }
 
+/**
+ * Photo produit. Dimensions RÉELLES du fichier source (évitent tout décalage de mise en
+ * page) et miniature floue facultative affichée pendant le chargement.
+ * Générer ces valeurs avec `npm run image:info -- <fichier>`.
+ */
+export interface ProductImage {
+  /** Chemin local (/produits/…) ou URL du stockage Supabase (bucket public). */
+  src: string;
+  /** Texte alternatif descriptif : « Smartphone X noir, vue de face ». */
+  alt: string;
+  width: number;
+  height: number;
+  /** Miniature floue en data URL (~200 octets), affichée instantanément. */
+  blurDataURL?: string;
+}
+
 export interface Variant {
   sku: string;
+  /** Photos de la variante (la première est le visuel principal). Sans photo : illustration. */
+  images?: ProductImage[];
   /** Libellé lisible, ex. « 256 Go · Graphite ». */
   label: string;
   color: { name: string; hex: string };

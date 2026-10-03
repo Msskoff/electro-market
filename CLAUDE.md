@@ -49,6 +49,7 @@ npm run lint           # ESLint
 npm run typecheck      # next typegen + tsc --noEmit
 npm run test           # tests unitaires (Vitest)
 npm run check          # lint + typecheck + test (à lancer avant chaque commit)
+npm run image:info -- <fichiers>  # photo produit : dimensions, miniature floue, alertes de poids/taille
 ```
 
 À ajouter avec les étapes suivantes : `test:e2e` (Playwright), `lighthouse`, `db:migrate`, `db:seed`.
@@ -72,6 +73,7 @@ src/
       [categorie]/[slug]/page.tsx      # Fiche produit (SSG)
       [categorie]/[slug]/visuel.png/   # Image produit à URL stable (OG + JSON-LD)
       faq/page.tsx                     # Aide : livraison, retours, garantie
+      loading.tsx (+ [categorie]/, [slug]/, panier/, recherche/, compte/, commande/)  # Squelettes affichés pendant la navigation
       panier/page.tsx                  # Panier (dynamique, noindex)
       recherche/page.tsx               # Recherche interne (dynamique, noindex)
       compte/page.tsx                  # Espace client « Mon compte » (dynamique, noindex)
@@ -81,8 +83,8 @@ src/
     sitemap.ts · robots.ts · llms.txt/route.ts · partage.png/route.tsx · icon.svg · not-found.tsx
   proxy.ts                           # Proxy Next.js 16 (ex-middleware) : rafraîchit la session, pages privées uniquement
   components/
-    ui/        # Primitives : Button/ButtonLink, Badge/SpecChip, Price, StockStatus, Container, SectionHeading, Icon
-    product/   # ProductCard, ProductGrid, ProductHero, QuickAddButton, OptionGroup, AddToCartButton, SpecTable, DeviceIllustration, kindIcon
+    ui/        # Primitives : Button/ButtonLink, Badge/SpecChip, Price, StockStatus, Container, SectionHeading, Icon, Skeleton (squelettes de chargement)
+    product/   # ProductCard, ProductGrid, ProductHero, ProductVisual (photo next/image ou illustration), QuickAddButton, OptionGroup, AddToCartButton, SpecTable, DeviceIllustration, kindIcon
     content/   # Faq, TrustBar
     home/      # hero/ (HeroShowcase, HeroScene), CategoryCircles, PromoTiles, ReviewsSection, HelpBand
     catalog/   # CategoryView (contenu d'une page de catégorie), Pagination
@@ -95,7 +97,7 @@ src/
   config/site.ts                       # Identité, URL, politiques commerciales (source unique)
   lib/
     catalog/   # types.ts, data.ts + demo-generator.ts (DÉMO : 100 produits/catégorie), repository.ts (seul accès aux données), search.ts (normalisation + pertinence, partagé serveur/navigateur), selectors.ts, pagination.ts
-    cart/      # schema.ts (Zod + logique pure), pricing.ts, actions.ts (Server Actions), queries.ts, client.ts
+    cart/      # lines.ts (logique pure SANS Zod, importable côté navigateur), schema.ts (schémas Zod, serveur), pricing.ts, actions.ts (Server Actions), queries.ts, client.ts
     seo/       # metadata.ts (buildMetadata), jsonld.ts, og.tsx
     content/   # site-faq.ts, hero-slides.ts (diapositives du hero + vidéos)
     account/   # schema.ts (Zod : profil, adresses, téléphone +228), actions.ts (Server Actions), queries.ts
@@ -105,6 +107,7 @@ src/
     utils/     # cn, format (prix en unité mineure de la devise, dates)
   styles/tokens.css                    # Design tokens (thème clair)
 tests/                                 # Tests Vitest
+scripts/image-info.mjs                 # Préparation des photos produit (npm run image:info)
 supabase/migrations/                   # Migrations SQL appliquées au projet Supabase (source de vérité du schéma)
 ```
 
@@ -202,7 +205,17 @@ JetBrains Mono (`font-mono`, chargée à la demande) reste réservée aux codes 
 
 ### 5.5 Mouvement
 
-Animations courtes (150–250 ms), `ease-out`, uniquement fonctionnelles (feedback, transitions d'état). Respect de `prefers-reduced-motion`.
+Animations courtes (150–250 ms), `ease-out`, uniquement fonctionnelles (feedback, transitions d'état). Respect de `prefers-reduced-motion`. Uniquement `transform` / `opacity` (jamais `width`, `height`, `top`… qui recalculent la mise en page).
+
+Classes disponibles (`globals.css`) :
+- `.pop-in` : ouverture d'un panneau (suggestions de recherche, menu des catégories).
+- `.bump` : compteur du panier qui change (`key={count}` pour rejouer).
+- `.check-in` : coche « Ajouté au panier » (boutons d'ajout).
+- `.reveal` : apparition au défilement, **100 % CSS** (`animation-timeline: view()`), sans JS ; navigateurs non compatibles : affichage direct. Sur les sections de l'accueil et les cartes des grilles (pas dans les rangées défilantes). Jamais sur le hero ni sur l'élément LCP.
+- `.details-smooth` : ouverture en douceur des `<details>` (FAQ, pied de page) via `::details-content`.
+- `.skeleton` : squelette gris avec reflet (voir ci-dessous).
+
+**Squelettes de chargement** (`components/ui/Skeleton.tsx` + fichiers `loading.tsx`) : affichés instantanément pendant la navigation vers une page pas encore chargée, **aux dimensions des vrais contenus** (pas de saut à l'arrivée des données). Tout nouveau gabarit de page reçoit son `loading.tsx` (au minimum le `PageSkeleton` générique de `(shop)/loading.tsx`). Les suggestions de recherche affichent des lignes fantômes tant que l'index n'est pas arrivé. Pas de spinner.
 
 **Exception : le hero de l'accueil.** Ses scènes animées en boucle (flottement, rotation 3D, lueurs, particules) et ses vidéos sont voulues pour un rendu immersif. Elles n'utilisent que `transform`/`opacity`, sont mises en pause sur les diapositives inactives et entièrement coupées avec `prefers-reduced-motion` (vidéo non lue, poster affiché).
 
@@ -265,7 +278,10 @@ Valider chaque gabarit avec le test des résultats enrichis de Google et le vali
 
 Objectifs en production (mobile) : **LCP < 2,5 s, INP < 200 ms, CLS < 0,1**, score Lighthouse ≥ 95 en Performance, SEO et Accessibilité.
 
-- Image principale produit en `priority`, dimensions toujours déclarées.
+- **Photos produit** : toujours via `ProductVisual` / `ProductThumb` (`next/image`), jamais de `<img>` direct. AVIF puis WebP selon le navigateur, largeurs ≤ 1 600 px, qualités autorisées 60 (miniatures) et 75, cache 31 jours (une photo modifiée change de nom de fichier). Le `sizes` décrit la **largeur réellement affichée** (mesurée), pas `100vw` par défaut. Visuel principal de la fiche en `preload` (Next 16 : remplace `priority`) ; première rangée de cartes en `eager`, le reste en différé. Dimensions réelles + miniature floue (`blurDataURL`) générées par `npm run image:info`.
+- **Photos à publier** : JPEG/PNG/WebP, carrées, 1 600–2 000 px de côté, < 500 Ko, fond uni ; stockage `public/produits/` ou bucket public Supabase (`/storage/v1/object/public/…`, autorisé dans `next.config.ts`). `alt` descriptif obligatoire. Une variante sans photo reprend celle d'une variante de même couleur, sinon l'illustration — jamais la photo d'une autre couleur.
+- **JS navigateur** : budget ≈ 190 Ko compressés par page (dont ~150 Ko de socle React/Next). Ne jamais importer Zod, Supabase ou une grosse bibliothèque dans un composant client ni dans un module qu'il importe (ex. `lib/cart/lines.ts` existe pour garder Zod hors du navigateur). Les props d'un composant client sont recopiées dans la page : ne lui passer que les champs utiles (cf. `ProductHeroData`).
+- **Fluidité au défilement** : pas de `backdrop-blur` sur les éléments collants/fixes (repeint à chaque image sur mobile) ; les animations du hero sont en pause hors de l'écran et onglet masqué.
 - Pas de bibliothèque JS lourde côté client sans justification ; privilégier les Server Components.
 - Scripts tiers chargés en `lazyOnload` et limités au strict nécessaire.
 

@@ -1,7 +1,8 @@
 import "server-only";
 import { normalize, queryTerms, relevance } from "./search";
 import { brands, categories, products } from "./data";
-import type { Brand, Category, Product, Review, Variant } from "./types";
+import { primaryImage } from "./selectors";
+import type { Brand, Category, Product, ProductImage, Review, Variant } from "./types";
 
 /**
  * Couche d'accès au catalogue.
@@ -87,8 +88,24 @@ export async function searchProducts(query: string, category?: string): Promise<
 
 /** Index léger pour les suggestions instantanées (chargé une fois par le navigateur). */
 export interface SuggestionIndex {
-  products: { name: string; brand: string; url: string; price: number; from: boolean; kind: Product["kind"]; color: string; n: string; h: string }[];
+  products: {
+    name: string;
+    brand: string;
+    url: string;
+    price: number;
+    from: boolean;
+    kind: Product["kind"];
+    color: string;
+    /** Photo de la miniature (absente : illustration). */
+    img?: { src: string; width: number; height: number };
+    n: string;
+    h: string;
+  }[];
   categories: { name: string; url: string; h: string }[];
+}
+
+function imageRef(image: ProductImage | undefined) {
+  return image && { src: image.src, width: image.width, height: image.height };
 }
 
 export async function getSuggestionIndex(): Promise<SuggestionIndex> {
@@ -105,6 +122,7 @@ export async function getSuggestionIndex(): Promise<SuggestionIndex> {
         from: Math.max(...prices) > min,
         kind: p.kind,
         color: variant.color.hex,
+        img: imageRef(primaryImage(p, variant)),
         n: normalize(p.name),
         // Suggestions : sans le résumé (index ~4 fois plus léger) ; la page /recherche l'inclut.
         h: searchText(p, false),

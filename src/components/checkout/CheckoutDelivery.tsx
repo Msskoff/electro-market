@@ -4,7 +4,8 @@ import { useState } from "react";
 import { AddressForm } from "@/components/account/AddressesSection";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { MAX_ADDRESSES, type Address } from "@/lib/account/schema";
+import { MAX_ADDRESSES } from "@/lib/account/limits";
+import type { Address } from "@/lib/account/schema";
 import { cn } from "@/lib/utils/cn";
 
 /**

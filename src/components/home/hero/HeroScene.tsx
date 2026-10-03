@@ -21,16 +21,16 @@ const particles = Array.from({ length: 16 }, (_, i) => ({
   size: i % 4 === 0 ? 6 : i % 3 === 0 ? 4 : 3,
 }));
 
-function SceneVideo({ video, active }: { video: HeroVideo; active: boolean }) {
+function SceneVideo({ video, active, playing }: { video: HeroVideo; active: boolean; playing: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (active && !reduced) el.play().catch(() => {});
+    if (active && playing && !reduced) el.play().catch(() => {});
     else el.pause();
-  }, [active]);
+  }, [active, playing]);
 
   return (
     <video
@@ -59,12 +59,15 @@ export function HeroScene({
   tone,
   video,
   active,
+  playing = true,
 }: {
   kind: DeviceKind;
   color: string;
   tone: HeroSlide["tone"];
   video?: HeroVideo;
   active: boolean;
+  /** Faux quand le hero est hors de l'écran : vidéo en pause. */
+  playing?: boolean;
 }) {
   const style = { "--glow": `var(--tile-${tone})` } as CSSProperties;
 
@@ -72,7 +75,7 @@ export function HeroScene({
     <div className="hero-scene absolute inset-0 overflow-hidden" style={style} aria-hidden>
       <div className={cn("absolute inset-0", active && "hero-kenburns")}>
         {video ? (
-          <SceneVideo video={video} active={active} />
+          <SceneVideo video={video} active={active} playing={playing} />
         ) : (
           <>
             {/* Trame de points discrète */}

@@ -27,7 +27,7 @@ export function Faq({ items, title = "Questions fréquentes", withSchema = true,
       </h2>
       <div className="mt-6 divide-y divide-border rounded-lg border border-border bg-surface">
         {items.map((item) => (
-          <details key={frenchSpacing(item.question)} className="group">
+          <details key={frenchSpacing(item.question)} className="details-smooth group">
             <summary
               className={cn(
                 "flex cursor-pointer list-none items-center justify-between gap-6 px-5 py-4 font-medium",

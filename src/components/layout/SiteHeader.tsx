@@ -48,7 +48,7 @@ export async function SiteHeader() {
         </Container>
       </div>
 
-      <header className="z-40 border-b border-border bg-bg/90 backdrop-blur-md md:sticky md:top-0">
+      <header className="z-40 border-b border-border bg-bg md:sticky md:top-0">
         <Container className="flex h-16 items-center justify-between gap-6 md:h-20">
           <Logo />
           <SearchForm className="hidden max-w-xl flex-1 md:block" />

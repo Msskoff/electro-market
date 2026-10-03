@@ -5,15 +5,24 @@ import { SpecChip } from "@/components/ui/Badge";
 import { Price } from "@/components/ui/Price";
 import { StockStatus } from "@/components/ui/StockStatus";
 import { Icon } from "@/components/ui/Icon";
-import { defaultVariant } from "@/lib/catalog/selectors";
+import { primaryImage } from "@/lib/catalog/selectors";
 import type { Product, Variant } from "@/lib/catalog/types";
 import { AddToCartButton } from "./AddToCartButton";
-import { DeviceIllustration } from "./DeviceIllustration";
+import { ProductVisual } from "./ProductVisual";
 import { OptionGroup } from "./OptionGroup";
 import { frenchSpacing } from "@/lib/utils/typography";
 
+/**
+ * Uniquement les champs utiles au bloc d'achat : les props d'un composant client sont
+ * recopiées dans la page (charge utile RSC). Envoyer le produit entier (description,
+ * caractéristiques, FAQ) doublerait le poids HTML de la fiche.
+ */
+export type ProductHeroData = Pick<Product, "name" | "kind" | "summary" | "highlights" | "variants"> & {
+  defaultSku: string;
+};
+
 interface ProductHeroProps {
-  product: Product;
+  product: ProductHeroData;
   brandName: string;
   /** Lignes de réassurance (livraison, retours, garantie) issues de la config. */
   assurances: { icon: "truck" | "rotate" | "shield"; text: string }[];
@@ -25,7 +34,9 @@ interface ProductHeroProps {
  * côté serveur au premier affichage (nom, prix, stock visibles sans JS).
  */
 export function ProductHero({ product, brandName, assurances }: ProductHeroProps) {
-  const [variant, setVariant] = useState<Variant>(() => defaultVariant(product));
+  const [variant, setVariant] = useState<Variant>(
+    () => product.variants.find((v) => v.sku === product.defaultSku) ?? product.variants[0],
+  );
 
   const options = useMemo(
     () => [...new Set(product.variants.map((v) => v.option).filter((o): o is string => !!o))],
@@ -49,7 +60,8 @@ export function ProductHero({ product, brandName, assurances }: ProductHeroProps
     if (chosen) setVariant(chosen);
   }
 
-  const visualLabel = `${product.name}, coloris ${variant.color.name}`;
+  const image = primaryImage(product, variant);
+  const visualLabel = image?.alt ?? `${product.name}, coloris ${variant.color.name}`;
 
   return (
     <>
@@ -58,10 +70,15 @@ export function ProductHero({ product, brandName, assurances }: ProductHeroProps
         <div className="bg-glow relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-lg border border-border bg-surface-2 p-6 sm:aspect-square sm:p-10 lg:sticky lg:top-24 lg:self-start">
           <span className="label-mono absolute left-4 top-4 text-muted">{variant.sku}</span>
           <span className="label-mono absolute bottom-4 right-4 text-muted">{variant.color.name}</span>
-          <DeviceIllustration
+          <ProductVisual
+            key={image?.src ?? variant.color.hex}
+            image={image}
             kind={product.kind}
             color={variant.color.hex}
-            label={visualLabel}
+            alt={visualLabel}
+            // Largeur affichée réelle (cadre 4:3 puis carré, marges, 78 % max) — mesurée.
+            sizes="(min-width: 1280px) 440px, (min-width: 1024px) 32vw, (min-width: 640px) 72vw, 60vw"
+            preload
             className="max-w-[78%] text-fg"
           />
         </div>
@@ -137,7 +154,7 @@ export function ProductHero({ product, brandName, assurances }: ProductHeroProps
       </div>
 
       {/* Barre d'achat collante sur mobile */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 px-4 py-3 backdrop-blur lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface px-4 py-3 shadow-[0_-4px_16px_-8px_rgb(0_0_0_/_0.12)] lg:hidden">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{product.name}</p>

@@ -67,7 +67,7 @@ export function CategoryHeader({ category, tile, products, brands, page }: Categ
 
             <dl className="mt-7 hidden grid-cols-4 gap-3 sm:grid">
               {stats.map((s) => (
-                <div key={s.label} className="rounded-lg bg-surface/80 px-4 py-3 backdrop-blur-sm">
+                <div key={s.label} className="rounded-lg bg-surface/85 px-4 py-3">
                   <dt className="text-xs font-medium text-muted">{s.label}</dt>
                   <dd className="mt-1 text-lg font-semibold leading-tight tabular">{s.value}</dd>
                   <dd className="mt-0.5 text-xs text-muted">{s.hint}</dd>

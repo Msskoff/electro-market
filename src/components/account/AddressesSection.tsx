@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { siteConfig } from "@/config/site";
 import { deleteAddress, saveAddress, setDefaultAddress } from "@/lib/account/actions";
-import { MAX_ADDRESSES, type Address } from "@/lib/account/schema";
+import { MAX_ADDRESSES } from "@/lib/account/limits";
+import type { Address } from "@/lib/account/schema";
 import type { FormState } from "@/lib/auth/schema";
 
 export function AddressForm({ initial, onDone }: { initial?: Address; onDone: () => void }) {

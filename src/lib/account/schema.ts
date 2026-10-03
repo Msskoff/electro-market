@@ -60,7 +60,7 @@ export interface Address {
   isDefault: boolean;
 }
 
-export const MAX_ADDRESSES = 10;
+export { MAX_ADDRESSES } from "./limits";
 
 /** Erreurs de validation par champ (premier message de chaque champ). */
 export function fieldErrors(error: z.ZodError): Record<string, string> {

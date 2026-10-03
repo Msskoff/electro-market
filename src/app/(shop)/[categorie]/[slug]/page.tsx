@@ -76,7 +76,18 @@ export default async function ProductPage({ params }: PageProps<"/[categorie]/[s
           ]}
         />
 
-        <ProductHero product={product} brandName={brand.name} assurances={assurances} />
+        <ProductHero
+          product={{
+            name: product.name,
+            kind: product.kind,
+            summary: product.summary,
+            highlights: product.highlights,
+            variants: product.variants,
+            defaultSku: defaultVariant(product).sku,
+          }}
+          brandName={brand.name}
+          assurances={assurances}
+        />
 
         <div className="mt-12 grid gap-12 sm:mt-20 sm:gap-16 lg:grid-cols-[1fr_1.1fr]">
           <section aria-labelledby="presentation">

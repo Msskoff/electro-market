@@ -34,9 +34,9 @@ export function ProductGrid({
         "lg:gap-5",
       )}
     >
-      {products.map((p) => (
-        <li key={p.id} className={cn("flex", layout === "rail" && "w-[46%] shrink-0 snap-start sm:w-auto")}>
-          <ProductCard product={p} brandName={brandName(p.brand)} headingLevel={headingLevel} />
+      {products.map((p, i) => (
+        <li key={p.id} className={cn("flex", layout === "rail" ? "w-[46%] shrink-0 snap-start sm:w-auto" : "reveal")}>
+          <ProductCard product={p} brandName={brandName(p.brand)} headingLevel={headingLevel} eager={i < 4} />
         </li>
       ))}
     </ul>

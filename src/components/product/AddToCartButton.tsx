@@ -50,7 +50,12 @@ export function AddToCartButton({
         fullWidth={!compact}
         aria-describedby={compact ? undefined : `${sku}-status`}
       >
-        <Icon name={status.kind === "added" ? "check" : "cart"} size={18} />
+        <Icon
+          key={status.kind}
+          name={status.kind === "added" ? "check" : "cart"}
+          size={18}
+          className={status.kind === "added" ? "check-in" : undefined}
+        />
         {compact && !disabled ? "Ajouter" : label}
       </Button>
 

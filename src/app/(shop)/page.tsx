@@ -88,7 +88,7 @@ export default async function HomePage() {
         <CategoryCircles categories={categories} counts={counts} />
       </Container>
 
-      <Container as="section" aria-labelledby="selection-title">
+      <Container as="section" aria-labelledby="selection-title" className="reveal">
         <div className="rounded-xl border border-border bg-surface p-4 sm:p-8">
           <SectionTitle id="selection-title">
             Notre sélection
@@ -101,7 +101,7 @@ export default async function HomePage() {
         </div>
       </Container>
 
-      <Container as="section" aria-label="Nos univers">
+      <Container as="section" aria-label="Nos univers" className="reveal">
         <PromoTiles categories={categories} products={products} />
       </Container>
 
@@ -111,15 +111,15 @@ export default async function HomePage() {
         </Container>
       )}
 
-      <Container>
+      <Container className="reveal">
         <HelpBand />
       </Container>
 
-      <Container className="max-w-3xl">
+      <Container className="reveal max-w-3xl">
         <Faq items={siteFaq} />
       </Container>
 
-      <Container as="section" aria-label="Nos engagements">
+      <Container as="section" aria-label="Nos engagements" className="reveal">
         <TrustBar />
       </Container>
     </div>

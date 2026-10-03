@@ -6,13 +6,14 @@ import {
   defaultVariant,
   discountPercent,
   priceRange,
+  primaryImage,
   productPath,
   totalStock,
   uniqueColors,
 } from "@/lib/catalog/selectors";
 import type { Product } from "@/lib/catalog/types";
 import { t } from "@/lib/i18n/fr";
-import { DeviceIllustration } from "./DeviceIllustration";
+import { ProductVisual } from "./ProductVisual";
 import { QuickAddButton } from "./QuickAddButton";
 
 interface ProductCardProps {
@@ -20,6 +21,8 @@ interface ProductCardProps {
   brandName: string;
   /** Niveau de titre selon le contexte de la page (h2 sur une catégorie, h3 dans une section). */
   headingLevel?: "h2" | "h3";
+  /** Carte visible dès l'arrivée (première rangée) : photo chargée sans attendre. */
+  eager?: boolean;
 }
 
 /**
@@ -27,19 +30,25 @@ interface ProductCardProps {
  * (un seul lien par carte = meilleure accessibilité et maillage interne propre) ;
  * seul le bouton d'ajout rapide est posé au-dessus.
  */
-export function ProductCard({ product, brandName, headingLevel: Heading = "h3" }: ProductCardProps) {
+export function ProductCard({ product, brandName, headingLevel: Heading = "h3", eager = false }: ProductCardProps) {
   const variant = defaultVariant(product);
   const { min, max } = priceRange(product);
   const colors = uniqueColors(product);
   const discount = discountPercent(variant);
   const singlePrice = min === max;
+  const image = primaryImage(product, variant);
 
   return (
     <article className="group relative flex w-full flex-col rounded-xl border border-border bg-surface p-2 transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md sm:p-3">
       <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-lg bg-surface-2 p-4 sm:p-6">
-        <DeviceIllustration
+        <ProductVisual
+          image={image}
           kind={product.kind}
           color={variant.color.hex}
+          alt={image?.alt ?? ""}
+          // Largeur affichée réelle (mesurée) : ~26 % de l'écran en 2 colonnes, ~170 px en 4 colonnes.
+          sizes="(min-width: 1024px) 180px, 28vw"
+          eager={eager}
           className="max-h-full w-auto max-w-[78%] text-fg transition-transform duration-300 ease-out group-hover:scale-[1.04]"
         />
         {discount > 0 && singlePrice && (

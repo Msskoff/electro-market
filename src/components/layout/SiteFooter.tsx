@@ -24,7 +24,7 @@ function FooterColumn({ title, links }: { title: string; links: { href: string; 
   );
   return (
     <div>
-      <details className="group border-b border-on-inverse/15 md:hidden">
+      <details className="details-smooth group border-b border-on-inverse/15 md:hidden">
         <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-sm font-semibold [&::-webkit-details-marker]:hidden">
           {title}
           <Icon name="chevronDown" size={18} className="text-on-inverse-muted transition-transform duration-200 group-open:rotate-180" />

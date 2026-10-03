@@ -102,3 +102,30 @@ describe("hasAuthSession", () => {
     expect(hasAuthSession("vx_cart=[]")).toBe(false);
   });
 });
+
+describe("validation du panier sans Zod (navigateur)", () => {
+  it("donne exactement le même verdict que le schéma Zod du serveur", async () => {
+    const { validateCart } = await import("@/lib/cart/lines");
+    const { cartSchema } = await import("@/lib/cart/schema");
+    const samples: unknown[] = [
+      [],
+      [{ sku: "ABC-1", qty: 1 }],
+      [{ sku: " ABC-1 ", qty: 10 }],
+      [{ sku: "abc", qty: 1 }],
+      [{ sku: "ABC", qty: 0 }],
+      [{ sku: "ABC", qty: 11 }],
+      [{ sku: "ABC", qty: 1.5 }],
+      [{ sku: "ABC", qty: "2" }],
+      [{ sku: "", qty: 1 }],
+      [{ sku: "A".repeat(65), qty: 1 }],
+      Array.from({ length: 31 }, (_, i) => ({ sku: `S${i}`, qty: 1 })),
+      { sku: "ABC", qty: 1 },
+      null,
+      [null],
+    ];
+    for (const sample of samples) {
+      const zod = cartSchema.safeParse(sample);
+      expect(validateCart(sample)).toEqual(zod.success ? zod.data : null);
+    }
+  });
+});

@@ -3,7 +3,7 @@
  * Il lit le cookie (sans prix) afin que les pages restent statiques :
  * aucun rendu serveur n'a besoin de connaître le panier pour afficher l'en-tête.
  */
-import { CART_COOKIE, countItems, parseCart } from "./schema";
+import { CART_COOKIE, countItems, parseCart } from "./lines";
 
 const EVENT = "vx:cart-change";
 

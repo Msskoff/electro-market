@@ -1,4 +1,4 @@
-import type { Product, Variant } from "./types";
+import type { Product, ProductImage, Variant } from "./types";
 
 /**
  * Fonctions pures dérivées d'un produit (utilisables côté serveur ET client).
@@ -22,6 +22,17 @@ export function defaultVariant(product: Product): Variant {
   const available = product.variants.filter((v) => v.stock > 0);
   const pool = available.length > 0 ? available : product.variants;
   return pool.reduce((min, v) => (v.price < min.price ? v : min), pool[0]);
+}
+
+/**
+ * Photo principale d'une variante. À défaut, celle d'une variante de MÊME couleur
+ * (ex. 128 Go et 256 Go partagent leurs photos) — jamais d'une autre couleur.
+ */
+export function primaryImage(product: Pick<Product, "variants">, variant: Variant): ProductImage | undefined {
+  return (
+    variant.images?.[0] ??
+    product.variants.find((v) => v.color.name === variant.color.name && v.images?.length)?.images?.[0]
+  );
 }
 
 export function priceRange(product: Product): { min: number; max: number } {

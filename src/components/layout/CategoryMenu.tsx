@@ -49,7 +49,7 @@ export function CategoryMenu({ items }: { items: CategoryMenuItem[] }) {
         <span>{t.nav.allCategories}</span>
         <Icon name="chevronDown" size={16} className="transition-transform duration-200 group-open:rotate-180" />
       </summary>
-      <ul className="absolute left-0 top-full z-50 mt-2 w-72 rounded-lg border border-border bg-surface p-2 shadow-md">
+      <ul className="pop-in absolute left-0 top-full z-50 mt-2 w-72 rounded-lg border border-border bg-surface p-2 shadow-md">
         {items.map((item) => (
           <li key={item.href}>
             <Link

@@ -2,13 +2,13 @@ import Link from "next/link";
 import { CartLineControls } from "@/components/cart/CartLineControls";
 import { CheckoutSteps } from "@/components/checkout/CheckoutSteps";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { DeviceIllustration } from "@/components/product/DeviceIllustration";
+import { ProductThumb } from "@/components/product/ProductVisual";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { getSessionUser } from "@/lib/auth/session";
 import { Container } from "@/components/ui/Container";
 import { getCart } from "@/lib/cart/queries";
-import { productPath } from "@/lib/catalog/selectors";
+import { primaryImage, productPath } from "@/lib/catalog/selectors";
 import { t } from "@/lib/i18n/fr";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { formatPrice } from "@/lib/utils/format";
@@ -42,7 +42,7 @@ export default async function CartPage() {
             {cart.lines.map((line) => (
               <li key={line.sku} className="flex gap-5 p-5">
                 <div className="bg-glow flex size-24 shrink-0 items-center justify-center rounded-md bg-surface-2 p-2">
-                  <DeviceIllustration kind={line.product.kind} color={line.variant.color.hex} className="text-fg" />
+                  <ProductThumb image={primaryImage(line.product, line.variant)} kind={line.product.kind} color={line.variant.color.hex} size={96} className="text-fg" />
                 </div>
                 <div className="flex flex-1 flex-col gap-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">

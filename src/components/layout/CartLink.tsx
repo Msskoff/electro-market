@@ -48,8 +48,9 @@ export function CartLink() {
         <Icon name="cart" size={24} />
         {count > 0 && (
           <span
+            key={count /* nouvelle valeur = l'animation « bump » rejoue */}
             aria-hidden
-            className="tabular absolute -right-2 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[0.6875rem] font-semibold text-on-accent ring-2 ring-bg"
+            className="bump tabular absolute -right-2 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[0.6875rem] font-semibold text-on-accent ring-2 ring-bg"
           >
             {count}
           </span>

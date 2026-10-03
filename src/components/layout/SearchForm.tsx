@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
-import { DeviceIllustration } from "@/components/product/DeviceIllustration";
+import { ProductThumb } from "@/components/product/ProductVisual";
 import { Icon } from "@/components/ui/Icon";
 import type { SuggestionIndex } from "@/lib/catalog/repository";
 import { highlightParts, queryTerms, relevance } from "@/lib/catalog/search";
@@ -25,7 +25,7 @@ function loadIndex(): Promise<SuggestionIndex | null> {
 
 type Option =
   | { kind: "category"; id: string; label: string; url: string }
-  | { kind: "product"; id: string; label: string; url: string; brand: string; price: number; from: boolean; device: SuggestionIndex["products"][number]["kind"]; color: string }
+  | { kind: "product"; id: string; label: string; url: string; brand: string; price: number; from: boolean; device: SuggestionIndex["products"][number]["kind"]; color: string; img?: SuggestionIndex["products"][number]["img"] }
   | { kind: "all"; id: string; label: string; url: string };
 
 function Highlight({ text, terms }: { text: string; terms: string[] }) {
@@ -92,6 +92,7 @@ export function SearchForm({
         from: p.from,
         device: p.kind,
         color: p.color,
+        img: p.img,
       }));
     const allUrl = `/recherche?q=${encodeURIComponent(query.trim())}${category ? `&categorie=${category}` : ""}`;
     return [...cats, ...prods, { kind: "all", id: `${id}-all`, label: query.trim(), url: allUrl }];
@@ -99,6 +100,8 @@ export function SearchForm({
 
   const productCount = options.filter((o) => o.kind === "product").length;
   const showList = open && ready;
+  // Index pas encore arrivé (connexion lente) : lignes fantômes plutôt qu'un vide.
+  const showLoading = open && index === null && query.trim().length >= MIN_CHARS;
 
   // Fermeture au clic en dehors.
   useEffect(() => {
@@ -181,10 +184,24 @@ export function SearchForm({
 
       <div
         className={cn(
-          "absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-border bg-surface shadow-md",
-          !showList && "hidden",
+          "pop-in absolute inset-x-0 top-full z-50 mt-2 overflow-hidden rounded-xl border border-border bg-surface shadow-md",
+          !showList && !showLoading && "hidden",
         )}
       >
+        {showLoading && (
+          <div aria-hidden className="space-y-1 py-1.5">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="flex items-center gap-3 px-3 py-2">
+                <span className="skeleton size-11 shrink-0 rounded-md" />
+                <span className="flex-1 space-y-2">
+                  <span className="skeleton block h-3.5 w-3/5" />
+                  <span className="skeleton block h-3 w-1/4" />
+                </span>
+                <span className="skeleton h-4 w-20" />
+              </div>
+            ))}
+          </div>
+        )}
         <ul id={listId} role="listbox" aria-label={t.search.label} className="max-h-[min(70vh,28rem)] overflow-y-auto py-1.5">
           {options.map((o, i) => (
             <li
@@ -217,7 +234,7 @@ export function SearchForm({
               {o.kind === "product" && (
                 <>
                   <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-surface-2 p-1">
-                    <DeviceIllustration kind={o.device} color={o.color} className="text-fg" />
+                    <ProductThumb image={o.img && { ...o.img, alt: "" }} kind={o.device} color={o.color} size={44} className="text-fg" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium">

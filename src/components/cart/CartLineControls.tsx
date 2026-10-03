@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { updateCartLine } from "@/lib/cart/actions";
 import { notifyCartChanged } from "@/lib/cart/client";
-import { MAX_QTY_PER_LINE } from "@/lib/cart/schema";
+import { MAX_QTY_PER_LINE } from "@/lib/cart/lines";
 import { t } from "@/lib/i18n/fr";
 import { cn } from "@/lib/utils/cn";
 

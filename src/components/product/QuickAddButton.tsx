@@ -48,7 +48,7 @@ export function QuickAddButton({ sku, label }: { sku: string; label: string }) {
           added ? "bg-signal text-on-accent" : "bg-accent text-on-accent hover:bg-accent-strong",
         )}
       >
-        <Icon name={added ? "check" : "cart"} size={18} />
+        <Icon key={added ? "check" : "cart"} name={added ? "check" : "cart"} size={18} className={added ? "check-in" : undefined} />
       </button>
       <span role="status" aria-live="polite" className="sr-only">
         {message?.text}

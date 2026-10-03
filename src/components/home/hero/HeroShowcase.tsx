@@ -55,7 +55,28 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
   const [announce, setAnnounce] = useState("");
   const interacted = useRef(false);
   const pointerStart = useRef<number | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [playing, setPlaying] = useState(true);
   const count = slides.length;
+
+  // Animations et vidéo en pause quand le hero sort de l'écran ou que l'onglet est masqué :
+  // le défilement du reste de la page reste fluide et la batterie est épargnée.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    let inView = true;
+    const update = () => setPlaying(inView && document.visibilityState === "visible");
+    const io = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      update();
+    });
+    io.observe(el);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, []);
 
   /** Mise à jour fonctionnelle : fiable même en cas de clics rapides. */
   const step = (delta: number) => {
@@ -89,6 +110,8 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
 
   return (
     <section
+      ref={sectionRef}
+      data-playing={playing}
       aria-roledescription="carrousel"
       aria-label="À la une"
       onKeyDown={onKeyDown}
@@ -113,7 +136,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
               active ? "z-10 opacity-100" : "pointer-events-none z-0 opacity-0",
             )}
           >
-            <HeroScene kind={s.kind} color={s.color} tone={s.tone} video={s.video} active={active} />
+            <HeroScene kind={s.kind} color={s.color} tone={s.tone} video={s.video} active={active} playing={playing} />
 
             {/* Grand écran : dégradé à gauche, sous le texte. Petit écran : dégradé par le bas. */}
             <div className="absolute inset-y-0 left-0 hidden w-[60%] bg-gradient-to-r from-hero-to/35 to-transparent lg:block" />
