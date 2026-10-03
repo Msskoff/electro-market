@@ -7,7 +7,7 @@ export const siteConfig = {
   name: "ElectroMarket",
   tagline: "L'électronique choisie, testée, expliquée.",
   description:
-    "ElectroMarket est une boutique en ligne basée à Lomé (Togo), spécialisée en appareils électroniques : smartphones, ordinateurs portables, audio, tablettes et montres connectées, avec fiches techniques détaillées et conseils d'achat.",
+    "ElectroMarket est une boutique en ligne basée à Lomé (Togo), spécialisée en smartphones et ordinateurs portables, avec fiches techniques détaillées et conseils d'achat.",
   /** URL publique : variable explicite, sinon domaine de production Vercel, sinon local. */
   url: (
     process.env.NEXT_PUBLIC_SITE_URL ??

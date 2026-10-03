@@ -26,9 +26,9 @@ function Circle({ href, label, icon, tile, meta }: { href: string; label: string
 /** Accès rapide aux catégories, en pastilles rondes. */
 export function CategoryCircles({ categories, counts }: { categories: Category[]; counts: Record<string, number> }) {
   return (
-    <ul className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-6 sm:gap-x-4 sm:gap-y-8 sm:overflow-visible sm:px-0">
+    <ul className="flex justify-center gap-6 sm:gap-12">
       {categories.map((c, i) => (
-        <li key={c.slug} className="w-[76px] shrink-0 sm:w-auto">
+        <li key={c.slug} className="w-24 sm:w-36">
           <Circle
             href={categoryPath(c.slug)}
             label={c.name}
@@ -38,7 +38,7 @@ export function CategoryCircles({ categories, counts }: { categories: Category[]
           />
         </li>
       ))}
-      <li className="w-[76px] shrink-0 sm:w-auto">
+      <li className="w-24 sm:w-36">
         <Circle href="/guides" label={t.nav.guides} icon="book" tile="bg-surface" meta="Conseils" />
       </li>
     </ul>

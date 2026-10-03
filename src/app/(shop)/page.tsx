@@ -21,9 +21,9 @@ import { buildMetadata } from "@/lib/seo/metadata";
 import { formatDate, formatPrice } from "@/lib/utils/format";
 
 export const metadata = buildMetadata({
-  title: `${siteConfig.name} — Smartphones, ordinateurs, audio et objets connectés`,
+  title: `${siteConfig.name} — Smartphones et ordinateurs portables à Lomé`,
   description:
-    "Boutique d'électronique à Lomé : smartphones, ordinateurs portables, casques, tablettes et montres connectées. Fiches techniques détaillées, livraison en 24 à 48 h.",
+    "Smartphones et ordinateurs portables neufs à Lomé : fiches techniques détaillées, prix en francs CFA, livraison en 24 à 48 h et garantie 2 ans.",
   path: "/",
   absoluteTitle: true,
 });
@@ -39,12 +39,10 @@ function SectionTitle({ id, children, action }: { id: string; children: ReactNod
   );
 }
 
-/** « l'Aurion One 5G », « le Nuvia Book 14 Air », « la Stratos Tab 11 ». */
-function withArticle(name: string, feminine: boolean): string {
-  return /^[aeiouyhéè]/i.test(name) ? `l'${name}` : `${feminine ? "la" : "le"} ${name}`;
+/** « l'Aurion One 5G », « le Nuvia Book 14 Air » (smartphones et ordinateurs : masculin). */
+function withArticle(name: string): string {
+  return /^[aeiouyhéè]/i.test(name) ? `l'${name}` : `le ${name}`;
 }
-
-const FEMININE_CATEGORIES = new Set(["tablettes", "montres-connectees"]);
 
 /** Associe chaque diapositive éditoriale à son produit et à sa catégorie réels. */
 function buildShowcase(products: Product[], categories: Category[]): ShowcaseSlide[] {
@@ -61,7 +59,7 @@ function buildShowcase(products: Product[], categories: Category[]): ShowcaseSli
         categoryHref: categoryPath(category.slug),
         productName: product.name,
         productHref: productPath(product),
-        productCta: withArticle(product.name, FEMININE_CATEGORIES.has(category.slug)),
+        productCta: withArticle(product.name),
         kind: product.kind,
         color: variant.color.hex,
         priceLabel: min === max ? formatPrice(min) : `à partir de ${formatPrice(min)}`,

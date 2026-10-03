@@ -86,43 +86,6 @@ export const guides: Guide[] = [
       },
     ],
   },
-  {
-    slug: "choisir-casque-reduction-de-bruit",
-    title: "Quel casque à réduction de bruit choisir ?",
-    description:
-      "Circum-auriculaire ou intra, autonomie, codecs, confort : notre méthode pour choisir un casque à réduction de bruit adapté à vos trajets.",
-    tldr:
-      "Pour les longs trajets, un casque circum-auriculaire offre la meilleure isolation et le meilleur confort. Pour le sport et la mobilité, préférez des écouteurs intra. Vérifiez l'autonomie avec la réduction de bruit activée, pas seulement la valeur maximale.",
-    category: "audio",
-    author: "L'équipe ElectroMarket",
-    publishedAt: "2026-03-05",
-    updatedAt: "2026-09-18",
-    sections: [
-      {
-        heading: "Casque ou écouteurs ?",
-        paragraphs: [
-          "Un casque circum-auriculaire combine isolation passive (les coussinets) et active (l'électronique) : c'est la meilleure option en avion ou en train. Les écouteurs sont plus discrets et plus pratiques au quotidien.",
-        ],
-      },
-      {
-        heading: "Les critères techniques",
-        paragraphs: ["Quelques points à vérifier dans la fiche technique :"],
-        bullets: [
-          "Autonomie avec réduction de bruit activée",
-          "Connexion multipoint (ordinateur + smartphone)",
-          "Codecs : AAC pour iPhone, LDAC ou aptX pour Android",
-          "Poids : moins de 260 g pour un port prolongé",
-        ],
-      },
-    ],
-    faq: [
-      {
-        question: "La réduction de bruit est-elle mauvaise pour les oreilles ?",
-        answer:
-          "Non. Elle permet au contraire d'écouter à un volume plus faible dans un environnement bruyant.",
-      },
-    ],
-  },
 ];
 
 export function getGuides(): Guide[] {

@@ -6,7 +6,7 @@ Ce fichier guide Claude (et tout développeur) sur ce projet. Le lire en entier 
 
 ## 1. Vision du projet
 
-Site e-commerce personnel spécialisé dans la vente d'appareils électroniques (smartphones, ordinateurs, audio, accessoires, objets connectés).
+Site e-commerce personnel spécialisé dans la vente de **smartphones et d'ordinateurs portables** uniquement (les catégories audio, tablettes et montres connectées ont été retirées ; leurs anciennes URL redirigent en 308 vers l'accueil via `next.config.ts`).
 
 Trois objectifs non négociables :
 
@@ -173,10 +173,10 @@ Budget : ~100 Ko de polices préchargées (réseaux mobiles de Lomé). Ne pas pa
 ### 5.4 Composants clés
 
 - **En-tête :** bandeau de réassurance (`bg-inverse`) → logo + `SearchForm` (GET `/recherche`, fonctionne sans JS) + panier → navigation avec `CategoryMenu` (`<details>`, refermé à la navigation) et `NavLink` (onglet actif souligné).
-- **Hero immersif (`components/home/hero/`) :** une diapositive par catégorie (`lib/content/hero-slides.ts`), liée à un produit réel ; textes marketing fidèles à la fiche. Grand écran : média à droite, dégradé `inverse` à gauche sous le texte. Petit écran : média plein cadre, texte superposé en bas. Navigation volontaire uniquement : chevrons pleins épais, onglets, flèches du clavier, glissement tactile — **jamais de défilement automatique**. `video` (mp4/webm + poster) lue si fournie, sinon scène animée vectorielle (`HeroScene`). Seul `h1` de l'accueil : l'intitulé fixe en haut du hero.
+- **Hero immersif (`components/home/hero/`) :** deux diapositives par catégorie (4 au total) (`lib/content/hero-slides.ts`), liée à un produit réel ; textes marketing fidèles à la fiche. Grand écran : média à droite, dégradé `inverse` à gauche sous le texte. Petit écran : média plein cadre, texte superposé en bas. Navigation volontaire uniquement : chevrons pleins épais, onglets, flèches du clavier, glissement tactile — **jamais de défilement automatique**. `video` (mp4/webm + poster) lue si fournie, sinon scène animée vectorielle (`HeroScene`). Seul `h1` de l'accueil : l'intitulé fixe en haut du hero.
 - **Accueil (`components/home/`) :** `HeroShowcase`, `CategoryCircles`, sélection en `ProductGrid`, `PromoTiles`, `ReviewsSection`, `HelpBand`, FAQ, `TrustBar`.
 - **ProductCard :** visuel sur fond `surface-2`, badge « -X % » si remise réelle, marque, nom, 2–3 specs en micro-étiquettes mono, prix (corail si remisé), état du stock (point + texte), bouton rond `QuickAddButton` (ajoute la variante par défaut, posé au-dessus du lien étiré).
-- **En-tête de catégorie (`CategoryHeader`) :** bandeau à la teinte de la catégorie (`categoryTile`, identique à sa pastille d'accueil), date de mise à jour (`<time>`), chiffres clés en `<dl>` (prix d'entrée, disponibles, marques, livraison — tous calculés, jamais saisis), lien vers le guide d'achat, illustration de deux produits réels, raccourcis « par marque » vers `/recherche?q=…&categorie=…` (`rel="nofollow"`, page `noindex`). Liste : `h2` « N références » puis cartes en `h3`.
+- **En-tête de catégorie (`CategoryHeader`) :** sur petit écran, seul le `h1` reste visible (bandeau, chiffres, introduction, guide et illustration masqués ; l'introduction reste dans le HTML). À partir de 640 px : bandeau à la teinte de la catégorie (`categoryTile`, identique à sa pastille d'accueil), date de mise à jour (`<time>`), chiffres clés en `<dl>` (prix d'entrée, disponibles, marques, livraison — tous calculés, jamais saisis), lien vers le guide d'achat, illustration de deux produits réels, raccourcis « par marque » vers `/recherche?q=…&categorie=…` (`rel="nofollow"`, page `noindex`). Liste : `h2` « N références » puis cartes en `h3`.
 - **Avis (`ReviewsSection`) :** n'affiche RIEN tant que `getVerifiedReviews()` est vide. Jamais d'avis d'exemple.
 - **Newsletter :** remplacée par `HelpBand` tant qu'aucun service d'e-mailing n'est branché (pas de formulaire factice).
 - **Fiche produit :** galerie à gauche, bloc d'achat collant à droite (prix, variantes, stock, délai de livraison, garantie, CTA), puis description, **tableau de caractéristiques**, contenu de la boîte, FAQ, avis.
@@ -208,7 +208,7 @@ Objectif : une page doit rester **courte sur mobile** (accueil ≈ 4 écrans, ca
 
 - URL courtes, en minuscules, avec tirets, sans paramètres pour le contenu indexable : `/categorie/nom-produit-variante-cle`.
 - Une seule URL canonique par produit ; les variantes (couleur, capacité) pointent vers la canonique sauf si elles ont un volume de recherche propre.
-- Maillage interne : fil d'Ariane sur toutes les pages, liens catégorie ↔ produits ↔ guides ↔ marques, « produits similaires » et « accessoires compatibles ».
+- Maillage interne : fil d'Ariane sur toutes les pages (exception : masqué sur petit écran dans les pages catégorie, qui commencent directement par le titre et les produits), liens catégorie ↔ produits ↔ guides ↔ marques, « produits similaires » et « accessoires compatibles ».
 - Profondeur maximale : tout produit accessible en 3 clics depuis l'accueil.
 
 ### 6.2 Métadonnées (via `generateMetadata`)
@@ -356,7 +356,7 @@ Valeurs centralisées dans `src/config/site.ts`.
 
 **Déploiement :** Vercel, projet `electro-market` (espace « Hubert's projects »), relié au dépôt GitHub `Msskoff/electro-market`. Chaque push sur `main` = déploiement de production. Démo client : https://electro-market-one.vercel.app — non indexée tant que `SITE_INDEXING` n'est pas `true` (à n'activer qu'au lancement réel, avec le vrai catalogue).
 
-**Catalogue de démonstration :** 8 fiches rédigées + 492 produits générés par `demo-generator.ts` (déterministe, URL stables), soit 100 par catégorie. Tout est fictif et signalé par le bandeau « Démo » : à remplacer par la base réelle avant lancement. Marquées « À VALIDER » : frais de livraison (2 000 F CFA), seuil de gratuité (50 000 F CFA), délai (24–48 h à Lomé), retours (30 j), garantie (2 ans), adresse et téléphone.
+**Catalogue de démonstration :** 2 catégories (smartphones, ordinateurs portables) ; 4 fiches rédigées + 196 produits générés par `demo-generator.ts` (déterministe, URL stables), soit 100 par catégorie. Tout est fictif et signalé par le bandeau « Démo » : à remplacer par la base réelle avant lancement. Marquées « À VALIDER » : frais de livraison (2 000 F CFA), seuil de gratuité (50 000 F CFA), délai (24–48 h à Lomé), retours (30 j), garantie (2 ans), adresse et téléphone.
 
 **Mode sombre :** retiré pour l'instant (thème clair uniquement).
 

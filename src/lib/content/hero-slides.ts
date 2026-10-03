@@ -1,5 +1,5 @@
 /**
- * Diapositives du hero de l'accueil : une par catégorie, chacune liée à un produit réel du catalogue.
+ * Diapositives du hero de l'accueil : deux par catégorie, chacune liée à un produit réel du catalogue.
  *
  * Règle : chaque affirmation doit correspondre à la fiche du produit (aucune promesse inventée).
  *
@@ -40,24 +40,17 @@ export const heroSlides: HeroSlide[] = [
     text: "Un ultraportable 14 pouces 2,8K en aluminium de 14 mm, pensé pour les étudiants et les professionnels nomades.",
   },
   {
-    categorySlug: "audio",
-    productSlug: "kelvo-quiet-900",
-    tone: "lilac",
-    title: "Le silence, quand vous le décidez.",
-    text: "Réduction de bruit active adaptative, jusqu'à 40 heures d'autonomie (30 h avec réduction de bruit) et connexion multipoint.",
-  },
-  {
-    categorySlug: "tablettes",
-    productSlug: "stratos-tab-11",
+    categorySlug: "smartphones",
+    productSlug: "kelvo-neo-6a",
     tone: "peach",
-    title: "Votre carnet de notes, en mieux.",
-    text: "Écran 11 pouces 120 Hz et stylet à faible latence : prise de notes, dessin et multimédia sur une seule tablette.",
+    title: "La 5G, sans se ruiner.",
+    text: "Grand écran 6,6 pouces à 90 Hz et batterie de 5 000 mAh qui dépasse facilement la journée.",
   },
   {
-    categorySlug: "montres-connectees",
-    productSlug: "nuvia-watch-active",
-    tone: "rose",
-    title: "Dix jours d'autonomie. GPS intégré.",
-    text: "Fréquence cardiaque, SpO2, sommeil et plus de 100 activités sportives, dans un boîtier étanche 5 ATM.",
+    categorySlug: "ordinateurs-portables",
+    productSlug: "stratos-pro-16",
+    tone: "lilac",
+    title: "Une station de travail, à emporter.",
+    text: "Écran 16 pouces 165 Hz, 32 Go de mémoire et carte graphique dédiée 8 Go pour le montage vidéo, la 3D et le développement.",
   },
 ];

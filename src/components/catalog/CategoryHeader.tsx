@@ -52,24 +52,25 @@ export function CategoryHeader({ category, tile, products, brands, guides, page,
 
   return (
     <header>
-      <div className={cn("relative overflow-hidden rounded-xl", tile)}>
-        <div className="grid items-center gap-8 p-5 sm:p-10 lg:grid-cols-[1.5fr_1fr] lg:gap-12">
+      {/* Petit écran : seul le titre reste ; bandeau complet à partir de 640 px. */}
+      <div className={cn("relative overflow-hidden max-sm:bg-transparent sm:rounded-xl", tile)}>
+        <div className="grid items-center gap-8 pt-5 sm:p-10 lg:grid-cols-[1.5fr_1fr] lg:gap-12">
           <div className="relative z-10">
             {updatedAt && (
-              <p className="eyebrow text-accent">
+              <p className="eyebrow hidden text-accent sm:block">
                 Mis à jour le <time dateTime={updatedAt}>{formatDate(updatedAt)}</time>
               </p>
             )}
 
-            <h1 className="mt-3 text-h1">
+            <h1 className="text-h1 sm:mt-3">
               {category.name}
               {page > 1 && <span className="text-muted"> — page {page}</span>}
             </h1>
 
             {page === 1 ? (
-              <p className="measure mt-3 line-clamp-3 text-base leading-relaxed text-muted sm:mt-4 sm:line-clamp-none sm:text-lg">{frenchSpacing(category.intro)}</p>
+              <p className="measure mt-4 hidden text-lg leading-relaxed text-muted sm:block">{frenchSpacing(category.intro)}</p>
             ) : (
-              <p className="mt-3 text-muted">
+              <p className="mt-3 hidden text-muted sm:block">
                 Page {page} sur {totalPages} ·{" "}
                 <Link href={`/${category.slug}`} className="font-medium text-accent underline-offset-4 hover:underline">
                   Revenir à la première page
@@ -77,18 +78,18 @@ export function CategoryHeader({ category, tile, products, brands, guides, page,
               </p>
             )}
 
-            <dl className="mt-5 grid grid-cols-2 gap-2 sm:mt-7 sm:grid-cols-4 sm:gap-3">
+            <dl className="mt-7 hidden grid-cols-4 gap-3 sm:grid">
               {stats.map((s) => (
-                <div key={s.label} className="rounded-lg bg-surface/80 px-3 py-2 backdrop-blur-sm sm:px-4 sm:py-3">
+                <div key={s.label} className="rounded-lg bg-surface/80 px-4 py-3 backdrop-blur-sm">
                   <dt className="text-xs font-medium text-muted">{s.label}</dt>
-                  <dd className="mt-1 text-base font-semibold leading-tight tabular sm:text-lg">{s.value}</dd>
-                  <dd className="mt-0.5 hidden text-xs text-muted sm:block">{s.hint}</dd>
+                  <dd className="mt-1 text-lg font-semibold leading-tight tabular">{s.value}</dd>
+                  <dd className="mt-0.5 text-xs text-muted">{s.hint}</dd>
                 </div>
               ))}
             </dl>
 
             {guides.length > 0 && (
-              <ul className="mt-5 flex flex-col gap-2 sm:mt-6">
+              <ul className="mt-6 hidden flex-col gap-2 sm:flex">
                 {guides.map((g) => (
                   <li key={g.slug}>
                     <Link

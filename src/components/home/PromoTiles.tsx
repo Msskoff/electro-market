@@ -6,10 +6,10 @@ import type { Category, Product } from "@/lib/catalog/types";
 
 const tones = ["bg-tile-peach", "bg-tile-sand", "bg-tile-sky"];
 
-/** Trois encarts éditoriaux menant aux catégories phares. */
+/** Encarts éditoriaux menant aux catégories (une par catégorie). */
 export function PromoTiles({ categories, products }: { categories: Category[]; products: Product[] }) {
   return (
-    <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 md:mx-0 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0">
+    <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 md:mx-0 md:grid md:grid-cols-2 md:gap-5 md:overflow-visible md:px-0">
       {categories.slice(0, 3).map((c, i) => (
         <li key={c.slug} className="w-[84%] shrink-0 snap-start md:w-auto">
           <Link

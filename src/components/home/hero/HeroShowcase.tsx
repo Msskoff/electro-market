@@ -68,7 +68,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
   };
 
   useEffect(() => {
-    if (interacted.current) setAnnounce(`Diapositive ${index + 1} sur ${count} : ${slides[index].categoryName}`);
+    if (interacted.current) setAnnounce(`Diapositive ${index + 1} sur ${count} : ${slides[index].productName}`);
   }, [index, count, slides]);
 
   function onKeyDown(e: KeyboardEvent) {
@@ -104,7 +104,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
             key={s.productSlug}
             role="group"
             aria-roledescription="diapositive"
-            aria-label={`${i + 1} sur ${count} : ${s.categoryName}`}
+            aria-label={`${i + 1} sur ${count} : ${s.productName}`}
             aria-hidden={!active}
             inert={!active}
             data-active={active}
@@ -175,7 +175,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
                 <button
                   type="button"
                   onClick={() => goTo(i)}
-                  aria-label={`Diapositive ${i + 1} : ${s.categoryName}`}
+                  aria-label={`Diapositive ${i + 1} : ${s.productName}`}
                   aria-current={i === index ? "true" : undefined}
                   className="group block w-full py-2 text-left focus-visible:outline-on-inverse"
                 >
@@ -193,7 +193,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
                       i === index ? "text-on-inverse" : "text-on-inverse-muted group-hover:text-on-inverse",
                     )}
                   >
-                    {s.categoryName}
+                    {s.productName}
                   </span>
                 </button>
               </li>

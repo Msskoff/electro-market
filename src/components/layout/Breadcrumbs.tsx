@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { t } from "@/lib/i18n/fr";
+import { cn } from "@/lib/utils/cn";
 import { breadcrumbJsonLd, type Crumb } from "@/lib/seo/jsonld";
 
 /**
  * Fil d'Ariane visible + BreadcrumbList JSON-LD générés à partir de la même source,
  * ce qui garantit leur cohérence.
  */
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
+export function Breadcrumbs({ items, className }: { items: Crumb[]; className?: string }) {
   const crumbs: Crumb[] = [{ name: t.nav.home, path: "/" }, ...items];
   return (
     <>
-      <nav aria-label={t.nav.breadcrumb} className="py-5">
+      <nav aria-label={t.nav.breadcrumb} className={cn("py-5", className)}>
         <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
           {crumbs.map((c, i) => {
             const last = i === crumbs.length - 1;

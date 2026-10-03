@@ -8,6 +8,6 @@ export function GET() {
   return renderOgImage({
     eyebrow: "Boutique d'électronique",
     title: siteConfig.tagline,
-    subtitle: "Smartphones, ordinateurs, audio, tablettes et montres connectées.",
+    subtitle: "Smartphones et ordinateurs portables, à Lomé.",
   });
 }

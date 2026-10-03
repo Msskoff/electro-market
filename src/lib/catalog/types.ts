@@ -3,13 +3,8 @@
  * Les prix sont TOUJOURS stockés en entiers, dans l'unité mineure de la devise (F CFA pour XOF), pour éviter les erreurs d'arrondi.
  */
 
-export type DeviceKind =
-  | "phone"
-  | "laptop"
-  | "headphones"
-  | "earbuds"
-  | "watch"
-  | "tablet";
+/** Types d'appareils vendus : smartphones et ordinateurs portables uniquement. */
+export type DeviceKind = "phone" | "laptop";
 
 export interface Category {
   slug: string;

@@ -32,7 +32,7 @@ export async function CategoryView({ category, page }: { category: Category; pag
 
   return (
     <Container>
-      <Breadcrumbs items={crumbs} />
+      <Breadcrumbs items={crumbs} className="hidden sm:block" />
 
       <CategoryHeader
         category={category}

@@ -25,9 +25,6 @@ const paths = {
   chat: "M4 5h16v11H8l-4 4V5Zm4 5h.01M12 10h.01M16 10h.01",
   phone: "M8 2h8a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm3 17h2",
   laptop: "M5 5h14v10H5zM2 19h20",
-  headphones: "M4 15v-3a8 8 0 0 1 16 0v3M4 15h3v5H5a1 1 0 0 1-1-1v-4Zm16 0h-3v5h2a1 1 0 0 0 1-1v-4Z",
-  tablet: "M6 2h12a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm5 17h2",
-  watch: "M9 3h6l1 4H8l1-4Zm-1 14h8l-1 4H9l-1-4Zm-1-10h10v10H7z",
   book: "M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5Zm0 16a2 2 0 0 1 2-2h13v2",
   mail: "M3 5h18v14H3zm0 0 9 7 9-7",
 } as const;

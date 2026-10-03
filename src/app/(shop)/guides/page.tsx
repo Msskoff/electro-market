@@ -9,7 +9,7 @@ import { formatDate } from "@/lib/utils/format";
 export const metadata = buildMetadata({
   title: "Guides d'achat high-tech",
   description:
-    "Nos guides pour bien choisir smartphone, ordinateur portable, casque ou montre connectée : critères essentiels, repères par usage et réponses aux questions fréquentes.",
+    "Nos guides pour bien choisir son smartphone ou son ordinateur portable : critères essentiels, repères par usage et réponses aux questions fréquentes.",
   path: "/guides",
 });
 

@@ -18,6 +18,20 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  /**
+   * Catégories retirées du catalogue (la boutique ne vend plus que smartphones et
+   * ordinateurs portables) : redirection permanente plutôt que des 404 en masse.
+   */
+  async redirects() {
+    const retired = ["audio", "tablettes", "montres-connectees"];
+    return [
+      ...retired.flatMap((slug) => [
+        { source: `/${slug}`, destination: "/", permanent: true },
+        { source: `/${slug}/:path*`, destination: "/", permanent: true },
+      ]),
+      { source: "/guides/choisir-casque-reduction-de-bruit", destination: "/guides", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

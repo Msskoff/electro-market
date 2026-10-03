@@ -49,10 +49,10 @@ describe("priceCart", () => {
   });
 
   it("facture la livraison sous le seuil", () => {
-    const sku = "AUR-PODS-BLA";
+    const sku = "KEL-NEO6A-128-NUI";
     const cart = priceCart([{ sku, qty: 1 }], lookupFor([sku]), { ...rules, freeShippingThreshold: 500000 });
     expect(cart.shipping).toBe(2000);
-    expect(cart.remainingForFreeShipping).toBe(500000 - 117500);
+    expect(cart.remainingForFreeShipping).toBe(500000 - 183000);
   });
 
   it("ignore les SKU inconnus et les produits épuisés, ajuste au stock", () => {

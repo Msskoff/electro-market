@@ -10,14 +10,7 @@ import { cn } from "@/lib/utils/cn";
 const motion: Record<DeviceKind, string> = {
   phone: "hero-turn",
   laptop: "hero-tilt",
-  tablet: "hero-sway",
-  watch: "",
-  headphones: "",
-  earbuds: "hero-sway",
 };
-
-/** Ondes concentriques : son (audio) ou pouls (montre). */
-const withRings: DeviceKind[] = ["headphones", "earbuds", "watch"];
 
 /** Particules : positions et rythmes fixes (rendu identique serveur/client). */
 const particles = Array.from({ length: 16 }, (_, i) => ({
@@ -126,14 +119,6 @@ export function HeroScene({
 
             {/* Appareil */}
             <div className="absolute left-1/2 top-[27%] aspect-square w-[min(50vw,220px)] -translate-x-1/2 -translate-y-1/2 sm:top-[30%] sm:w-[min(50vw,320px)] lg:left-[70%] lg:top-1/2 lg:w-[min(36vw,500px)]">
-              {withRings.includes(kind) &&
-                [0, 1.2, 2.4].map((delay) => (
-                  <span
-                    key={delay}
-                    className="hero-ring absolute left-1/2 top-1/2 size-[92%] rounded-full border border-on-inverse/30"
-                    style={{ animationDelay: `${delay}s` }}
-                  />
-                ))}
               <span className="hero-shadow absolute bottom-[2%] left-1/2 h-[7%] w-[60%] rounded-[50%] bg-inverse blur-md" />
               <div className="hero-float absolute inset-0">
                 <div className={cn("absolute inset-0", motion[kind])}>

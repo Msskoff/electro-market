@@ -299,221 +299,21 @@ function laptop(rng: Rng, brand: Brand, name: string, tier: 0 | 1 | 2): Draft {
 }
 
 /* ------------------------------------------------------------------ */
-/* Audio                                                               */
-/* ------------------------------------------------------------------ */
-
-function audio(rng: Rng, brand: Brand, name: string, tier: 0 | 1 | 2, earbuds: boolean): Draft {
-  const anc = tier === 2 || (tier === 1 && chance(rng, 0.6));
-  const hours = earbuds ? int(rng, 5, 9) : int(rng, 25, 60);
-  const caseHours = earbuds ? hours + int(rng, 15, 30) : 0;
-  const codecs = ["SBC, AAC", "SBC, AAC", "SBC, AAC, LDAC"][tier];
-  const bt = ["5.0", "5.3", "5.3"][tier];
-  const multipoint = tier > 0;
-  const weight = earbuds ? int(rng, 4, 7) : int(rng, 180, 320);
-  const type = earbuds ? "écouteurs intra-auriculaires sans fil" : "casque circum-auriculaire sans fil";
-  const use = earbuds ? "les trajets, le sport et les appels" : "le télétravail, les voyages et l'écoute prolongée";
-  const autonomyText = earbuds ? `${hours} h (${caseHours} h avec le boîtier)` : `${hours} h`;
-
-  return {
-    name,
-    brand,
-    kind: earbuds ? "earbuds" : "headphones",
-    summary: earbuds
-      ? `Les ${name} sont des ${type}${anc ? " à réduction de bruit active" : ""}. Ils conviennent pour ${use}, avec ${autonomyText} d'autonomie annoncée.`
-      : `${the(name, "m")} est un ${type}${anc ? " à réduction de bruit active" : ""}. Il convient pour ${use}, avec ${autonomyText} d'autonomie annoncée.`,
-    description: [
-      `Codecs pris en charge : ${codecs}. Connexion Bluetooth ${bt}${multipoint ? " avec multipoint pour basculer entre ordinateur et smartphone" : ""}.`,
-      earbuds
-        ? `Chaque écouteur pèse ${weight} g et ${chance(rng, 0.7) ? "résiste à la transpiration (IPX4)" : "se range dans un boîtier compact"}.`
-        : `Avec ${weight} g et des coussinets à mémoire de forme, il reste confortable sur de longues sessions.`,
-    ],
-    highlights: [anc ? "Réduction de bruit" : "Son stéréo", `${earbuds ? caseHours : hours} h`, multipoint ? "Multipoint" : `BT ${bt}`],
-    specs: [
-      {
-        label: "Audio",
-        specs: [
-          { label: "Réduction de bruit active", value: anc ? "Oui" : "Non" },
-          { label: "Codecs", value: codecs },
-        ],
-      },
-      {
-        label: "Connectivité",
-        specs: [
-          { label: "Bluetooth", value: bt },
-          { label: "Multipoint", value: multipoint ? "Oui" : "Non" },
-        ],
-      },
-      {
-        label: "Batterie",
-        specs: earbuds
-          ? [
-              { label: "Écouteurs", value: `${hours} h` },
-              { label: "Avec boîtier", value: `${caseHours} h` },
-            ]
-          : [{ label: "Autonomie", value: `${hours} h` }],
-      },
-      { label: "Dimensions", specs: [{ label: "Poids", value: earbuds ? `${weight} g par écouteur` : `${weight} g` }] },
-    ],
-    inTheBox: earbuds
-      ? ["Écouteurs", "Boîtier de charge", "3 tailles d'embouts", "Câble USB-C"]
-      : [name, "Étui de transport", "Câble USB-C", "Câble jack 3,5 mm"],
-    faq: [
-      {
-        question: earbuds ? `Les ${name} ont-ils une réduction de bruit active ?` : `${the(name, "m")} a-t-il une réduction de bruit active ?`,
-        answer: anc
-          ? "Oui, la réduction de bruit active atténue les bruits graves et continus (transport, ventilation)."
-          : "Non, l'isolation est uniquement passive, assurée par la forme et les embouts ou coussinets.",
-      },
-    ],
-    options: [{ factor: 1 }],
-    colors: pickColors(rng, int(rng, 1, 3)),
-    basePrice: round500([int(rng, 15, 45), int(rng, 50, 120), int(rng, 130, 250)][tier] * 1000),
-  };
-}
-
-/* ------------------------------------------------------------------ */
-/* Tablettes                                                           */
-/* ------------------------------------------------------------------ */
-
-function tablet(rng: Rng, brand: Brand, name: string, tier: 0 | 1 | 2): Draft {
-  const size = [int(rng, 87, 105) / 10, int(rng, 105, 115) / 10, int(rng, 110, 130) / 10][tier];
-  const hz = [60, pick(rng, [90, 120]), 120][tier];
-  const tech = ["LCD", pick(rng, ["LCD", "OLED"]), "OLED"][tier];
-  const storages = [[64, 128], [128, 256], [256, 512]][tier];
-  const stylus = tier > 0 || chance(rng, 0.3);
-  const cellular = chance(rng, 0.35);
-  const battery = int(rng, 50, 100) * 100;
-  const weight = int(rng, Math.round(size * 38), Math.round(size * 52));
-
-  return {
-    name,
-    brand,
-    kind: "tablet",
-    summary: `${the(name, "f")} est une tablette ${fr(size, 1)} pouces ${tech} ${hz} Hz. Elle convient à la lecture, au multimédia${stylus ? ", à la prise de notes et au dessin au stylet" : " et à la navigation"}.`,
-    description: [
-      `Sa batterie de ${fr(battery)} mAh couvre une journée d'usage mixte. ${cellular ? "La version cellulaire accepte une carte SIM 4G pour rester connecté partout." : "Elle se connecte en Wi-Fi 6."}`,
-      stylus ? "Le stylet (vendu séparément) est reconnu avec sensibilité à la pression." : "Elle n'est pas compatible stylet actif.",
-    ],
-    highlights: [`${fr(size, 1)}" ${hz} Hz`, stylus ? "Stylet compatible" : tech, cellular ? "4G" : "Wi-Fi 6"],
-    specs: [
-      {
-        label: "Écran",
-        specs: [
-          { label: "Diagonale", value: `${fr(size, 1)} pouces` },
-          { label: "Technologie", value: `${tech}, ${hz} Hz` },
-        ],
-      },
-      {
-        label: "Connectivité",
-        specs: [
-          { label: "Réseau", value: cellular ? "Wi-Fi 6 + 4G" : "Wi-Fi 6" },
-          { label: "Stylet", value: stylus ? "Compatible (vendu séparément)" : "Non compatible" },
-        ],
-      },
-      { label: "Batterie", specs: [{ label: "Capacité", value: `${fr(battery)} mAh` }] },
-      { label: "Dimensions", specs: [{ label: "Poids", value: `${weight} g` }] },
-    ],
-    inTheBox: [name, "Câble USB-C"],
-    faq: [
-      {
-        question: `${the(name, "f")} accepte-t-elle une carte SIM ?`,
-        answer: cellular
-          ? "Oui, elle accepte une nano-SIM 4G."
-          : "Non, cette tablette fonctionne en Wi-Fi uniquement. Vous pouvez utiliser le partage de connexion de votre smartphone.",
-      },
-    ],
-    options: storages.map((s, i) => ({ label: `${s} Go`, factor: 1 + i * 0.15 })),
-    colors: pickColors(rng, int(rng, 1, 2)),
-    basePrice: round500([int(rng, 90, 180), int(rng, 200, 380), int(rng, 400, 700)][tier] * 1000),
-  };
-}
-
-/* ------------------------------------------------------------------ */
-/* Montres connectées                                                  */
-/* ------------------------------------------------------------------ */
-
-function watch(rng: Rng, brand: Brand, name: string, tier: 0 | 1 | 2): Draft {
-  const gps = tier > 0 || chance(rng, 0.3);
-  const days = [int(rng, 7, 14), int(rng, 4, 10), int(rng, 2, 7)][tier];
-  const atm = tier === 0 ? 3 : 5;
-  const sensors = ["Fréquence cardiaque", "Fréquence cardiaque, SpO2", "Fréquence cardiaque, SpO2, ECG, température"][tier];
-  const sizes = tier === 0 ? [41] : [41, 45];
-  const amoled = tier > 0;
-
-  return {
-    name,
-    brand,
-    kind: "watch",
-    summary: `${the(name, "f")} est une montre connectée ${amoled ? "à écran AMOLED" : "légère"} pour le sport et le suivi santé. Elle annonce ${days} jours d'autonomie${gps ? " et intègre un GPS" : ""}.`,
-    description: [
-      `Capteurs : ${sensors}. Elle suit le sommeil et plus de ${[60, 100, 150][tier]} activités sportives.`,
-      `Étanche ${atm} ATM, elle est compatible Android et iOS via l'application du fabricant.`,
-    ],
-    highlights: [gps ? "GPS" : "Bluetooth", `${atm} ATM`, `${days} jours`],
-    specs: [
-      {
-        label: "Écran",
-        specs: [
-          { label: "Technologie", value: amoled ? "AMOLED" : "LCD" },
-          { label: "Boîtier", value: sizes.map((s) => `${s} mm`).join(" ou ") },
-        ],
-      },
-      {
-        label: "Capteurs",
-        specs: [
-          { label: "Santé", value: sensors },
-          { label: "Localisation", value: gps ? "GPS intégré" : "Via le smartphone" },
-        ],
-      },
-      { label: "Autonomie", specs: [{ label: "Usage typique", value: `${days} jours` }] },
-      { label: "Résistance", specs: [{ label: "Étanchéité", value: `${atm} ATM` }] },
-    ],
-    inTheBox: [name, "Câble de charge magnétique"],
-    faq: [
-      {
-        question: `${the(name, "f")} fonctionne-t-elle avec un iPhone ?`,
-        answer: "Oui, elle est compatible Android et iOS via l'application du fabricant.",
-      },
-    ],
-    options: sizes.map((s, i) => ({ label: `${s} mm`, factor: 1 + i * 0.08 })),
-    colors: pickColors(rng, int(rng, 1, 3)),
-    basePrice: round500([int(rng, 25, 60), int(rng, 70, 160), int(rng, 170, 300)][tier] * 1000),
-  };
-}
-
-/* ------------------------------------------------------------------ */
 /* Assemblage                                                          */
 /* ------------------------------------------------------------------ */
 
 const SERIES: Record<string, { names: readonly string[]; suffixes: readonly [string, string, string] }> = {
   smartphones: { names: ["Nova", "Pulse", "Edge", "Vibe", "Spark", "Orbit", "Flux", "Zen", "Astra", "Mira"], suffixes: [" Lite", "", " Pro"] },
   "ordinateurs-portables": { names: ["Book", "Air", "Flex", "Swift", "Studio", "Core", "Vista", "Creator"], suffixes: [" Go", "", " Pro"] },
-  audio: { names: ["Buds", "Air", "Wave", "Echo", "Tune", "Studio", "Beat", "Calm"], suffixes: [" Lite", "", " Pro"] },
-  tablettes: { names: ["Tab", "Pad", "Slate", "Canvas", "Note", "View"], suffixes: [" Lite", "", " Pro"] },
-  "montres-connectees": { names: ["Watch", "Fit", "Active", "Run", "Trek", "Band"], suffixes: [" Lite", "", " Pro"] },
 };
 
 const CATEGORY_SEED: Record<string, number> = {
   smartphones: 101,
   "ordinateurs-portables": 202,
-  audio: 303,
-  tablettes: 404,
-  "montres-connectees": 505,
 };
 
-function build(rng: Rng, categorySlug: string, brand: Brand, name: string, tier: 0 | 1 | 2, index: number): Draft {
-  switch (categorySlug) {
-    case "smartphones":
-      return smartphone(rng, brand, name, tier);
-    case "ordinateurs-portables":
-      return laptop(rng, brand, name, tier);
-    case "audio":
-      return audio(rng, brand, name, tier, index % 2 === 0);
-    case "tablettes":
-      return tablet(rng, brand, name, tier);
-    default:
-      return watch(rng, brand, name, tier);
-  }
+function build(rng: Rng, categorySlug: string, brand: Brand, name: string, tier: 0 | 1 | 2): Draft {
+  return categorySlug === "ordinateurs-portables" ? laptop(rng, brand, name, tier) : smartphone(rng, brand, name, tier);
 }
 
 /**
@@ -550,7 +350,7 @@ export function generateDemoProducts(
       if (slug === "page" || usedSlugs.has(`${categorySlug}/${slug}`)) slug = `${slug}-${i + 2}`;
       usedSlugs.add(`${categorySlug}/${slug}`);
 
-      const draft = build(rng, categorySlug, brand, name, tier, i);
+      const draft = build(rng, categorySlug, brand, name, tier);
       const code = `${categorySlug.slice(0, 2).toUpperCase()}${String(i + 1).padStart(3, "0")}`;
       const soldOut = chance(rng, 0.07);
       const onSale = chance(rng, 0.16);

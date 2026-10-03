@@ -5,8 +5,4 @@ import type { DeviceKind } from "@/lib/catalog/types";
 export const kindIcon: Record<DeviceKind, IconName> = {
   phone: "phone",
   laptop: "laptop",
-  headphones: "headphones",
-  earbuds: "headphones",
-  tablet: "tablet",
-  watch: "watch",
 };

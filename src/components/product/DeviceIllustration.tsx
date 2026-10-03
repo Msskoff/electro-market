@@ -87,17 +87,6 @@ export function DeviceIllustrationSvg({
         </g>
       )}
 
-      {kind === "tablet" && (
-        <g>
-          <rect x="36" y="24" width="128" height="160" rx="14" fill={dark} />
-          <rect x="41" y="29" width="118" height="150" rx="10" fill={screen} />
-          <circle cx="100" cy="26.5" r="1.4" fill="#05070a" />
-          <rect x="54" y="150" width="60" height="3.5" rx="1.75" fill="#fff" opacity="0.35" />
-          <rect x="54" y="159" width="38" height="3.5" rx="1.75" fill="#fff" opacity="0.2" />
-          <rect x="166" y="60" width="5" height="64" rx="2.5" fill={color} />
-        </g>
-      )}
-
       {kind === "laptop" && (
         <g>
           <rect x="34" y="42" width="132" height="92" rx="7" fill={`url(#${id}-body)`} />
@@ -110,44 +99,6 @@ export function DeviceIllustrationSvg({
         </g>
       )}
 
-      {kind === "watch" && (
-        <g>
-          <rect x="78" y="14" width="44" height="54" rx="10" fill={color} />
-          <rect x="78" y="132" width="44" height="54" rx="10" fill={color} />
-          <rect x="62" y="52" width="76" height="96" rx="24" fill={dark} />
-          <rect x="68" y="58" width="64" height="84" rx="19" fill={screen} />
-          <rect x="138" y="84" width="6" height="20" rx="3" fill={dark} />
-          <circle cx="100" cy="100" r="2.5" fill="#fff" opacity="0.9" />
-          <rect x="99" y="76" width="2" height="25" rx="1" fill="#fff" opacity="0.9" />
-          <rect x="99" y="99" width="2" height="18" rx="1" fill="#fff" opacity="0.7" transform="rotate(-60 100 100)" />
-          <circle cx="100" cy="66" r="1.5" fill="#f4a261" />
-        </g>
-      )}
-
-      {kind === "headphones" && (
-        <g>
-          <path d="M50 112a50 56 0 0 1 100 0" fill="none" stroke={color} strokeWidth="11" strokeLinecap="round" />
-          <path d="M50 112a50 56 0 0 1 100 0" fill="none" stroke={light} strokeWidth="3" strokeLinecap="round" opacity="0.6" />
-          <rect x="30" y="98" width="38" height="66" rx="17" fill={`url(#${id}-body)`} />
-          <rect x="132" y="98" width="38" height="66" rx="17" fill={`url(#${id}-body)`} />
-          <rect x="60" y="106" width="12" height="50" rx="6" fill={dark} />
-          <rect x="128" y="106" width="12" height="50" rx="6" fill={dark} />
-        </g>
-      )}
-
-      {kind === "earbuds" && (
-        <g>
-          <rect x="50" y="98" width="100" height="74" rx="32" fill={`url(#${id}-body)`} />
-          <path d="M52 124h96" stroke={dark} strokeWidth="1.5" opacity="0.5" />
-          <circle cx="100" cy="148" r="2.5" fill="#f4a261" />
-          <g>
-            <circle cx="78" cy="62" r="17" fill={color} stroke={dark} strokeWidth="1" />
-            <rect x="72" y="66" width="11" height="34" rx="5.5" fill={color} stroke={dark} strokeWidth="1" />
-            <circle cx="124" cy="58" r="17" fill={color} stroke={dark} strokeWidth="1" />
-            <rect x="118" y="62" width="11" height="34" rx="5.5" fill={color} stroke={dark} strokeWidth="1" />
-          </g>
-        </g>
-      )}
     </svg>
   );
 }
