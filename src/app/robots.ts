@@ -2,7 +2,19 @@ import type { MetadataRoute } from "next";
 import { absoluteUrl, siteConfig } from "@/config/site";
 
 /** Pages privées ou sans valeur de recherche. */
-const PRIVATE_PATHS = ["/panier", "/commande", "/compte", "/admin", "/api/", "/recherche"];
+const PRIVATE_PATHS = [
+  "/panier",
+  "/commande",
+  "/compte",
+  "/connexion",
+  "/inscription",
+  "/mot-de-passe-oublie",
+  "/reinitialiser-mot-de-passe",
+  "/auth/",
+  "/admin",
+  "/api/",
+  "/recherche",
+];
 
 /**
  * Robots d'assistants IA explicitement autorisés sur le contenu public

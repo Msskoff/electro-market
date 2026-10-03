@@ -26,7 +26,7 @@ Chaque décision technique ou visuelle doit servir au moins un de ces trois obje
 | Style | **Tailwind CSS v4** + design tokens en variables CSS | Cohérence du design system (thème clair uniquement pour l'instant) |
 | Composants | Composants maison (+ Radix UI pour l'accessibilité des primitives) | Design distinctif, pas de look « kit UI » |
 | Base de données | **PostgreSQL** (Supabase) + ORM (Drizzle ou Prisma) — *MVP : données en mémoire derrière `repository.ts`* | Catalogue relationnel, variantes, stocks |
-| Authentification | Supabase Auth (ou Auth.js) | Comptes clients, admin |
+| Authentification | **Supabase Auth** — e-mail + mot de passe (projet `electromarket`, région Paris `eu-west-3`) | Comptes clients ; admin à venir |
 | Paiement | Prestataire configurable via `PAYMENT_PROVIDER` (Stripe, PayPal, ou passerelle locale) | Adapter au pays de vente |
 | Images | `next/image`, formats AVIF/WebP, CDN | Performance (LCP) |
 | Recherche | Postgres full-text (puis Meilisearch/Algolia si le catalogue grossit) | Recherche produit rapide |
@@ -75,7 +75,10 @@ src/
       panier/page.tsx                  # Panier (dynamique, noindex)
       recherche/page.tsx               # Recherche interne (dynamique, noindex)
       compte/page.tsx                  # Espace client « Mon compte » (dynamique, noindex)
+      connexion/, inscription/, mot-de-passe-oublie/, reinitialiser-mot-de-passe/  # Authentification (noindex)
+    auth/callback/route.ts           # Retour des liens e-mail (échange de code PKCE → session)
     sitemap.ts · robots.ts · llms.txt/route.ts · partage.png/route.tsx · icon.svg · not-found.tsx
+  proxy.ts                           # Proxy Next.js 16 (ex-middleware) : rafraîchit la session, pages privées uniquement
   components/
     ui/        # Primitives : Button/ButtonLink, Badge/SpecChip, Price, StockStatus, Container, SectionHeading, Icon
     product/   # ProductCard, ProductGrid, ProductHero, QuickAddButton, OptionGroup, AddToCartButton, SpecTable, DeviceIllustration, kindIcon
@@ -83,7 +86,9 @@ src/
     home/      # hero/ (HeroShowcase, HeroScene), CategoryCircles, PromoTiles, ReviewsSection, HelpBand
     catalog/   # CategoryView (contenu d'une page de catégorie), Pagination
     layout/    # SiteHeader, SiteFooter, SearchForm, CategoryMenu, NavLink, Breadcrumbs, AccountLink, CartLink, Logo
-    account/   # AccountView, ProfileSection, AddressesSection, Field
+    account/   # AccountView, ProfileSection, AddressesSection, DeleteAccount
+    auth/      # AuthShell, AuthForms (connexion, inscription, mot de passe oublié / nouveau)
+    forms/     # Field, PasswordField (bouton Afficher), SubmitButton (état en cours), FormAlert
     cart/      # CartLineControls
     seo/       # JsonLd
   config/site.ts                       # Identité, URL, politiques commerciales (source unique)
@@ -92,11 +97,14 @@ src/
     cart/      # schema.ts (Zod + logique pure), pricing.ts, actions.ts (Server Actions), queries.ts, client.ts
     seo/       # metadata.ts (buildMetadata), jsonld.ts, og.tsx
     content/   # site-faq.ts, hero-slides.ts (diapositives du hero + vidéos)
-    account/   # schema.ts (Zod : profil, adresses, téléphone +228), store.ts (stockage sur l'appareil)
+    account/   # schema.ts (Zod : profil, adresses, téléphone +228), actions.ts (Server Actions), queries.ts
+    auth/      # schema.ts (Zod + messages d'erreur), actions.ts (inscription, connexion, déconnexion, mot de passe, suppression), session.ts (getSessionUser, requireUser), redirect.ts (safeNextPath)
+    supabase/  # server.ts (client serveur), proxy.ts (updateSession), database.types.ts (types générés)
     i18n/fr.ts # Textes d'interface
     utils/     # cn, format (prix en unité mineure de la devise, dates)
   styles/tokens.css                    # Design tokens (thème clair)
 tests/                                 # Tests Vitest
+supabase/migrations/                   # Migrations SQL appliquées au projet Supabase (source de vérité du schéma)
 ```
 
 ### Règles d'architecture
@@ -180,7 +188,8 @@ Budget : ~100 Ko de polices préchargées (réseaux mobiles de Lomé). Ne pas pa
 - **Accueil (`components/home/`) :** `HeroShowcase`, `CategoryCircles`, sélection en `ProductGrid`, `PromoTiles`, `ReviewsSection`, `HelpBand`, FAQ, `TrustBar`.
 - **ProductCard :** visuel sur fond `surface-2`, badge « -X % » si remise réelle, marque, nom, 2–3 specs en micro-étiquettes mono, prix (corail si remisé), état du stock (point + texte), bouton rond `QuickAddButton` (ajoute la variante par défaut, posé au-dessus du lien étiré).
 - **En-tête de catégorie (`CategoryHeader`) :** sur petit écran, seul le `h1` reste visible (bandeau, chiffres, introduction et illustration masqués ; l'introduction reste dans le HTML). À partir de 640 px : bandeau à la teinte de la catégorie (`categoryTile`, identique à sa pastille d'accueil), date de mise à jour (`<time>`), chiffres clés en `<dl>` (prix d'entrée, disponibles, marques, livraison — tous calculés, jamais saisis), illustration de deux produits réels, raccourcis « par marque » vers `/recherche?q=…&categorie=…` (`rel="nofollow"`, page `noindex`). Liste : `h2` « N références » puis cartes en `h3`.
-- **Espace client (`/compte`, `components/account/`) :** rassemble tout ce qui concerne le client — profil (prénom, nom, téléphone +228, e-mail facultatif), adresses de livraison (quartier, ville, point de repère, téléphone, adresse par défaut), commandes (vide tant que le paiement n'est pas branché), panier (lu côté serveur), effacement des données. Accès par l'icône « Compte » de l'en-tête, la pastille de l'accueil et le pied de page. **MVP : données enregistrées uniquement sur l'appareil** (`localStorage`, mention visible) ; les schémas Zod de `lib/account/schema.ts` serviront tels quels à la validation serveur quand l'authentification sera branchée.
+- **Espace client (`/compte`, `components/account/`) :** réservé aux clients connectés (`requireUser` → `/connexion?suite=/compte`). Rassemble profil (prénom, nom, téléphone +228 ; e-mail du compte en lecture seule), adresses de livraison (quartier, ville, point de repère, téléphone, adresse par défaut ; 10 max), commandes (vide tant que le paiement n'est pas branché), panier, modification du mot de passe, déconnexion et **suppression définitive du compte**. Données dans Supabase (tables `profiles`, `addresses`), lues/écrites par Server Actions validées par Zod, protégées par RLS.
+- **Authentification (`/connexion`, `/inscription`, `/mot-de-passe-oublie`, `/reinitialiser-mot-de-passe`) :** e-mail + mot de passe (8 caractères min.), messages d'erreur en français qui ne révèlent jamais si une adresse a un compte, retour après connexion limité aux chemins internes (`safeNextPath`), liens e-mail via `/auth/callback` (PKCE). Toutes `noindex`.
 - **Avis (`ReviewsSection`) :** n'affiche RIEN tant que `getVerifiedReviews()` est vide. Jamais d'avis d'exemple.
 - **Newsletter :** remplacée par `HelpBand` tant qu'aucun service d'e-mailing n'est branché (pas de formulaire factice).
 - **Fiche produit :** galerie à gauche, bloc d'achat collant à droite (prix, variantes, stock, délai de livraison, garantie, CTA), puis description, **tableau de caractéristiques**, contenu de la boîte, FAQ, avis.
@@ -225,7 +234,7 @@ Chaque page indexable définit :
 - `hreflang` si le site devient multilingue
 - Un seul `<h1>` par page, hiérarchie `h2`/`h3` logique
 
-Pages `noindex` : panier, commande, compte (`/compte`), recherche interne, filtres non stratégiques, admin.
+Pages `noindex` : panier, commande, compte (`/compte`), connexion, inscription, mots de passe, recherche interne, filtres non stratégiques, admin.
 
 ### 6.3 Données structurées (JSON-LD)
 
@@ -243,7 +252,7 @@ Valider chaque gabarit avec le test des résultats enrichis de Google et le vali
 ### 6.4 Fichiers techniques
 
 - `sitemap.ts` : sitemap index + sitemaps séparés (produits, catégories, marques) avec `lastmod` réel.
-- `robots.ts` : autorise l'indexation du contenu public, bloque `/panier`, `/commande`, `/compte`, `/admin`, `/api`, la recherche interne ; référence le sitemap.
+- `robots.ts` : autorise l'indexation du contenu public, bloque `/panier`, `/commande`, `/compte`, les pages d'authentification, `/auth/`, `/admin`, `/api`, la recherche interne ; référence le sitemap.
 - Flux produits XML pour Google Merchant Center et Bing Merchant Center.
 - Gestion des redirections 301 lorsqu'un slug change ; produits retirés → 301 vers la catégorie ou un successeur, jamais de 404 en masse.
 - Produits en rupture : la page reste en ligne, `availability: OutOfStock`, alternatives proposées.
@@ -295,7 +304,7 @@ Les assistants IA citent les sources claires, factuelles, structurées et à jou
 - Politique de sécurité de contenu (CSP), en-têtes de sécurité, protection CSRF sur les mutations, limitation de débit sur les API publiques.
 - Conformité à la législation applicable sur les données personnelles (RGPD / loi locale) : consentement pour les traceurs non essentiels, page de politique de confidentialité, droit d'accès/suppression.
 - Pages légales obligatoires : mentions légales, CGV, politique de retour, confidentialité, cookies.
-- Espace client (MVP) : données personnelles stockées **sur l'appareil du client uniquement**, jamais envoyées au serveur ; bouton d'effacement disponible. À migrer vers des comptes serveur (Supabase Auth) avant d'activer les commandes.
+- **Comptes clients (Supabase)** : seule la clé *publishable* (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`) est utilisée ; **jamais** la clé *secret* / service_role dans le code. La sécurité des données repose sur la **RLS** (chaque client ne lit/écrit que ses lignes) + validation Zod côté serveur. Session vérifiée par `getClaims()` (jamais `getSession()` côté serveur). `delete_my_account()` est volontairement `SECURITY DEFINER` (avertissement Supabase accepté) : elle ne supprime que `auth.uid()`. Après toute migration : régénérer `database.types.ts` et relancer l'analyse de sécurité Supabase.
 
 ---
 
@@ -315,7 +324,7 @@ Les assistants IA citent les sources claires, factuelles, structurées et à jou
 
 `Product` (id, slug, nom, marque, catégorie, résumé, description, specs JSON typées, gtin, mpn, statut, dates) → `Variant` (sku, attributs, prix, prix barré, stock, images) → `Category` (arborescence, slug, contenu SEO, FAQ) → `Brand` → `Review` (vérifié, note, texte, date) → `Order` / `OrderItem` / `Customer` / `Address`.
 
-Toute modification du schéma passe par une migration.
+Toute modification du schéma passe par une migration, enregistrée dans `supabase/migrations/`.
 
 ---
 

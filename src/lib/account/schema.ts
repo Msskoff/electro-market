@@ -1,11 +1,9 @@
 import { z } from "zod";
 
 /**
- * Données de l'espace client.
- *
- * MVP : aucun compte serveur n'existe encore (Supabase Auth prévu). Ces données sont
- * enregistrées sur l'appareil du client (voir store.ts). Les schémas sont ceux qui
- * serviront tels quels à valider les données côté serveur une fois l'authentification branchée.
+ * Données de l'espace client (profil, adresses), stockées dans Supabase
+ * (tables `profiles` et `addresses`, protégées par RLS). Ces schémas valident
+ * les formulaires côté serveur ; la base applique en plus ses propres contraintes.
  */
 
 /** Numéro togolais : 8 chiffres, avec ou sans indicatif +228, espaces tolérés. */
@@ -33,14 +31,9 @@ export const profileSchema = z.object({
   firstName: z.string().trim().min(1, "Indiquez votre prénom.").max(50),
   lastName: z.string().trim().min(1, "Indiquez votre nom.").max(50),
   phone: phoneSchema,
-  email: z.preprocess(
-    (v) => (typeof v === "string" ? v.trim() : v),
-    z.union([z.literal(""), z.email("Adresse e-mail invalide.")]),
-  ),
 });
 
-export const addressSchema = z.object({
-  id: z.string().min(1),
+export const addressInputSchema = z.object({
   label: z.string().trim().min(1, "Donnez un nom à cette adresse (ex. Domicile).").max(30),
   district: z.string().trim().min(2, "Indiquez le quartier.").max(60),
   city: z.string().trim().min(2, "Indiquez la ville.").max(40),
@@ -49,28 +42,25 @@ export const addressSchema = z.object({
   isDefault: z.boolean().default(false),
 });
 
-export const accountSchema = z.object({
-  version: z.literal(1),
-  profile: profileSchema.nullable(),
-  addresses: z.array(addressSchema).max(10),
-});
+export const uuidSchema = z.uuid();
 
-export type Profile = z.infer<typeof profileSchema>;
-export type Address = z.infer<typeof addressSchema>;
-export type AccountData = z.infer<typeof accountSchema>;
-
-export const EMPTY_ACCOUNT: AccountData = { version: 1, profile: null, addresses: [] };
-
-/** Lecture tolérante : toute donnée absente ou corrompue donne un compte vide. */
-export function parseAccount(raw: string | null | undefined): AccountData {
-  if (!raw) return EMPTY_ACCOUNT;
-  try {
-    const result = accountSchema.safeParse(JSON.parse(raw));
-    return result.success ? result.data : EMPTY_ACCOUNT;
-  } catch {
-    return EMPTY_ACCOUNT;
-  }
+export interface Profile {
+  firstName: string;
+  lastName: string;
+  phone: string | null;
 }
+
+export interface Address {
+  id: string;
+  label: string;
+  district: string;
+  city: string;
+  landmark: string;
+  phone: string;
+  isDefault: boolean;
+}
+
+export const MAX_ADDRESSES = 10;
 
 /** Erreurs de validation par champ (premier message de chaque champ). */
 export function fieldErrors(error: z.ZodError): Record<string, string> {

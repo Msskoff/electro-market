@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { addressSchema, normalizeTogoPhone, parseAccount, profileSchema } from "@/lib/account/schema";
+import { addressInputSchema, normalizeTogoPhone, profileSchema } from "@/lib/account/schema";
+import { safeNextPath } from "@/lib/auth/redirect";
+import { newPasswordSchema, signUpSchema } from "@/lib/auth/schema";
 
 describe("normalizeTogoPhone", () => {
   it("accepte les formats courants et normalise en +228 XX XX XX XX", () => {
@@ -15,19 +17,32 @@ describe("normalizeTogoPhone", () => {
 });
 
 describe("schémas du compte", () => {
-  it("profil : champs obligatoires, e-mail facultatif mais valide", () => {
-    expect(profileSchema.safeParse({ firstName: "Ama", lastName: "K.", phone: "90123456", email: "" }).success).toBe(true);
-    expect(profileSchema.safeParse({ firstName: "", lastName: "K.", phone: "90123456", email: "" }).success).toBe(false);
-    expect(profileSchema.safeParse({ firstName: "Ama", lastName: "K.", phone: "90123456", email: "pas-un-mail" }).success).toBe(false);
+  it("profil : prénom, nom et téléphone requis", () => {
+    expect(profileSchema.safeParse({ firstName: "Ama", lastName: "K.", phone: "90123456" }).success).toBe(true);
+    expect(profileSchema.safeParse({ firstName: "", lastName: "K.", phone: "90123456" }).success).toBe(false);
   });
-  it("adresse : quartier et téléphone requis", () => {
-    const ok = addressSchema.safeParse({ id: "a1", label: "Domicile", district: "Bè", city: "Lomé", phone: "90123456" });
+  it("adresse : quartier et téléphone requis, numéro normalisé", () => {
+    const ok = addressInputSchema.safeParse({ label: "Domicile", district: "Bè", city: "Lomé", phone: "90123456" });
     expect(ok.success && ok.data.phone).toBe("+228 90 12 34 56");
-    expect(addressSchema.safeParse({ id: "a1", label: "Domicile", district: "", city: "Lomé", phone: "90123456" }).success).toBe(false);
+    expect(addressInputSchema.safeParse({ label: "Domicile", district: "", city: "Lomé", phone: "90123456" }).success).toBe(false);
   });
-  it("lecture tolérante : données absentes ou corrompues → compte vide", () => {
-    expect(parseAccount(null)).toEqual({ version: 1, profile: null, addresses: [] });
-    expect(parseAccount("{pas du json")).toEqual({ version: 1, profile: null, addresses: [] });
-    expect(parseAccount(JSON.stringify({ version: 2 }))).toEqual({ version: 1, profile: null, addresses: [] });
+});
+
+describe("authentification", () => {
+  it("inscription : e-mail normalisé, mot de passe de 8 caractères minimum", () => {
+    const ok = signUpSchema.safeParse({ firstName: "Ama", lastName: "K.", email: "  Ama@Exemple.TG ", password: "motdepasse" });
+    expect(ok.success && ok.data.email).toBe("ama@exemple.tg");
+    expect(signUpSchema.safeParse({ firstName: "Ama", lastName: "K.", email: "ama@exemple.tg", password: "court" }).success).toBe(false);
+  });
+  it("nouveau mot de passe : la confirmation doit correspondre", () => {
+    expect(newPasswordSchema.safeParse({ password: "motdepasse", confirm: "motdepasse" }).success).toBe(true);
+    expect(newPasswordSchema.safeParse({ password: "motdepasse", confirm: "autre-chose" }).success).toBe(false);
+  });
+  it("redirection après connexion : chemins internes uniquement (pas de redirection ouverte)", () => {
+    expect(safeNextPath("/compte#adresses")).toBe("/compte#adresses");
+    expect(safeNextPath("//pirate.example")).toBe("/compte");
+    expect(safeNextPath("https://pirate.example")).toBe("/compte");
+    expect(safeNextPath(String.raw`/\pirate.example`)).toBe("/compte");
+    expect(safeNextPath(undefined)).toBe("/compte");
   });
 });

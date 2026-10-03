@@ -1,11 +1,12 @@
-"use client";
-
 import Link from "next/link";
-import { useState, useSyncExternalStore, type ReactNode } from "react";
-import { ButtonLink, Button } from "@/components/ui/Button";
+import type { ReactNode } from "react";
+import { FormAlert } from "@/components/forms/FormAlert";
+import { ButtonLink } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { getAccountServerSnapshot, getAccountSnapshot, clearAccount, subscribeToAccount } from "@/lib/account/store";
+import type { Address, Profile } from "@/lib/account/schema";
+import { signOut } from "@/lib/auth/actions";
 import { AddressesSection } from "./AddressesSection";
+import { DeleteAccount } from "./DeleteAccount";
 import { ProfileSection } from "./ProfileSection";
 
 export interface CartSummary {
@@ -19,10 +20,8 @@ const SECTIONS: { id: string; label: string; icon: IconName }[] = [
   { id: "adresses", label: "Mes adresses", icon: "mapPin" },
   { id: "commandes", label: "Mes commandes", icon: "package" },
   { id: "panier", label: "Mon panier", icon: "cart" },
-  { id: "donnees", label: "Mes données", icon: "lock" },
+  { id: "securite", label: "Sécurité et données", icon: "lock" },
 ];
-
-const noop = () => () => {};
 
 function Section({ id, title, icon, children }: { id: string; title: string; icon: IconName; children: ReactNode }) {
   return (
@@ -38,19 +37,28 @@ function Section({ id, title, icon, children }: { id: string; title: string; ico
   );
 }
 
-/** Espace client : tout ce qui concerne le client, au même endroit. */
-export function AccountView({ cart }: { cart: CartSummary }) {
-  const account = useSyncExternalStore(subscribeToAccount, getAccountSnapshot, getAccountServerSnapshot);
-  // Les données vivent sur l'appareil : on attend l'hydratation pour éviter un affichage trompeur.
-  const hydrated = useSyncExternalStore(noop, () => true, () => false);
-  const [confirmClear, setConfirmClear] = useState(false);
-  const { profile, addresses } = account;
+/** Espace client : tout ce qui concerne le client connecté, au même endroit. */
+export function AccountView({
+  email,
+  profile,
+  addresses,
+  cart,
+  notice,
+}: {
+  email: string;
+  profile: Profile;
+  addresses: Address[];
+  cart: CartSummary;
+  notice?: string;
+}) {
+  const initials = `${profile.firstName[0] ?? ""}${profile.lastName[0] ?? ""}`.toUpperCase();
+  const complete = Boolean(profile.firstName && profile.lastName && profile.phone);
 
   const overview = [
     { label: "Commandes", value: "0", href: "#commandes" },
     { label: "Panier", value: `${cart.itemCount} article${cart.itemCount > 1 ? "s" : ""}`, href: "#panier" },
     { label: "Adresses", value: String(addresses.length), href: "#adresses" },
-    { label: "Profil", value: profile ? "Complet" : "À compléter", href: "#profil" },
+    { label: "Profil", value: complete ? "Complet" : "À compléter", href: "#profil" },
   ];
 
   return (
@@ -73,49 +81,45 @@ export function AccountView({ cart }: { cart: CartSummary }) {
       </nav>
 
       <div className="min-w-0 space-y-4 sm:space-y-6">
+        <FormAlert ok message={notice} />
+
         {/* Bienvenue + aperçu */}
         <div className="rounded-xl bg-inverse p-5 text-on-inverse sm:p-6">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-accent text-lg font-semibold text-on-accent">
-              {hydrated && profile ? `${profile.firstName[0]}${profile.lastName[0]}`.toUpperCase() : <Icon name="user" size={24} />}
+              {initials || <Icon name="user" size={24} />}
             </span>
-            <div className="min-w-0">
-              <p className="text-h3 font-display">
-                {hydrated && profile ? `Bonjour ${profile.firstName}` : "Bienvenue"}
-              </p>
-              <p className="text-sm text-on-inverse-muted">
-                {hydrated && profile ? profile.phone : "Complétez votre profil pour commander plus vite."}
-              </p>
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-h3">{profile.firstName ? `Bonjour ${profile.firstName}` : "Bienvenue"}</p>
+              <p className="truncate text-sm text-on-inverse-muted">{email}</p>
             </div>
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="inline-flex h-10 items-center rounded-full border border-on-inverse/30 px-4 text-sm font-semibold transition-colors hover:bg-on-inverse/10"
+              >
+                Se déconnecter
+              </button>
+            </form>
           </div>
           <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
             {overview.map((o) => (
               <li key={o.label}>
                 <a href={o.href} className="block rounded-lg bg-on-inverse/10 px-3 py-2.5 transition-colors hover:bg-on-inverse/15">
                   <span className="block text-xs text-on-inverse-muted">{o.label}</span>
-                  <span className="mt-0.5 block font-semibold tabular">
-                    {hydrated || o.label === "Panier" || o.label === "Commandes" ? o.value : "…"}
-                  </span>
+                  <span className="mt-0.5 block font-semibold tabular">{o.value}</span>
                 </a>
               </li>
             ))}
           </ul>
         </div>
 
-        <p className="flex items-start gap-2 rounded-lg border border-border bg-surface-2 px-4 py-3 text-sm text-muted">
-          <Icon name="lock" size={16} className="mt-0.5 shrink-0" />
-          <span>
-            Version de démonstration : vos informations sont enregistrées <strong className="font-semibold text-fg">uniquement sur cet appareil</strong>.
-            La connexion à un compte en ligne arrivera avec le paiement.
-          </span>
-        </p>
-
         <Section id="profil" title="Mes informations" icon="user">
-          {hydrated ? <ProfileSection account={account} /> : <p className="text-muted">Chargement…</p>}
+          <ProfileSection profile={profile} email={email} />
         </Section>
 
         <Section id="adresses" title="Mes adresses de livraison" icon="mapPin">
-          {hydrated ? <AddressesSection account={account} /> : <p className="text-muted">Chargement…</p>}
+          <AddressesSection addresses={addresses} />
         </Section>
 
         <Section id="commandes" title="Mes commandes" icon="package">
@@ -149,33 +153,29 @@ export function AccountView({ cart }: { cart: CartSummary }) {
           )}
         </Section>
 
-        <Section id="donnees" title="Mes données personnelles" icon="lock">
-          <p className="text-muted">
-            Vous pouvez effacer à tout moment les informations et adresses enregistrées sur cet appareil. Votre panier
-            n&apos;est pas concerné.
-          </p>
-          <div className="mt-3 flex flex-wrap gap-3">
-            {confirmClear ? (
-              <>
-                <Button size="sm" className="bg-danger hover:bg-danger" onClick={() => { clearAccount(); setConfirmClear(false); }}>
-                  Confirmer l&apos;effacement
-                </Button>
-                <Button size="sm" variant="ghost" onClick={() => setConfirmClear(false)}>
-                  Annuler
-                </Button>
-              </>
-            ) : (
-              <Button size="sm" variant="secondary" onClick={() => setConfirmClear(true)} disabled={!profile && addresses.length === 0}>
-                <Icon name="trash" size={16} />
-                Effacer mes informations
-              </Button>
-            )}
+        <Section id="securite" title="Sécurité et données personnelles" icon="lock">
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-muted">Mot de passe du compte</p>
+              <ButtonLink href="/reinitialiser-mot-de-passe" variant="secondary" size="sm">
+                Modifier mon mot de passe
+              </ButtonLink>
+            </div>
+            <div className="border-t border-border pt-5">
+              <p className="text-muted">
+                Vous pouvez supprimer votre compte à tout moment : votre profil et vos adresses sont effacés
+                définitivement.
+              </p>
+              <div className="mt-3">
+                <DeleteAccount />
+              </div>
+            </div>
+            <p className="text-sm">
+              <Link href="/faq" className="font-medium text-accent underline-offset-4 hover:underline">
+                Une question ? Consultez l&apos;aide
+              </Link>
+            </p>
           </div>
-          <p className="mt-3 text-sm">
-            <Link href="/faq" className="font-medium text-accent underline-offset-4 hover:underline">
-              Une question ? Consultez l&apos;aide
-            </Link>
-          </p>
         </Section>
       </div>
     </div>
