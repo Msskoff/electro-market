@@ -20,7 +20,9 @@ comment on table public.admins is 'Comptes ayant accès au tableau de bord /admi
 alter table public.admins enable row level security;
 create policy "Admins : chacun voit sa propre ligne" on public.admins
   for select to authenticated using ((select auth.uid()) = user_id);
--- Aucune politique d'écriture : on ne devient administrateur que par SQL (tableau de bord Supabase).
+-- Aucune politique d'écriture : on ne devient administrateur que par SQL (tableau de bord Supabase) :
+--   insert into public.admins (user_id) select id from auth.users where email = '…';
+-- Premier administrateur : le compte du propriétaire de la boutique (attribué le 2026-10-03).
 
 create function public.is_admin()
 returns boolean

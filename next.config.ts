@@ -14,6 +14,10 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    // Photos produit envoyées depuis /admin (déjà compressées en WebP dans le navigateur).
+    serverActions: { bodySizeLimit: "4mb" },
+  },
   reactStrictMode: true,
   /**
    * Photos produit : AVIF (≈ 20 % plus léger que WebP) puis WebP selon le navigateur,

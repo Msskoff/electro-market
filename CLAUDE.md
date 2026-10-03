@@ -25,7 +25,7 @@ Chaque décision technique ou visuelle doit servir au moins un de ces trois obje
 | Framework | **Next.js 16 (App Router, Turbopack)**, TypeScript strict | Rendu serveur (SSR/SSG/ISR) indispensable au SEO et aux robots IA |
 | Style | **Tailwind CSS v4** + design tokens en variables CSS | Cohérence du design system (thème clair uniquement pour l'instant) |
 | Composants | Composants maison (+ Radix UI pour l'accessibilité des primitives) | Design distinctif, pas de look « kit UI » |
-| Base de données | **PostgreSQL** (Supabase) + ORM (Drizzle ou Prisma) — *MVP : données en mémoire derrière `repository.ts`* | Catalogue relationnel, variantes, stocks |
+| Base de données | **PostgreSQL** (Supabase) : catalogue, configuration, brouillons, comptes. Lecture publique via `repository.ts` / `lib/settings` (cache Next étiqueté) | Tout le contenu modifiable depuis `/admin` |
 | Authentification | **Supabase Auth** — e-mail + mot de passe (projet `electromarket`, région Paris `eu-west-3`) | Comptes clients ; admin à venir |
 | Paiement | Prestataire configurable via `PAYMENT_PROVIDER` (Stripe, PayPal, ou passerelle locale) | Adapter au pays de vente |
 | Images | `next/image`, formats AVIF/WebP, CDN | Performance (LCP) |
@@ -96,9 +96,11 @@ src/
     seo/       # JsonLd
   config/site.ts                       # Identité, URL, politiques commerciales (source unique)
   lib/
-    catalog/   # types.ts, data.ts + demo-generator.ts (DÉMO : 100 produits/catégorie), repository.ts (seul accès aux données), search.ts (normalisation + pertinence, partagé serveur/navigateur), selectors.ts, pagination.ts
+    catalog/   # types.ts, data.ts + demo-generator.ts (SOURCE DE L'IMPORT INITIAL ET DONNÉES DE TEST uniquement), repository.ts (seul accès aux données : lit Supabase), search.ts (normalisation + pertinence, partagé serveur/navigateur), selectors.ts, pagination.ts
     cart/      # lines.ts (logique pure SANS Zod, importable côté navigateur), schema.ts (schémas Zod, serveur), pricing.ts, actions.ts (Server Actions), queries.ts, client.ts
     seo/       # metadata.ts (buildMetadata), jsonld.ts, og.tsx
+    settings/  # types.ts (StoreSettings, DEFAULT_SETTINGS, variables de FAQ), repository.ts (getSettings, cache « settings »)
+    admin/     # session.ts (requireAdmin), queries.ts, actions.ts (Server Actions), schemas.ts (Zod), revalidate.ts, product-form.ts
     content/   # site-faq.ts, hero-slides.ts (diapositives du hero + vidéos)
     account/   # schema.ts (Zod : profil, adresses, téléphone +228), actions.ts (Server Actions), queries.ts
     auth/      # schema.ts (Zod + messages d'erreur), actions.ts (inscription, connexion, déconnexion, mot de passe, suppression), session.ts (getSessionUser, requireUser), redirect.ts (safeNextPath)
@@ -106,6 +108,8 @@ src/
     i18n/fr.ts # Textes d'interface
     utils/     # cn, format (prix en unité mineure de la devise, dates)
   styles/tokens.css                    # Design tokens (thème clair)
+app/admin/                             # Administration (réservée à la table admins) : tableau de bord, produits, catégories, marques, configuration, clients
+components/admin/                      # AdminNav, SaveBar + useDraftEditor (brouillon → publier, statut), ProductEditor, ImagesEditor, CategoryEditor, BrandManager, SettingsEditor, StockToggle, fields
 tests/                                 # Tests Vitest
 scripts/image-info.mjs                 # Préparation des photos produit (npm run image:info)
 supabase/migrations/                   # Migrations SQL appliquées au projet Supabase (source de vérité du schéma)
@@ -113,7 +117,11 @@ supabase/migrations/                   # Migrations SQL appliquées au projet Su
 
 ### Règles d'architecture
 
-- Les pages et composants n'importent **jamais** `lib/catalog/data.ts` : uniquement `repository.ts`. Brancher PostgreSQL = réimplémenter `repository.ts` avec les mêmes signatures.
+- Les pages et composants n'importent **jamais** `lib/catalog/data.ts` (source de l'import initial + données de test) : uniquement `repository.ts`, qui lit Supabase.
+- **Contenu modifiable = base de données.** Catalogue (`products`, `categories`, `brands`) et configuration (`site_settings` : contact, livraison, retours, garantie, réseaux, bandeau démo, hero, FAQ du site) se lisent via `repository.ts` et `getSettings()`. `config/site.ts` ne garde que le fixe (nom, URL, langue, devise, indexation).
+- **Brouillon puis publier.** Toute modification de l'admin est d'abord un brouillon (table `drafts`, invisible du public), puis « Publier » appelle une fonction SQL transactionnelle (`publish_product`, `publish_category`, `publish_settings`) et `refreshPublicSite()` (vide le cache « catalog » / « settings » et régénère les pages statiques, l'index de recherche, le sitemap, `/llms.txt`). Exceptions immédiates : bascule En stock / Rupture, marques.
+- Les pages produit / catégorie sont générées à la demande (`dynamicParams = true`) : un produit publié est en ligne sans redéploiement.
+- **Statut HTTP correct malgré les squelettes** : les vérifications d'existence (catégorie, page, produit) se font dans les `layout.tsx` de `[categorie]`, `page/[page]` et `[slug]`, AVANT les `loading.tsx` ; sinon la réponse part en 200 (« soft 404 »). Produit retiré → 308 vers sa catégorie ; adresse modifiée → 308 vers la nouvelle (`product_redirects`).
 - Prix stockés en **entiers, dans l'unité mineure de la devise** (XOF : 1 = 1 F CFA, pas de centimes). Formatage uniquement via `formatPrice` / `toDecimal`, jamais de `/ 100` en dur.
 - Métadonnées de page : toujours via `buildMetadata()`. JSON-LD : toujours via `lib/seo/jsonld.ts` + `<JsonLd />`.
 - Aucune couleur en dur dans les composants : uniquement les tokens (`bg-surface`, `text-muted`, `text-accent`…).
@@ -127,7 +135,7 @@ supabase/migrations/                   # Migrations SQL appliquées au projet Su
 
 ### 5.1 Direction artistique
 
-**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance noir, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil noire, pied de page noir. Palette inspirée des grandes boutiques high-tech : fond blanc / gris clair, noir pour les zones sombres, **bleu vif** pour les actions (boutons en pilule), **rouge** pour les remises et surtitres d'offre, **hero en dégradé corail → violet**, encarts pastel (lavande, beige, gris-bleu), vert réservé à l'état « en stock ». Typographie Poppins (titres et texte), specs techniques en micro-étiquettes mono.
+**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance noir, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil noire, pied de page noir. Palette du logo : fond blanc / gris clair, **bleu nuit** pour les zones sombres, **orange ElectroMarket (foncé)** pour les actions (boutons en pilule), **carmin** pour les remises et surtitres d'offre, **hero en dégradé orange → bleu nuit**, encarts pastel (lavande, beige, gris-bleu), vert réservé à l'état « en stock ». Typographie Poppins (titres et texte), specs techniques en micro-étiquettes mono.
 
 À éviter absolument : carrousels automatiques, pop-ups agressifs, bannières clignotantes, fausses urgences (« plus que 2 h ! »), promotions ou avis inventés, look « marketplace discount » surchargé.
 
@@ -139,12 +147,12 @@ Couleurs principales (thème clair) :
 |---|---|---|
 | `--bg` / `--surface` / `--surface-2` | `#F5F6F8` / `#FFFFFF` / `#F1F3F6` | Fond gris clair, cartes, fonds de visuels |
 | `--text` / `--text-muted` | `#14161A` / `#5B616C` | Texte |
-| `--accent` / `--accent-strong` / `--accent-soft` | `#0B62C4` / `#094F9F` / `#E7F0FB` | Bleu vif : boutons, liens, actif |
+| `--accent` / `--accent-strong` / `--accent-soft` | `#B53A0A` / `#8F2E08` / `#FFEDE5` | Orange de marque foncé : boutons, liens, actif (≥ 4,8:1 sur blanc, fond et toutes les tuiles) |
 | `--brand-orange` / `--brand-navy` | `#FF5A1F` / `#1B1F3B` | **Couleurs du logo uniquement** (pictogramme, « Electro » / « Market ») |
-| `--inverse` / `--on-inverse` / `--on-inverse-muted` | `#121316` / `#FFFFFF` / `#B3B8C1` | Noir : bandeau haut, pied de page, bande conseil, accueil du compte |
-| `--hero-from` / `--hero-via` / `--hero-to` | `#D42A47` / `#A52D7C` / `#5523A8` | Dégradé du hero (texte blanc uniquement, ≥ 4,9:1 sur toute la hauteur) |
+| `--inverse` / `--on-inverse` / `--on-inverse-muted` | `#1B1F3B` / `#FFFFFF` / `#B3B8C1` | Bleu nuit du logo : bandeau haut, pied de page, bande conseil, navigation admin |
+| `--hero-from` / `--hero-via` / `--hero-to` | `#C2410C` / `#8E2F45` / `#1B1F3B` | Dégradé du hero orange → bleu nuit (texte blanc uniquement, ≥ 5,2:1 sur toute la hauteur) |
 | `--tile-peach/sand/sky/rose/lilac` | pastels | Pastilles de catégories, hero, encarts promo |
-| `--danger` | `#C41C28` | Remises : badge « -X % », prix remisé, surtitres d'offre (≥ 4,9:1 sur les tuiles) |
+| `--danger` | `#B5123E` | Remises (carmin, distinct de l'orange) : badge « -X % », prix remisé, surtitres d'offre (≥ 5,6:1 sur les tuiles) |
 | `--signal` / `--warning` | `#1F7A46` / `#A35C00` | Stock disponible (vert conservé : code d'état universel) / stock faible |
 | `--star` | `#F5A300` | Étoiles des avis (vérifiés uniquement) |
 
@@ -202,6 +210,7 @@ JetBrains Mono (`font-mono`, chargée à la demande) reste réservée aux codes 
 - **Espace client (`/compte`, `components/account/`) :** réservé aux clients connectés (`requireUser` → `/connexion?suite=/compte`). Rassemble profil (prénom, nom, téléphone +228 ; e-mail du compte en lecture seule), adresses de livraison (quartier, ville, point de repère, téléphone, adresse par défaut ; 10 max), commandes (vide tant que le paiement n'est pas branché), panier, modification du mot de passe, déconnexion et **suppression définitive du compte**. Données dans Supabase (tables `profiles`, `addresses`), lues/écrites par Server Actions validées par Zod, protégées par RLS.
 - **Parcours d'achat (principe : le plus simple possible) :** navigation, recherche et panier **sans compte** (panier en cookie). L'identification n'est demandée qu'au clic sur « Valider mon panier » : `/commande` redirige vers `/connexion?suite=/commande`, écran « Plus qu'une étape » avec deux choix (« J'ai déjà un compte » / « Je suis nouveau client »), panier conservé, retour automatique à la commande (y compris via le lien d'activation e-mail). Repère `CheckoutSteps` : Panier → Identification → Livraison et paiement. `/commande` : choix de l'adresse en un toucher ou ajout sur place, récapitulatif recalculé côté serveur ; paiement affiché « bientôt disponible » (pas de prestataire, pas de tests E2E).
 - **Authentification (`/connexion`, `/inscription`, `/mot-de-passe-oublie`, `/reinitialiser-mot-de-passe`) :** e-mail + mot de passe (8 caractères min.), messages d'erreur en français qui ne révèlent jamais si une adresse a un compte, retour après connexion limité aux chemins internes (`safeNextPath`), liens e-mail via `/auth/callback` (PKCE). Toutes `noindex`.
+- **Administration (`/admin`) :** réservée aux comptes de la table `admins` (non connecté → connexion ; client ordinaire → 404). Mise en page propre (pas d'en-tête boutique) : pilule d'icônes verticale à gauche (barre basse sur mobile), titre + recherche en haut, cartes blanches sur fond gris clair. Pages : tableau de bord (chiffres réels uniquement : produits en ligne, ruptures, stocks faibles, brouillons en attente, paniers en cours, clients ; « Ventes » vide tant que le paiement n'est pas branché), produits (recherche, filtres, bascule de stock par ligne), éditeur de produit (tous les champs, variantes, photos, caractéristiques, FAQ, aperçu Google, suppression), catégories, marques, configuration (onglets), clients (lecture seule). **Barre d'actions `SaveBar`** : statut toujours visible et annoncé (`role="status"`) — Modifications non enregistrées → Enregistrement… → Brouillon enregistré (pas en ligne) → Mise en ligne… → En ligne, ou message d'erreur ; boutons « Enregistrer le brouillon » (Ctrl+S), « Publier », « Annuler les modifications », « Voir en ligne » ; alerte si on quitte avec des modifications non enregistrées. Photos : compressées dans le navigateur (WebP, ≤ 2 000 px, miniature floue), envoyées dans le bucket public `produits` (nom de fichier unique).
 - **Avis (`ReviewsSection`) :** n'affiche RIEN tant que `getVerifiedReviews()` est vide. Jamais d'avis d'exemple.
 - **Newsletter :** remplacée par `HelpBand` tant qu'aucun service d'e-mailing n'est branché (pas de formulaire factice).
 - **Fiche produit :** galerie à gauche, bloc d'achat collant à droite (prix, variantes, stock, délai de livraison, garantie, CTA), puis description, **tableau de caractéristiques**, contenu de la boîte, FAQ, avis.
@@ -329,6 +338,7 @@ Les assistants IA citent les sources claires, factuelles, structurées et à jou
 - Politique de sécurité de contenu (CSP), en-têtes de sécurité, protection CSRF sur les mutations, limitation de débit sur les API publiques.
 - Conformité à la législation applicable sur les données personnelles (RGPD / loi locale) : consentement pour les traceurs non essentiels, page de politique de confidentialité, droit d'accès/suppression.
 - Pages légales obligatoires : mentions légales, CGV, politique de retour, confidentialité, cookies.
+- **Administrateurs** : table `admins` (ajout uniquement en SQL, aucune politique d'écriture), fonction `is_admin()` (SECURITY DEFINER, exécutable par `authenticated` seulement). Chaque Server Action admin revérifie le rôle (`adminOrNull`) ; la RLS le revérifie à l'écriture (`drafts` lisible/modifiable par les seuls admins ; tables publiques en lecture pour tous, écriture admin). Les entrées passent par Zod (`lib/admin/schemas.ts`) ; fichiers image vérifiés par signature binaire, 3 Mo max.
 - **Comptes clients (Supabase)** : seule la clé *publishable* (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`) est utilisée ; **jamais** la clé *secret* / service_role dans le code. La sécurité des données repose sur la **RLS** (chaque client ne lit/écrit que ses lignes) + validation Zod côté serveur. Session vérifiée par `getClaims()` (jamais `getSession()` côté serveur). `delete_my_account()` est volontairement `SECURITY DEFINER` (avertissement Supabase accepté) : elle ne supprime que `auth.uid()`. Après toute migration : régénérer `database.types.ts` et relancer l'analyse de sécurité Supabase.
 
 ---
@@ -394,7 +404,9 @@ Valeurs centralisées dans `src/config/site.ts`.
 
 **Déploiement :** Vercel, projet `electro-market` (espace « Hubert's projects »), relié au dépôt GitHub `Msskoff/electro-market`. Chaque push sur `main` = déploiement de production. Démo client : https://electro-market-one.vercel.app — non indexée tant que `SITE_INDEXING` n'est pas `true` (à n'activer qu'au lancement réel, avec le vrai catalogue).
 
-**Catalogue de démonstration :** 2 catégories (smartphones, ordinateurs portables) ; 4 fiches rédigées + 196 produits générés par `demo-generator.ts` (déterministe, URL stables), soit 100 par catégorie. Tout est fictif et signalé par le bandeau « Démo » : à remplacer par la base réelle avant lancement. Marquées « À VALIDER » : frais de livraison (2 000 F CFA), seuil de gratuité (50 000 F CFA), délai (24–48 h à Lomé), retours (30 j), garantie (2 ans), adresse et téléphone.
+**Catalogue de démonstration :** 2 catégories (smartphones, ordinateurs portables) ; 4 fiches rédigées + 196 produits générés par `demo-generator.ts`, **importés dans Supabase le 2026-10-03** (sommes de contrôle vérifiées) et désormais modifiables depuis `/admin`. Tout est fictif et signalé par le bandeau « Démo » : à remplacer par la base réelle avant lancement. Marquées « À VALIDER » : frais de livraison (2 000 F CFA), seuil de gratuité (50 000 F CFA), délai (24–48 h à Lomé), retours (30 j), garantie (2 ans), adresse et téléphone.
+
+**Administration :** `/admin`, premier administrateur = compte du propriétaire (attribué en SQL le 2026-10-03). Autre administrateur : `insert into public.admins (user_id) select id from auth.users where email = '…';`
 
 **Mode sombre :** retiré pour l'instant (thème clair uniquement).
 

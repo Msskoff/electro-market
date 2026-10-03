@@ -19,5 +19,6 @@ export const config = {
     "/mot-de-passe-oublie",
     "/reinitialiser-mot-de-passe",
     "/auth/:path*",
+    "/admin/:path*",
   ],
 };

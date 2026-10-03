@@ -24,26 +24,27 @@
   --text: #14161a;
   --text-muted: #5b616c;
 
-  /* Marque : bleu vif (boutons, liens, actif) */
-  --accent: #0b62c4;
-  --accent-strong: #094f9f;
-  --accent-soft: #e7f0fb;
+  /* Marque : orange ElectroMarket, foncé pour la lisibilité (boutons, liens, actif).
+     #B53A0A : ≥ 4,8:1 sur blanc, fond et toutes les tuiles pastel ; texte blanc dessus 5,9:1. */
+  --accent: #b53a0a;
+  --accent-strong: #8f2e08;
+  --accent-soft: #ffede5;
 
   /* Couleurs du logo (identité de marque) : réservées au logo, pas à l'interface. */
   --brand-orange: #ff5a1f;
   --brand-navy: #1b1f3b;
   --on-accent: #ffffff;
 
-  /* Zones sombres (bandeau haut, pied de page, encarts) : noir */
-  --inverse: #121316;
-  --inverse-2: #24262b;
+  /* Zones sombres (bandeau haut, pied de page, encarts) : bleu nuit du logo */
+  --inverse: #1b1f3b;
+  --inverse-2: #2a2f55;
   --on-inverse: #ffffff;
   --on-inverse-muted: #b3b8c1;
 
-  /* Hero : dégradé corail → violet (texte blanc ≥ 4,9:1 sur toute la hauteur) */
-  --hero-from: #d42a47;
-  --hero-via: #a52d7c;
-  --hero-to: #5523a8;
+  /* Hero : dégradé orange → bleu nuit (texte blanc ≥ 5,2:1 sur toute la hauteur) */
+  --hero-from: #c2410c;
+  --hero-via: #8e2f45;
+  --hero-to: #1b1f3b;
 
   /* Fonds de tuiles pastel (catégories, encarts promo) */
   --tile-peach: #fbe8e2;
@@ -57,7 +58,7 @@
   --signal-soft: #e3f3e9;
   --warning: #a35c00;
   --warning-soft: #fdf0dc;
-  --danger: #c41c28; /* remises : badges « -X % », prix remisés, surtitres d'offre */
-  --danger-soft: #fde8ea;
+  --danger: #b5123e; /* remises : carmin, distinct de l'orange des boutons (≥ 5,6:1 sur les tuiles) */
+  --danger-soft: #fde7ec;
   --star: #f5a300;
 }

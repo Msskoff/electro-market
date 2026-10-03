@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   // Thème clair uniquement pour l'instant (mode sombre retiré).
   colorScheme: "light",
-  themeColor: [{ color: "#121316" }],
+  themeColor: [{ color: "#1B1F3B" }],
 };
 
 /** Squelette HTML commun. En-tête, pied de page et JSON-LD : (shop)/layout.tsx ; l'administration a sa propre mise en page. */
