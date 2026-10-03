@@ -70,3 +70,16 @@ describe("frenchSpacing", () => {
     expect(frenchSpacing("à 10:30")).toBe("à 10:30");
   });
 });
+
+describe("recherche partagée (suggestions + page de résultats)", () => {
+  it("insensible aux accents et à la casse, tous les mots requis, nom prioritaire", async () => {
+    const { normalize, queryTerms, relevance, highlightParts } = await import("@/lib/catalog/search");
+    const terms = queryTerms("  ÉCRAN  oled ");
+    expect(terms).toEqual(["ecran", "oled"]);
+    expect(relevance(normalize("Aurion One 5G"), normalize("aurion one 5g ecran oled"), terms)).toBeGreaterThan(0);
+    expect(relevance(normalize("Kelvo Neo"), normalize("kelvo neo lcd"), terms)).toBe(0);
+    const name = normalize("Aurion One 5G");
+    expect(relevance(name, name, queryTerms("aurion"))).toBeGreaterThan(relevance(name, name, queryTerms("one")));
+    expect(highlightParts("Écran Pro", ["ecran"])).toEqual([{ text: "Écran", match: true }, { text: " Pro", match: false }]);
+  });
+});

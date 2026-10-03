@@ -1,4 +1,5 @@
 import "server-only";
+import { normalize, queryTerms, relevance } from "./search";
 import { brands, categories, products } from "./data";
 import type { Brand, Category, Product, Review, Variant } from "./types";
 
@@ -51,26 +52,66 @@ export async function getRelatedProducts(product: Product, limit = 4): Promise<P
     .slice(0, limit);
 }
 
-/** Normalise pour une recherche insensible à la casse et aux accents. */
-function normalize(text: string): string {
-  return text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+/** Mots courants des acheteurs qui ne figurent pas dans les noms de catégories. */
+const CATEGORY_SYNONYMS: Record<string, string> = {
+  smartphones: "téléphone portable mobile cellulaire",
+  "ordinateurs-portables": "ordi pc laptop notebook",
+};
+
+function categoryKeywords(slug: string): string {
+  const c = categories.find((cat) => cat.slug === slug);
+  return c ? `${c.name} ${c.singular} ${CATEGORY_SYNONYMS[slug] ?? ""}` : "";
+}
+
+/** Texte indexé d'un produit : nom, marque, catégorie, points clés (+ résumé si `withSummary`). */
+function searchText(p: Product, withSummary = true): string {
+  const brand = brands.find((b) => b.slug === p.brand)?.name ?? "";
+  return normalize([p.name, brand, categoryKeywords(p.category), ...p.highlights, withSummary ? p.summary : ""].join(" "));
 }
 
 /**
- * Recherche plein texte simple (nom, marque, catégorie, points clés).
- * Tous les mots saisis doivent apparaître ; `category` restreint à une catégorie
- * (raccourcis « par marque » des pages catégorie). À remplacer par le full-text Postgres.
+ * Recherche plein texte (mêmes règles que les suggestions instantanées, lib/catalog/search.ts) :
+ * tous les mots saisis doivent apparaître, résultats triés par pertinence.
+ * `category` restreint à une catégorie. À remplacer par le full-text Postgres.
  */
 export async function searchProducts(query: string, category?: string): Promise<Product[]> {
-  const terms = normalize(query).split(/\s+/).filter(Boolean);
+  const terms = queryTerms(query);
   if (terms.length === 0) return [];
-  return products.filter((p) => {
-    if (category && p.category !== category) return false;
-    const brand = brands.find((b) => b.slug === p.brand)?.name ?? "";
-    const categoryName = categories.find((c) => c.slug === p.category)?.name ?? "";
-    const haystack = normalize([p.name, brand, categoryName, ...p.highlights, p.summary].join(" "));
-    return terms.every((term) => haystack.includes(term));
-  });
+  return products
+    .filter((p) => !category || p.category === category)
+    .map((p) => ({ p, score: relevance(normalize(p.name), searchText(p), terms) }))
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map((r) => r.p);
+}
+
+/** Index léger pour les suggestions instantanées (chargé une fois par le navigateur). */
+export interface SuggestionIndex {
+  products: { name: string; brand: string; url: string; price: number; from: boolean; kind: Product["kind"]; color: string; n: string; h: string }[];
+  categories: { name: string; url: string; h: string }[];
+}
+
+export async function getSuggestionIndex(): Promise<SuggestionIndex> {
+  return {
+    products: products.map((p) => {
+      const prices = p.variants.map((v) => v.price);
+      const min = Math.min(...prices);
+      const variant = p.variants.find((v) => v.price === min && v.stock > 0) ?? p.variants[0];
+      return {
+        name: p.name,
+        brand: brands.find((b) => b.slug === p.brand)?.name ?? "",
+        url: `/${p.category}/${p.slug}`,
+        price: min,
+        from: Math.max(...prices) > min,
+        kind: p.kind,
+        color: variant.color.hex,
+        n: normalize(p.name),
+        // Suggestions : sans le résumé (index ~4 fois plus léger) ; la page /recherche l'inclut.
+        h: searchText(p, false),
+      };
+    }),
+    categories: categories.map((c) => ({ name: c.name, url: `/${c.slug}`, h: normalize(`${categoryKeywords(c.slug)} ${c.tagline}`) })),
+  };
 }
 
 /**

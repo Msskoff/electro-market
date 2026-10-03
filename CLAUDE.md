@@ -77,6 +77,7 @@ src/
       compte/page.tsx                  # Espace client « Mon compte » (dynamique, noindex)
       connexion/, inscription/, mot-de-passe-oublie/, reinitialiser-mot-de-passe/  # Authentification (noindex)
     auth/callback/route.ts           # Retour des liens e-mail (échange de code PKCE → session)
+    api/suggestions/route.ts           # Index JSON statique des suggestions de recherche
     sitemap.ts · robots.ts · llms.txt/route.ts · partage.png/route.tsx · icon.svg · not-found.tsx
   proxy.ts                           # Proxy Next.js 16 (ex-middleware) : rafraîchit la session, pages privées uniquement
   components/
@@ -93,7 +94,7 @@ src/
     seo/       # JsonLd
   config/site.ts                       # Identité, URL, politiques commerciales (source unique)
   lib/
-    catalog/   # types.ts, data.ts + demo-generator.ts (DÉMO : 100 produits/catégorie), repository.ts (seul accès aux données), selectors.ts, pagination.ts
+    catalog/   # types.ts, data.ts + demo-generator.ts (DÉMO : 100 produits/catégorie), repository.ts (seul accès aux données), search.ts (normalisation + pertinence, partagé serveur/navigateur), selectors.ts, pagination.ts
     cart/      # schema.ts (Zod + logique pure), pricing.ts, actions.ts (Server Actions), queries.ts, client.ts
     seo/       # metadata.ts (buildMetadata), jsonld.ts, og.tsx
     content/   # site-faq.ts, hero-slides.ts (diapositives du hero + vidéos)
@@ -185,7 +186,7 @@ JetBrains Mono (`font-mono`, chargée à la demande) reste réservée aux codes 
 
 ### 5.4 Composants clés
 
-- **En-tête :** bandeau de réassurance (`bg-inverse`) → logo + `SearchForm` (GET `/recherche`, fonctionne sans JS) + panier → navigation avec `CategoryMenu` (`<details>`, refermé à la navigation) et `NavLink` (onglet actif souligné ; chaque lien porte une icône décorative — maison, téléphone, ordinateur, aide — à côté de son libellé, toujours affiché ; icône bleue sur la rubrique active).
+- **En-tête :** bandeau de réassurance (`bg-inverse`) → logo + `SearchForm` (GET `/recherche`, fonctionne sans JS ; avec JS, suggestions instantanées en combobox ARIA dès 2 caractères : catégories, 6 produits, « Voir tous les résultats » ; index `/api/suggestions` chargé une fois au focus puis filtré localement, mêmes règles que `/recherche` via `lib/catalog/search.ts` — insensible aux accents, synonymes « téléphone », « pc »… dans `CATEGORY_SYNONYMS`) + panier → navigation avec `CategoryMenu` (`<details>`, refermé à la navigation) et `NavLink` (onglet actif souligné ; chaque lien porte une icône décorative — maison, téléphone, ordinateur, aide — à côté de son libellé, toujours affiché ; icône bleue sur la rubrique active).
 - **Hero immersif (`components/home/hero/`) :** deux diapositives par catégorie (4 au total) (`lib/content/hero-slides.ts`), liée à un produit réel ; textes marketing fidèles à la fiche. Grand écran : média à droite, dégradé `inverse` à gauche sous le texte. Petit écran : média plein cadre, texte superposé en bas. Navigation volontaire uniquement : chevrons pleins épais, onglets, flèches du clavier, glissement tactile — **jamais de défilement automatique**. `video` (mp4/webm + poster) lue si fournie, sinon scène animée vectorielle (`HeroScene`). Seul `h1` de l'accueil : l'intitulé fixe en haut du hero.
 - **Accueil (`components/home/`) :** `HeroShowcase`, `CategoryCircles`, sélection en `ProductGrid`, `PromoTiles`, `ReviewsSection`, `HelpBand`, FAQ, `TrustBar`.
 - **ProductCard :** visuel sur fond `surface-2`, badge « -X % » si remise réelle, marque, nom, 2–3 specs en micro-étiquettes mono, prix (corail si remisé), état du stock (point + texte), bouton rond `QuickAddButton` (ajoute la variante par défaut, posé au-dessus du lien étiré).
