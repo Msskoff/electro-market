@@ -71,6 +71,7 @@ export async function saveAddress(_prev: FormState, formData: FormData): Promise
   if (isDefault) await supabase.rpc("set_default_address", { target: id });
 
   revalidatePath("/compte");
+  revalidatePath("/commande");
   return { ok: true, message: "Adresse enregistrée." };
 }
 

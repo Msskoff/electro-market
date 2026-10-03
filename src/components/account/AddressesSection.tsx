@@ -11,7 +11,7 @@ import { deleteAddress, saveAddress, setDefaultAddress } from "@/lib/account/act
 import { MAX_ADDRESSES, type Address } from "@/lib/account/schema";
 import type { FormState } from "@/lib/auth/schema";
 
-function AddressForm({ initial, onDone }: { initial?: Address; onDone: () => void }) {
+export function AddressForm({ initial, onDone }: { initial?: Address; onDone: () => void }) {
   const [state, action] = useActionState(async (prev: FormState, formData: FormData) => {
     const result = await saveAddress(prev, formData);
     if (result.ok) onDone();

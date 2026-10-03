@@ -31,11 +31,12 @@ export function SignInForm({ next, notice }: { next: string; notice?: string }) 
   );
 }
 
-export function SignUpForm() {
+export function SignUpForm({ next }: { next: string }) {
   const [state, action] = useActionState(signUp, initial);
   if (state.ok) return <FormAlert ok message={state.message} />;
   return (
     <form action={action} noValidate className="space-y-4">
+      <input type="hidden" name="suite" value={next} />
       <FormAlert message={state.message} />
       <div className="grid gap-4 sm:grid-cols-2">
         <Field name="firstName" label="Prénom" autoComplete="given-name" required defaultValue={state.values?.firstName} error={state.errors?.firstName} />

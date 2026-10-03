@@ -26,22 +26,26 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
 
   const { firstName, lastName, email, password } = parsed.data;
+  const next = safeNextPath(formData.get("suite"));
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: callbackUrl("/compte"),
+      emailRedirectTo: callbackUrl(next),
       data: { first_name: firstName, last_name: lastName },
     },
   });
   if (error) return { message: authErrorMessage(error.code), values };
 
   // Confirmation d'e-mail désactivée : la session est ouverte immédiatement.
-  if (data.session) redirect("/compte");
+  if (data.session) redirect(next);
   return {
     ok: true,
-    message: `Presque fini ! Un e-mail vient d'être envoyé à ${email} : cliquez sur le lien qu'il contient pour activer votre compte.`,
+    message:
+      next === "/commande"
+        ? `Presque fini ! Un e-mail vient d'être envoyé à ${email} : cliquez sur le lien qu'il contient pour activer votre compte. Vous reviendrez directement à votre commande, votre panier est conservé.`
+        : `Presque fini ! Un e-mail vient d'être envoyé à ${email} : cliquez sur le lien qu'il contient pour activer votre compte.`,
   };
 }
 

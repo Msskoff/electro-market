@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { CartLineControls } from "@/components/cart/CartLineControls";
+import { CheckoutSteps } from "@/components/checkout/CheckoutSteps";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { DeviceIllustration } from "@/components/product/DeviceIllustration";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
+import { getSessionUser } from "@/lib/auth/session";
 import { Container } from "@/components/ui/Container";
 import { getCart } from "@/lib/cart/queries";
 import { productPath } from "@/lib/catalog/selectors";
@@ -17,10 +21,12 @@ export const metadata = buildMetadata({
 });
 
 export default async function CartPage() {
-  const cart = await getCart();
+  const [cart, user] = await Promise.all([getCart(), getSessionUser()]);
 
   return (
-    <Container className="py-12">
+    <Container className="pb-12">
+      <Breadcrumbs items={[{ name: t.cart.title, path: "/panier" }]} />
+      {cart.lines.length > 0 && <CheckoutSteps current={0} />}
       <h1 className="text-h1">{t.cart.title}</h1>
 
       {cart.lines.length === 0 ? (
@@ -86,13 +92,19 @@ export default async function CartPage() {
                 ? t.cart.freeShippingIn(formatPrice(cart.remainingForFreeShipping))
                 : t.cart.freeShippingReached}
             </p>
-            {/* Le tunnel de paiement sera branché sur PAYMENT_PROVIDER (voir CLAUDE.md §9). */}
-            <Button size="lg" fullWidth className="mt-6" disabled aria-describedby="checkout-note">
+            {/* Identification demandée seulement maintenant : /commande redirige vers la connexion si besoin. */}
+            <ButtonLink href="/commande" size="lg" fullWidth className="mt-6">
               {t.cart.checkout}
-            </Button>
-            <p id="checkout-note" className="mt-3 text-center text-xs text-muted">
-              {t.cart.checkoutSoon}
+              <Icon name="arrowRight" size={18} />
+            </ButtonLink>
+            <p className="mt-3 text-center text-xs text-muted">
+              {user
+                ? "Étape suivante : adresse de livraison et paiement."
+                : "Vous vous identifierez à l'étape suivante (connexion ou création de compte). Votre panier est conservé."}
             </p>
+            <Link href="/" className="mt-4 block text-center text-sm font-medium text-accent underline-offset-4 hover:underline">
+              Continuer mes achats
+            </Link>
           </aside>
         </div>
       )}

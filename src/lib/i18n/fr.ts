@@ -53,7 +53,7 @@ export const t = {
     free: "Offerte",
     total: "Total TTC",
     remove: "Retirer",
-    checkout: "Passer commande",
+    checkout: "Valider mon panier",
     checkoutSoon: "Le paiement en ligne sera activé prochainement.",
     freeShippingIn: (amount: string) => `Plus que ${amount} pour la livraison offerte`,
     freeShippingReached: "Livraison offerte",
