@@ -14,14 +14,13 @@ interface CategoryHeaderProps {
   products: Product[];
   brands: Brand[];
   page: number;
-  totalPages: number;
 }
 
 /**
  * En-tête d'une page catégorie : identité visuelle, chiffres clés lisibles d'un coup d'œil,
  * date de mise à jour (fraîcheur) et raccourcis par marque.
  */
-export function CategoryHeader({ category, tile, products, brands, page, totalPages }: CategoryHeaderProps) {
+export function CategoryHeader({ category, tile, products, brands, page }: CategoryHeaderProps) {
   const prices = products.flatMap((p) => Object.values(priceRange(p)));
   const minPrice = prices.length ? Math.min(...prices) : 0;
   const maxPrice = prices.length ? Math.max(...prices) : 0;
@@ -59,20 +58,11 @@ export function CategoryHeader({ category, tile, products, brands, page, totalPa
               </p>
             )}
 
-            <h1 className="text-h1 sm:mt-3">
-              {category.name}
-              {page > 1 && <span className="text-muted"> — page {page}</span>}
-            </h1>
+            {/* Même titre sur toutes les pages : la position est indiquée au-dessus de la grille et par la pagination. */}
+            <h1 className="text-h1 sm:mt-3">{category.name}</h1>
 
-            {page === 1 ? (
+            {page === 1 && (
               <p className="measure mt-4 hidden text-lg leading-relaxed text-muted sm:block">{frenchSpacing(category.intro)}</p>
-            ) : (
-              <p className="mt-3 hidden text-muted sm:block">
-                Page {page} sur {totalPages} ·{" "}
-                <Link href={`/${category.slug}`} className="font-medium text-accent underline-offset-4 hover:underline">
-                  Revenir à la première page
-                </Link>
-              </p>
             )}
 
             <dl className="mt-7 hidden grid-cols-4 gap-3 sm:grid">

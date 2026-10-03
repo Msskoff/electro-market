@@ -26,7 +26,6 @@ export async function CategoryView({ category, page }: { category: Category; pag
   const last = first + visible.length - 1;
 
   const crumbs = [{ name: category.name, path: categoryPath(category.slug) }];
-  if (page > 1) crumbs.push({ name: `Page ${page}`, path: categoryPagePath(category.slug, page) });
 
   return (
     <Container>
@@ -38,7 +37,6 @@ export async function CategoryView({ category, page }: { category: Category; pag
         products={products}
         brands={brands}
         page={page}
-        totalPages={total}
       />
 
       <section aria-labelledby="liste-produits" className="pb-10 pt-6 sm:pt-10">
@@ -73,7 +71,7 @@ export async function CategoryView({ category, page }: { category: Category; pag
           {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            name: page > 1 ? `${category.name} — page ${page}` : category.name,
+            name: category.name,
             description: category.intro,
             url: absoluteUrl(categoryPagePath(category.slug, page)),
           },
