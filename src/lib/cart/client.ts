@@ -32,3 +32,12 @@ export function subscribeToCart(callback: () => void): () => void {
 export function notifyCartChanged(): void {
   window.dispatchEvent(new Event(EVENT));
 }
+
+/**
+ * Le navigateur porte une session de connexion : cookie Supabase « sb-<projet>-auth-token »
+ * (éventuellement découpé en « .0 », « .1 »…). Les cookies temporaires
+ * « …-auth-token-code-verifier » (inscription en attente) ne comptent pas.
+ */
+export function hasAuthSession(cookie: string = document.cookie): boolean {
+  return /(?:^|; )sb-[^=;]+-auth-token(?:\.\d+)?=/.test(cookie);
+}

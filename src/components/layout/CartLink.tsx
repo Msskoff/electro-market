@@ -1,18 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Icon } from "@/components/ui/Icon";
+import { syncCartFromAccount } from "@/lib/cart/actions";
 import {
   getCartCountServerSnapshot,
   getCartCountSnapshot,
+  hasAuthSession,
+  notifyCartChanged,
   subscribeToCart,
 } from "@/lib/cart/client";
 import { t } from "@/lib/i18n/fr";
 
+const SYNC_INTERVAL_MS = 15_000;
+let lastSync = 0;
+
+/**
+ * Client connecté : récupère le panier du compte (il a pu changer sur un autre appareil).
+ * Visiteur : aucun appel serveur, les pages restent statiques.
+ */
+async function syncWithAccount() {
+  if (!hasAuthSession() || Date.now() - lastSync < SYNC_INTERVAL_MS) return;
+  lastSync = Date.now();
+  if (await syncCartFromAccount()) notifyCartChanged();
+}
+
 /** Lien panier avec compteur, lu depuis le cookie pour garder les pages statiques. */
 export function CartLink() {
   const count = useSyncExternalStore(subscribeToCart, getCartCountSnapshot, getCartCountServerSnapshot);
+
+  useEffect(() => {
+    void syncWithAccount();
+    const onVisible = () => document.visibilityState === "visible" && void syncWithAccount();
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
   const label = count > 0 ? `${t.nav.cart} (${count} article${count > 1 ? "s" : ""})` : t.nav.cart;
 
   return (

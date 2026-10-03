@@ -62,3 +62,18 @@ export function setLineQty(lines: CartLine[], sku: string, qty: number): CartLin
 export function countItems(lines: CartLine[]): number {
   return lines.reduce((sum, l) => sum + l.qty, 0);
 }
+
+/**
+ * Fusion à la connexion : le panier du compte d'abord, puis les articles ajoutés sur
+ * l'appareil avant la connexion. Pour un même SKU, on garde la plus grande quantité
+ * (pas d'addition : évite de doubler un article déjà synchronisé).
+ */
+export function mergeCartLines(account: CartLine[], device: CartLine[]): CartLine[] {
+  const merged = account.map((l) => ({ ...l }));
+  for (const line of device) {
+    const existing = merged.find((l) => l.sku === line.sku);
+    if (existing) existing.qty = Math.min(Math.max(existing.qty, line.qty), MAX_QTY_PER_LINE);
+    else if (merged.length < MAX_LINES) merged.push({ sku: line.sku, qty: Math.min(line.qty, MAX_QTY_PER_LINE) });
+  }
+  return merged;
+}

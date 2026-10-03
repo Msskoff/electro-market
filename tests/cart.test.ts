@@ -73,3 +73,32 @@ describe("priceCart", () => {
     expect(priceCart([], new Map(), rules).total).toBe(0);
   });
 });
+
+describe("mergeCartLines (connexion)", () => {
+  it("garde le panier du compte et ajoute les articles choisis avant la connexion", async () => {
+    const { mergeCartLines } = await import("@/lib/cart/schema");
+    const merged = mergeCartLines(
+      [{ sku: "A-1", qty: 1 }, { sku: "B-1", qty: 2 }],
+      [{ sku: "B-1", qty: 1 }, { sku: "C-1", qty: 3 }],
+    );
+    expect(merged).toEqual([
+      { sku: "A-1", qty: 1 },
+      { sku: "B-1", qty: 2 }, // même article : la plus grande quantité, sans addition
+      { sku: "C-1", qty: 3 },
+    ]);
+  });
+  it("ne crée rien à partir de paniers vides (pas de remplissage par défaut)", async () => {
+    const { mergeCartLines } = await import("@/lib/cart/schema");
+    expect(mergeCartLines([], [])).toEqual([]);
+  });
+});
+
+describe("hasAuthSession", () => {
+  it("reconnaît une vraie session, pas les cookies temporaires d'inscription", async () => {
+    const { hasAuthSession } = await import("@/lib/cart/client");
+    expect(hasAuthSession("sb-abc-auth-token=xyz")).toBe(true);
+    expect(hasAuthSession("vx_cart=1; sb-abc-auth-token.0=xyz")).toBe(true);
+    expect(hasAuthSession("sb-abc-auth-token-code-verifier=xyz")).toBe(false);
+    expect(hasAuthSession("vx_cart=[]")).toBe(false);
+  });
+});

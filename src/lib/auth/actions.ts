@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { absoluteUrl } from "@/config/site";
 import { fieldErrors } from "@/lib/account/schema";
+import { clearCartCookie, mergeCartIntoAccount } from "@/lib/cart/store";
 import { createClient } from "@/lib/supabase/server";
 import { safeNextPath } from "./redirect";
 import {
@@ -39,7 +40,10 @@ export async function signUp(_prev: FormState, formData: FormData): Promise<Form
   if (error) return { message: authErrorMessage(error.code), values };
 
   // Confirmation d'e-mail désactivée : la session est ouverte immédiatement.
-  if (data.session) redirect(next);
+  if (data.session && data.user) {
+    await mergeCartIntoAccount(supabase, data.user.id);
+    redirect(next);
+  }
   return {
     ok: true,
     message:
@@ -55,8 +59,10 @@ export async function signIn(_prev: FormState, formData: FormData): Promise<Form
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) return { message: authErrorMessage(error.code), values };
+  // Les articles choisis avant la connexion rejoignent le panier du compte.
+  await mergeCartIntoAccount(supabase, data.user.id);
 
   revalidatePath("/compte");
   redirect(safeNextPath(formData.get("suite")));
@@ -65,6 +71,8 @@ export async function signIn(_prev: FormState, formData: FormData): Promise<Form
 export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  // Le panier reste dans le compte ; on le retire de l'appareil (appareil partagé).
+  await clearCartCookie();
   revalidatePath("/compte");
   redirect("/");
 }
@@ -109,6 +117,7 @@ export async function deleteAccount(): Promise<FormState> {
   const { error } = await supabase.rpc("delete_my_account");
   if (error) return { message: "La suppression a échoué. Réessayez ou contactez-nous." };
   await supabase.auth.signOut();
+  await clearCartCookie();
   revalidatePath("/compte");
   redirect("/?compte=supprime");
 }

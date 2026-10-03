@@ -2,12 +2,20 @@
  * Types de la base Supabase « electromarket » (générés depuis le schéma, puis réduits
  * au strict nécessaire). À régénérer après chaque migration.
  */
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
 export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.18";
   };
   public: {
     Tables: {
+      carts: {
+        Row: { lines: Json; updated_at: string; user_id: string };
+        Insert: { lines?: Json; updated_at?: string; user_id?: string };
+        Update: { lines?: Json; updated_at?: string; user_id?: string };
+        Relationships: [];
+      };
       addresses: {
         Row: {
           city: string;

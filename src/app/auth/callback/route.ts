@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { safeNextPath } from "@/lib/auth/redirect";
+import { mergeCartIntoAccount } from "@/lib/cart/store";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -14,8 +15,11 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(next, origin));
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      await mergeCartIntoAccount(supabase, data.user.id);
+      return NextResponse.redirect(new URL(next, origin));
+    }
   }
 
   // Lien expiré, déjà utilisé, ou ouvert dans un autre navigateur.

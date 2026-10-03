@@ -113,7 +113,7 @@ supabase/migrations/                   # Migrations SQL appliquées au projet Su
 - Prix stockés en **entiers, dans l'unité mineure de la devise** (XOF : 1 = 1 F CFA, pas de centimes). Formatage uniquement via `formatPrice` / `toDecimal`, jamais de `/ 100` en dur.
 - Métadonnées de page : toujours via `buildMetadata()`. JSON-LD : toujours via `lib/seo/jsonld.ts` + `<JsonLd />`.
 - Aucune couleur en dur dans les composants : uniquement les tokens (`bg-surface`, `text-muted`, `text-accent`…).
-- Le panier (cookie `vx_cart`) ne contient que SKU + quantité ; les montants sont recalculés côté serveur (`priceCart`).
+- Le panier ne contient que SKU + quantité ; les montants sont recalculés côté serveur (`priceCart`). Stockage (`lib/cart/store.ts`) : visiteur → cookie `vx_cart` de l'appareil ; **client connecté → table `carts` du compte (source de vérité, identique sur tous ses appareils)**, le cookie n'en est que le reflet pour le compteur. À la connexion (mot de passe, inscription, lien e-mail) : `mergeCartIntoAccount` fusionne le panier de l'appareil dans celui du compte (même SKU → plus grande quantité, jamais d'addition). À la déconnexion / suppression du compte : le cookie est effacé (appareil partagé). Le compteur de l'en-tête récupère le panier du compte au chargement et au retour sur l'onglet, **uniquement si une vraie session existe** (aucun appel serveur pour un visiteur). Le panier ne se remplit **jamais** sans clic explicite sur « Ajouter au panier ».
 - Les pages publiques restent statiques : rien dans le layout ne lit `cookies()` ou `headers()`.
 - Next.js 16 : `params` est une Promise (`await params`), types `PageProps<"/route">` / `RouteContext`. Lire `node_modules/next/dist/docs/` avant d'utiliser une API inconnue.
 
