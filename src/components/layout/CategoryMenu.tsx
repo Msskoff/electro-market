@@ -44,7 +44,7 @@ export function CategoryMenu({ items }: { items: CategoryMenuItem[] }) {
 
   return (
     <details ref={ref} className="group relative shrink-0">
-      <summary className="flex h-10 cursor-pointer list-none items-center gap-2.5 rounded-md bg-accent px-4 text-sm font-medium text-on-accent transition-colors hover:bg-accent-strong [&::-webkit-details-marker]:hidden">
+      <summary className="flex h-10 cursor-pointer list-none items-center gap-2.5 rounded-full bg-accent px-4 text-sm font-medium text-on-accent transition-colors hover:bg-accent-strong [&::-webkit-details-marker]:hidden">
         <Icon name="menu" size={18} />
         <span>{t.nav.allCategories}</span>
         <Icon name="chevronDown" size={16} className="transition-transform duration-200 group-open:rotate-180" />

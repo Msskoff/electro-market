@@ -59,9 +59,9 @@ export function DeviceIllustrationSvg({
     >
       <defs>
         <linearGradient id={`${id}-screen`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#1a0c05" />
-          <stop offset="0.55" stopColor="#4a1e08" />
-          <stop offset="1" stopColor="#d9732e" />
+          <stop offset="0" stopColor="#140a2e" />
+          <stop offset="0.55" stopColor="#5523a8" />
+          <stop offset="1" stopColor="#e8475f" />
         </linearGradient>
         <linearGradient id={`${id}-body`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor={light} />

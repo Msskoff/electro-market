@@ -3,7 +3,8 @@
  * Les composants n'utilisent JAMAIS de couleur en dur : uniquement ces variables
  * (exposées à Tailwind via `@theme inline` dans globals.css).
  *
- * Direction : orange foncé (terre cuite) + crème chaud, rouge carmin pour les offres.
+ * Direction : blanc et gris clair, noir pour les zones sombres, bleu vif pour les actions,
+ * rouge pour les remises, hero en dégradé corail → violet, encarts pastel.
  *
  * Thème clair uniquement : le mode sombre est retiré pour l'instant (ses anciennes
  * valeurs restent dans l'historique git si on le réactive).
@@ -13,41 +14,46 @@
   color-scheme: light;
 
   /* Surfaces */
-  --bg: #f6f4ee;
+  --bg: #f5f6f8;
   --surface: #ffffff;
-  --surface-2: #f1efe8;
-  --border: #e4e0d5;
-  --border-strong: #cdc7b8;
+  --surface-2: #f1f3f6;
+  --border: #e3e6eb;
+  --border-strong: #c9ced6;
 
   /* Texte */
-  --text: #21170f;
-  --text-muted: #6a5c52;
+  --text: #14161a;
+  --text-muted: #5b616c;
 
-  /* Marque */
-  --accent: #a63f0a;
-  --accent-strong: #82300a;
-  --accent-soft: #fbe7d8;
+  /* Marque : bleu vif (boutons, liens, actif) */
+  --accent: #0b62c4;
+  --accent-strong: #094f9f;
+  --accent-soft: #e7f0fb;
   --on-accent: #ffffff;
 
-  /* Zones inversées (bandeau haut, pied de page, encarts) */
-  --inverse: #2e1406;
-  --inverse-2: #45200b;
-  --on-inverse: #fbf1ea;
-  --on-inverse-muted: #d9b8a3;
+  /* Zones sombres (bandeau haut, pied de page, encarts) : noir */
+  --inverse: #121316;
+  --inverse-2: #24262b;
+  --on-inverse: #ffffff;
+  --on-inverse-muted: #b3b8c1;
 
-  /* Fonds de tuiles (catégories, encarts promo) */
-  --tile-peach: #fbe1cc;
-  --tile-sand: #f2e7d7;
-  --tile-sky: #dde8f0;
-  --tile-rose: #f5e1dc;
-  --tile-lilac: #e8e3f0;
+  /* Hero : dégradé corail → violet (texte blanc ≥ 4,9:1 sur toute la hauteur) */
+  --hero-from: #d42a47;
+  --hero-via: #a52d7c;
+  --hero-to: #5523a8;
+
+  /* Fonds de tuiles pastel (catégories, encarts promo) */
+  --tile-peach: #fbe8e2;
+  --tile-sand: #f3ece2;
+  --tile-sky: #e5ebf0;
+  --tile-rose: #f8e4e7;
+  --tile-lilac: #ebe8f3;
 
   /* Statuts */
-  --signal: #23744a; /* vert conservé : « en stock » est un code d'état universel */
-  --signal-soft: #e1f0e6;
-  --warning: #9a5b00;
-  --warning-soft: #fbefd9;
-  --danger: #b0213a; /* prix remisés, badges d'offre (carmin, distinct de l'orange) */
-  --danger-soft: #fbe5e1;
-  --star: #d99a1e;
+  --signal: #1f7a46; /* « en stock » : vert, code d'état universel */
+  --signal-soft: #e3f3e9;
+  --warning: #a35c00;
+  --warning-soft: #fdf0dc;
+  --danger: #c41c28; /* remises : badges « -X % », prix remisés, surtitres d'offre */
+  --danger-soft: #fde8ea;
+  --star: #f5a300;
 }

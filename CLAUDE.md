@@ -115,7 +115,7 @@ tests/                                 # Tests Vitest
 
 ### 5.1 Direction artistique
 
-**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance orange foncé, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil sombre, pied de page brun-orange. Palette orange foncé (terre cuite) + crème, rouge carmin réservé aux remises, vert réservé à l'état « en stock ». Titres en serif éditoriale, specs techniques toujours en micro-étiquettes mono.
+**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance noir, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil noire, pied de page noir. Palette inspirée des grandes boutiques high-tech : fond blanc / gris clair, noir pour les zones sombres, **bleu vif** pour les actions (boutons en pilule), **rouge** pour les remises et surtitres d'offre, **hero en dégradé corail → violet**, encarts pastel (lavande, beige, gris-bleu), vert réservé à l'état « en stock ». Titres en serif éditoriale, specs techniques toujours en micro-étiquettes mono.
 
 À éviter absolument : carrousels automatiques, pop-ups agressifs, bannières clignotantes, fausses urgences (« plus que 2 h ! »), promotions ou avis inventés, look « marketplace discount » surchargé.
 
@@ -125,14 +125,15 @@ Couleurs principales (thème clair) :
 
 | Token | Valeur | Usage |
 |---|---|---|
-| `--bg` / `--surface` / `--surface-2` | `#F6F4EE` / `#FFFFFF` / `#F1EFE8` | Fond crème, cartes, fonds de visuels |
-| `--text` / `--text-muted` | `#21170F` / `#6A5C52` | Texte |
-| `--accent` / `--accent-strong` / `--accent-soft` | `#A63F0A` / `#82300A` / `#FBE7D8` | Orange foncé : boutons, liens, actif |
-| `--inverse` / `--on-inverse` / `--on-inverse-muted` | `#2E1406` / `#FBF1EA` / `#D9B8A3` | Brun-orange très foncé : bandeau haut, hero, pied de page, bande conseil |
+| `--bg` / `--surface` / `--surface-2` | `#F5F6F8` / `#FFFFFF` / `#F1F3F6` | Fond gris clair, cartes, fonds de visuels |
+| `--text` / `--text-muted` | `#14161A` / `#5B616C` | Texte |
+| `--accent` / `--accent-strong` / `--accent-soft` | `#0B62C4` / `#094F9F` / `#E7F0FB` | Bleu vif : boutons, liens, actif |
+| `--inverse` / `--on-inverse` / `--on-inverse-muted` | `#121316` / `#FFFFFF` / `#B3B8C1` | Noir : bandeau haut, pied de page, bande conseil, accueil du compte |
+| `--hero-from` / `--hero-via` / `--hero-to` | `#D42A47` / `#A52D7C` / `#5523A8` | Dégradé du hero (texte blanc uniquement, ≥ 4,9:1 sur toute la hauteur) |
 | `--tile-peach/sand/sky/rose/lilac` | pastels | Pastilles de catégories, hero, encarts promo |
-| `--danger` | `#B0213A` | Badge de remise « -X % » et prix remisé (carmin, distinct de l'orange) |
-| `--signal` / `--warning` | `#23744A` / `#9A5B00` | Stock disponible (vert conservé : code d'état universel) / stock faible |
-| `--star` | `#D99A1E` | Étoiles des avis (vérifiés uniquement) |
+| `--danger` | `#C41C28` | Remises : badge « -X % », prix remisé, surtitres d'offre (≥ 4,9:1 sur les tuiles) |
+| `--signal` / `--warning` | `#1F7A46` / `#A35C00` | Stock disponible (vert conservé : code d'état universel) / stock faible |
+| `--star` | `#F5A300` | Étoiles des avis (vérifiés uniquement) |
 
 - Classes Tailwind correspondantes : `bg-accent`, `bg-inverse`, `text-on-inverse-muted`, `bg-tile-peach`, `text-danger`…
 - Rayons : 6 / 10 / 16 / 24 px (`rounded-xl` pour les grandes cartes et sections).

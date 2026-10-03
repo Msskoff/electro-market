@@ -17,7 +17,7 @@ interface OgInput {
 /** Gabarit unique des images de partage (Open Graph / Twitter) et image produit schema.org. */
 export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInput): ImageResponse {
   const grid =
-    "radial-gradient(circle at 80% 20%, #FBE1CC 0%, #F6F4EE 60%)";
+    "radial-gradient(circle at 80% 20%, #EBE8F3 0%, #F5F6F8 60%)";
 
   const element: ReactElement = (
     <div
@@ -25,9 +25,9 @@ export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInp
         width: "100%",
         height: "100%",
         display: "flex",
-        background: "#F6F4EE",
+        background: "#F5F6F8",
         backgroundImage: grid,
-        color: "#21170F",
+        color: "#14161A",
         padding: 64,
         fontFamily: "sans-serif",
       }}
@@ -39,7 +39,7 @@ export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInp
               width: 56,
               height: 56,
               borderRadius: 14,
-              background: "#A63F0A",
+              background: "#0B62C4",
               color: "white",
               display: "flex",
               alignItems: "center",
@@ -53,11 +53,11 @@ export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInp
           <div style={{ fontSize: 34, fontWeight: 700 }}>{siteConfig.name}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", maxWidth: visual ? 640 : 1000 }}>
-          <div style={{ fontSize: 22, letterSpacing: 3, textTransform: "uppercase", color: "#A63F0A" }}>
+          <div style={{ fontSize: 22, letterSpacing: 3, textTransform: "uppercase", color: "#0B62C4" }}>
             {eyebrow}
           </div>
           <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.05, marginTop: 16 }}>{title}</div>
-          {subtitle && <div style={{ fontSize: 28, color: "#6A5C52", marginTop: 20 }}>{subtitle}</div>}
+          {subtitle && <div style={{ fontSize: 28, color: "#5B616C", marginTop: 20 }}>{subtitle}</div>}
         </div>
         <div style={{ display: "flex", fontSize: 36, fontWeight: 700 }}>{price ?? siteConfig.tagline}</div>
       </div>

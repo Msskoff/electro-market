@@ -95,7 +95,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerCancel={() => (pointerStart.current = null)}
-      className="relative isolate h-[540px] touch-pan-y overflow-hidden bg-inverse text-on-inverse sm:h-[700px] lg:h-[clamp(600px,calc(100svh-11rem),740px)]"
+      className="relative isolate h-[540px] touch-pan-y overflow-hidden bg-gradient-to-b from-hero-from via-hero-via to-hero-to text-on-inverse sm:h-[700px] lg:h-[clamp(600px,calc(100svh-11rem),740px)]"
     >
       {slides.map((s, i) => {
         const active = i === index;
@@ -116,13 +116,13 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
             <HeroScene kind={s.kind} color={s.color} tone={s.tone} video={s.video} active={active} />
 
             {/* Grand écran : dégradé à gauche, sous le texte. Petit écran : dégradé par le bas. */}
-            <div className="absolute inset-y-0 left-0 hidden w-[64%] bg-gradient-to-r from-inverse from-30% via-inverse/80 to-transparent lg:block" />
-            <div className="absolute inset-x-0 bottom-0 h-[66%] bg-gradient-to-t from-inverse from-45% via-inverse/80 to-transparent lg:hidden" />
+            <div className="absolute inset-y-0 left-0 hidden w-[60%] bg-gradient-to-r from-hero-to/35 to-transparent lg:block" />
+            <div className="absolute inset-x-0 bottom-0 h-[66%] bg-gradient-to-t from-hero-to from-40% via-hero-to/80 to-transparent lg:hidden" />
 
             <Container className="relative flex h-full flex-col justify-end pb-28 sm:pb-36 lg:justify-center lg:pb-10">
               <div className="hero-content max-w-xl">
                 <p className="flex flex-wrap items-center gap-2">
-                  <span className="eyebrow rounded-full border border-on-inverse/25 px-3 py-1 text-on-inverse-muted">
+                  <span className="eyebrow rounded-full border border-on-inverse/25 px-3 py-1 text-on-inverse">
                     {s.categoryName}
                   </span>
                   {s.discount > 0 && (
@@ -130,11 +130,11 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
                   )}
                 </p>
                 <h2 className="mt-3 text-display text-on-inverse sm:mt-5">{frenchSpacing(s.title)}</h2>
-                <p className="mt-5 hidden max-w-lg leading-relaxed text-on-inverse-muted sm:block lg:text-lg">{frenchSpacing(s.text)}</p>
+                <p className="mt-5 hidden max-w-lg leading-relaxed text-on-inverse sm:block lg:text-lg">{frenchSpacing(s.text)}</p>
                 <p className="mt-4 text-xs sm:mt-6 sm:text-sm">
                   <span className="font-semibold text-on-inverse">{s.productName}</span>
-                  <span className="mx-2 text-on-inverse-muted">·</span>
-                  <span className="text-on-inverse-muted">{s.priceLabel}</span>
+                  <span className="mx-2 text-on-inverse">·</span>
+                  <span className="text-on-inverse">{s.priceLabel}</span>
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3 sm:mt-7">
                   <Link
@@ -158,7 +158,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
 
       {/* Intitulé fixe de la page (seul h1) */}
       <Container className="pointer-events-none absolute inset-x-0 top-0 z-20 pt-6 lg:pt-8">
-        <h1 className="eyebrow truncate font-sans text-on-inverse-muted">
+        <h1 className="eyebrow truncate font-sans text-on-inverse">
           ElectroMarket · Boutique d&apos;électronique à Lomé
         </h1>
       </Container>
@@ -166,7 +166,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
       {/* Commandes */}
       <Container className="absolute inset-x-0 bottom-0 z-20 flex items-end justify-between gap-6 pb-6 lg:pb-8">
         <div className="min-w-0 flex-1">
-          <p className="mb-3 font-mono text-xs tabular text-on-inverse-muted lg:hidden">
+          <p className="mb-3 font-mono text-xs tabular text-on-inverse lg:hidden">
             <span className="text-on-inverse">{String(index + 1).padStart(2, "0")}</span> / {String(count).padStart(2, "0")}
           </p>
           <ol className="flex max-w-2xl gap-2 lg:gap-4">
@@ -190,7 +190,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
                   <span
                     className={cn(
                       "mt-2.5 hidden truncate text-xs font-semibold transition-colors lg:block",
-                      i === index ? "text-on-inverse" : "text-on-inverse-muted group-hover:text-on-inverse",
+                      i === index ? "text-on-inverse" : "text-on-inverse/85 group-hover:text-on-inverse",
                     )}
                   >
                     {s.productName}

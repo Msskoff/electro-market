@@ -4,7 +4,7 @@ import { Icon } from "@/components/ui/Icon";
 import { categoryPath, defaultVariant } from "@/lib/catalog/selectors";
 import type { Category, Product } from "@/lib/catalog/types";
 
-const tones = ["bg-tile-peach", "bg-tile-sand", "bg-tile-sky"];
+const tones = ["bg-tile-lilac", "bg-tile-sand", "bg-tile-sky"];
 
 /** Encarts éditoriaux menant aux catégories (une par catégorie). */
 export function PromoTiles({ categories, products }: { categories: Category[]; products: Product[] }) {
@@ -17,7 +17,7 @@ export function PromoTiles({ categories, products }: { categories: Category[]; p
             className={`group relative flex h-full min-h-36 items-center overflow-hidden rounded-xl ${tones[i]} p-5 transition-shadow hover:shadow-md sm:min-h-44 sm:p-6`}
           >
             <div className="relative z-10 max-w-[58%]">
-              <p className="eyebrow text-muted">{c.name}</p>
+              <p className="eyebrow text-danger">{c.name}</p>
               <h3 className="mt-2 text-h3 sm:text-h2">{c.tagline}</h3>
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
                 Découvrir

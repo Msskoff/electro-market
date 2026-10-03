@@ -18,6 +18,9 @@
   --color-inverse-2: var(--inverse-2);
   --color-on-inverse: var(--on-inverse);
   --color-on-inverse-muted: var(--on-inverse-muted);
+  --color-hero-from: var(--hero-from);
+  --color-hero-via: var(--hero-via);
+  --color-hero-to: var(--hero-to);
   --color-tile-peach: var(--tile-peach);
   --color-tile-sand: var(--tile-sand);
   --color-tile-sky: var(--tile-sky);

@@ -12,7 +12,7 @@ interface ButtonStyleProps {
 }
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-md font-medium whitespace-nowrap " +
+  "inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap " +
   "transition-[background-color,border-color,color,transform] duration-150 ease-out " +
   "active:translate-y-px disabled:pointer-events-none disabled:opacity-50";
 
