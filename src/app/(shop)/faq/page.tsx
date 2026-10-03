@@ -4,16 +4,21 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { siteConfig } from "@/config/site";
-import { siteFaq } from "@/lib/content/site-faq";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { getSettings } from "@/lib/settings/repository";
+import { siteFaqItems } from "@/lib/settings/types";
 
-export const metadata = buildMetadata({
-  title: "Aide : livraison, retours et garantie",
-  description: `Délais de livraison, retours sous ${siteConfig.policies.returnDays} jours, garantie, paiement : toutes les réponses sur vos commandes ${siteConfig.name}.`,
-  path: "/faq",
-});
+export async function generateMetadata() {
+  const { policies } = await getSettings();
+  return buildMetadata({
+    title: "Aide : livraison, retours et garantie",
+    description: `Délais de livraison, retours sous ${policies.returnDays} jours, garantie, paiement : toutes les réponses sur vos commandes ${siteConfig.name}.`,
+    path: "/faq",
+  });
+}
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const settings = await getSettings();
   return (
     <Container>
       <Breadcrumbs items={[{ name: "Aide", path: "/faq" }]} />
@@ -26,15 +31,15 @@ export default function FaqPage() {
       <div id="livraison" className="mt-10 scroll-mt-28">
         <TrustBar />
       </div>
-      <Faq items={siteFaq} className="max-w-3xl py-14" />
+      <Faq items={siteFaqItems(settings)} className="max-w-3xl py-14" />
       <section aria-labelledby="contact" className="max-w-3xl rounded-lg border border-border bg-surface p-6">
         <h2 id="contact" className="text-h3">
           Nous contacter
         </h2>
         <p className="mt-2 text-muted">
           Par e-mail :{" "}
-          <a href={`mailto:${siteConfig.contact.email}`} className="text-accent underline-offset-4 hover:underline">
-            {siteConfig.contact.email}
+          <a href={`mailto:${settings.contact.email}`} className="text-accent underline-offset-4 hover:underline">
+            {settings.contact.email}
           </a>
         </p>
       </section>

@@ -7,7 +7,6 @@ import { SpecTable } from "@/components/product/SpecTable";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
-import { siteConfig } from "@/config/site";
 import {
   getAllProducts,
   getBrand,
@@ -19,11 +18,16 @@ import {
 import { categoryPath, defaultVariant, productImagePath, productPath } from "@/lib/catalog/selectors";
 import { t } from "@/lib/i18n/fr";
 import { productJsonLd } from "@/lib/seo/jsonld";
+import { getSettings } from "@/lib/settings/repository";
 import { buildMetadata, clampDescription } from "@/lib/seo/metadata";
 import { formatDate, formatPrice } from "@/lib/utils/format";
 import { frenchSpacing } from "@/lib/utils/typography";
 
-export const dynamicParams = false;
+/**
+ * Pages connues au build générées à l'avance ; les autres (produit ajouté depuis /admin,
+ * nouvelle page de pagination) sont générées à la première visite puis mises en cache.
+ */
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const products = await getAllProducts();
@@ -49,7 +53,7 @@ export async function generateMetadata({ params }: PageProps<"/[categorie]/[slug
 export default async function ProductPage({ params }: PageProps<"/[categorie]/[slug]">) {
   const { categorie, slug } = await params;
   const product = await getProduct(categorie, slug);
-  if (!product) notFound();
+  if (!product) notFound(); // cas traités dans layout.tsx (redirections)
 
   const [category, brand, related, brands] = await Promise.all([
     getCategory(product.category),
@@ -59,7 +63,8 @@ export default async function ProductPage({ params }: PageProps<"/[categorie]/[s
   ]);
   if (!category || !brand) notFound();
 
-  const { policies } = siteConfig;
+  const settings = await getSettings();
+  const { policies } = settings;
   const assurances = [
     { icon: "truck" as const, text: `Livraison en ${policies.shippingDelay}, offerte dès ${formatPrice(policies.freeShippingThreshold)}` },
     { icon: "rotate" as const, text: `${policies.returnDays} jours pour changer d'avis, retour gratuit` },
@@ -143,7 +148,7 @@ export default async function ProductPage({ params }: PageProps<"/[categorie]/[s
         )}
       </Container>
 
-      <JsonLd data={productJsonLd(product, brand, category)} />
+      <JsonLd data={productJsonLd(product, brand, category, settings)} />
     </div>
   );
 }

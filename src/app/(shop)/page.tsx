@@ -13,18 +13,20 @@ import { siteConfig } from "@/config/site";
 import { getAllProducts, getBrands, getCategories, getVerifiedReviews } from "@/lib/catalog/repository";
 import { categoryPath, defaultVariant, discountPercent, priceRange, productPath } from "@/lib/catalog/selectors";
 import type { Category, Product } from "@/lib/catalog/types";
-import { heroSlides } from "@/lib/content/hero-slides";
-import { siteFaq } from "@/lib/content/site-faq";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { getSettings } from "@/lib/settings/repository";
+import { siteFaqItems, type HeroSlide } from "@/lib/settings/types";
 import { formatPrice } from "@/lib/utils/format";
 
-export const metadata = buildMetadata({
-  title: `${siteConfig.name} — Smartphones et ordinateurs portables à Lomé`,
-  description:
-    "Smartphones et ordinateurs portables neufs à Lomé : fiches techniques détaillées, prix en francs CFA, livraison en 24 à 48 h et garantie 2 ans.",
-  path: "/",
-  absoluteTitle: true,
-});
+export async function generateMetadata() {
+  const { policies } = await getSettings();
+  return buildMetadata({
+    title: `${siteConfig.name} — Smartphones et ordinateurs portables à Lomé`,
+    description: `Smartphones et ordinateurs portables neufs à Lomé : fiches techniques détaillées, prix en francs CFA, livraison en ${policies.shippingDelay.replace(/ à Lomé$/, "")} et garantie ${policies.warrantyYears} ans.`,
+    path: "/",
+    absoluteTitle: true,
+  });
+}
 
 function SectionTitle({ id, children, action }: { id: string; children: ReactNode; action?: ReactNode }) {
   return (
@@ -43,7 +45,7 @@ function withArticle(name: string): string {
 }
 
 /** Associe chaque diapositive éditoriale à son produit et à sa catégorie réels. */
-function buildShowcase(products: Product[], categories: Category[]): ShowcaseSlide[] {
+function buildShowcase(heroSlides: HeroSlide[], products: Product[], categories: Category[]): ShowcaseSlide[] {
   return heroSlides.flatMap((slide) => {
     const product = products.find((p) => p.category === slide.categorySlug && p.slug === slide.productSlug);
     const category = categories.find((c) => c.slug === slide.categorySlug);
@@ -68,11 +70,12 @@ function buildShowcase(products: Product[], categories: Category[]): ShowcaseSli
 }
 
 export default async function HomePage() {
-  const [categories, products, brands, reviews] = await Promise.all([
+  const [categories, products, brands, reviews, settings] = await Promise.all([
     getCategories(),
     getAllProducts(),
     getBrands(),
     getVerifiedReviews(),
+    getSettings(),
   ]);
   const counts = Object.fromEntries(
     categories.map((c) => [c.slug, products.filter((p) => p.category === c.slug).length]),
@@ -82,7 +85,7 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-10 sm:space-y-16">
-      <HeroShowcase slides={buildShowcase(products, categories)} />
+      <HeroShowcase slides={buildShowcase(settings.heroSlides, products, categories)} />
 
       <Container as="section" aria-label="Catégories">
         <CategoryCircles categories={categories} counts={counts} />
@@ -116,7 +119,7 @@ export default async function HomePage() {
       </Container>
 
       <Container className="reveal max-w-3xl">
-        <Faq items={siteFaq} />
+        <Faq items={siteFaqItems(settings)} />
       </Container>
 
       <Container as="section" aria-label="Nos engagements" className="reveal">

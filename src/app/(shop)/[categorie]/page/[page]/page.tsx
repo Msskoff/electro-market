@@ -7,8 +7,11 @@ import { buildMetadata, clampDescription } from "@/lib/seo/metadata";
 /**
  * Pages 2…n d'une catégorie (/smartphones/page/2). La page 1 n'existe qu'à
  * l'URL de la catégorie ; chaque page paginée a sa propre URL canonique.
+ *
+ * Pages connues au build générées à l'avance ; les autres (produit ajouté depuis /admin,
+ * nouvelle page de pagination) sont générées à la première visite puis mises en cache.
  */
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const categories = await getCategories();

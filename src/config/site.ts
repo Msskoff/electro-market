@@ -1,7 +1,7 @@
 /**
  * Configuration centrale de la boutique.
- * Source unique pour le nom, l'URL, les politiques commerciales et l'identité
- * de l'entité (réutilisée par les métadonnées, le JSON-LD et /llms.txt).
+ * Partie FIXE (code) : nom, URL, langue, devise, indexation. La partie modifiable depuis
+ * l'administration (contact, politiques commerciales…) est dans lib/settings.
  */
 export const siteConfig = {
   name: "ElectroMarket",
@@ -19,33 +19,18 @@ export const siteConfig = {
   language: "fr",
   /** Code ISO 4217. XOF = franc CFA (UEMOA), sans subdivision. */
   currency: process.env.NEXT_PUBLIC_CURRENCY ?? "XOF",
-  /** Affiche un bandeau signalant que le catalogue contient des données fictives. */
-  demoMode: true,
   /**
    * Indexation par les moteurs et assistants IA. Désactivée par défaut (démo,
    * préproduction) : il faut définir SITE_INDEXING=true au lancement réel.
    */
   indexable: process.env.SITE_INDEXING === "true",
-  contact: {
-    email: "contact@votre-domaine.com",
-    phone: "+228 00 00 00 00",
-    address: {
-      street: "À compléter",
-      city: "Lomé",
-      region: "Maritime",
-      country: "TG",
-    },
-  },
-  social: [] as string[],
-  /** Montants exprimés dans l'unité mineure de la devise (voir lib/utils/format.ts). */
-  policies: {
-    freeShippingThreshold: 50000, // À VALIDER
-    shippingCost: 2000, // À VALIDER
-    shippingDays: { min: 1, max: 2 }, // À VALIDER
-    shippingDelay: "24 à 48 h à Lomé",
-    returnDays: 30, // À VALIDER
-    warrantyYears: 2, // À VALIDER
-  },
+  /** Ville proposée par défaut dans les formulaires d'adresse. */
+  defaultCity: "Lomé",
+  /*
+   * Coordonnées, livraison, retours, garantie, réseaux sociaux, bandeau « Démo », hero et
+   * FAQ du site : modifiables dans /admin/configuration (table site_settings, voir
+   * lib/settings). Valeurs initiales : DEFAULT_SETTINGS (lib/settings/types.ts).
+   */
 } as const;
 
 export type SiteConfig = typeof siteConfig;

@@ -16,6 +16,8 @@ export interface Category {
   tagline: string;
   /** Introduction SEO de la page catégorie (2–3 phrases factuelles). */
   intro: string;
+  /** Mots que les acheteurs tapent sans qu'ils figurent dans le nom (« téléphone », « pc »…). */
+  searchKeywords?: string;
   faq: FaqItem[];
 }
 

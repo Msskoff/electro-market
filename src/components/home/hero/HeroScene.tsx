@@ -3,7 +3,7 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import { DeviceIllustration } from "@/components/product/DeviceIllustration";
 import type { DeviceKind } from "@/lib/catalog/types";
-import type { HeroSlide, HeroVideo } from "@/lib/content/hero-slides";
+import type { HeroSlide, HeroVideo } from "@/lib/settings/types";
 import { cn } from "@/lib/utils/cn";
 
 /** Animation propre à chaque type d'appareil (combinée au flottement). */

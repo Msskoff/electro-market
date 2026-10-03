@@ -1,8 +1,8 @@
 import { kindIcon } from "@/components/product/kindIcon";
 import { Container } from "@/components/ui/Container";
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { siteConfig } from "@/config/site";
 import { getCategories } from "@/lib/catalog/repository";
+import { getSettings } from "@/lib/settings/repository";
 import { categoryPath } from "@/lib/catalog/selectors";
 import { t } from "@/lib/i18n/fr";
 import { AccountLink } from "./AccountLink";
@@ -12,16 +12,13 @@ import { Logo } from "./Logo";
 import { NavLink } from "./NavLink";
 import { SearchForm } from "./SearchForm";
 
-const { policies } = siteConfig;
-
-const topBarItems: { icon: IconName; text: string }[] = [
-  { icon: "truck", text: `Livraison ${policies.shippingDelay}` },
-  { icon: "rotate", text: `Retours sous ${policies.returnDays} jours` },
-  { icon: "lock", text: "Paiement sécurisé" },
-];
-
 export async function SiteHeader() {
-  const categories = await getCategories();
+  const [categories, { policies, demoMode }] = await Promise.all([getCategories(), getSettings()]);
+  const topBarItems: { icon: IconName; text: string }[] = [
+    { icon: "truck", text: `Livraison ${policies.shippingDelay}` },
+    { icon: "rotate", text: `Retours sous ${policies.returnDays} jours` },
+    { icon: "lock", text: "Paiement sécurisé" },
+  ];
   const menuItems = [
     ...categories.map((c) => ({ href: categoryPath(c.slug), label: c.name, icon: kindIcon[c.kind] })),
   ];
@@ -31,7 +28,7 @@ export async function SiteHeader() {
       {/* Bandeau de réassurance */}
       <div className="bg-inverse text-on-inverse">
         <Container className="flex h-8 items-center justify-center gap-6 text-xs font-medium sm:h-9">
-          {siteConfig.demoMode && (
+          {demoMode && (
             <span className="shrink-0 whitespace-nowrap rounded-full bg-on-inverse/15 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.06em]">
               <span className="sm:hidden">Démo</span>
               <span className="hidden sm:inline">Démo — produits fictifs</span>

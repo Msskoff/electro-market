@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Container } from "@/components/ui/Container";
 import type { DeviceKind } from "@/lib/catalog/types";
-import type { HeroSlide } from "@/lib/content/hero-slides";
+import type { HeroSlide } from "@/lib/settings/types";
 import { cn } from "@/lib/utils/cn";
 import { HeroScene } from "./HeroScene";
 import { frenchSpacing } from "@/lib/utils/typography";

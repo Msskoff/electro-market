@@ -6,10 +6,10 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
-import { siteConfig } from "@/config/site";
 import { getAccount } from "@/lib/account/queries";
 import { requireUser } from "@/lib/auth/session";
 import { getCart } from "@/lib/cart/queries";
+import { getSettings } from "@/lib/settings/repository";
 import { t } from "@/lib/i18n/fr";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { formatPrice } from "@/lib/utils/format";
@@ -51,7 +51,7 @@ export default async function CheckoutPage() {
             <CheckoutDelivery addresses={addresses} />
             <p className="mt-4 flex items-center gap-2 text-sm text-muted">
               <Icon name="truck" size={16} className="shrink-0" />
-              Livraison {siteConfig.policies.shippingDelay}.
+              Livraison {(await getSettings()).policies.shippingDelay}.
             </p>
           </Step>
 

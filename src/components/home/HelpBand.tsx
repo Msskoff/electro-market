@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
-import { siteConfig } from "@/config/site";
+import { getSettings } from "@/lib/settings/repository";
 
 /**
  * Encart « conseil » (à la place d'une inscription newsletter tant
  * qu'aucun service d'e-mailing n'est branché).
  */
-export function HelpBand() {
+export async function HelpBand() {
+  const { contact } = await getSettings();
   return (
     <section
       aria-labelledby="conseil-title"
@@ -33,7 +34,7 @@ export function HelpBand() {
           <Icon name="arrowRight" size={16} />
         </Link>
         <a
-          href={`mailto:${siteConfig.contact.email}`}
+          href={`mailto:${contact.email}`}
           className="inline-flex h-11 items-center gap-2 rounded-full border border-on-inverse/30 px-5 text-sm font-semibold sm:h-12 sm:px-6 transition-colors hover:bg-on-inverse/10"
         >
           <Icon name="mail" size={16} />

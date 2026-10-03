@@ -1,7 +1,8 @@
 import { absoluteUrl, siteConfig } from "@/config/site";
 import { getAllProducts, getCategories } from "@/lib/catalog/repository";
 import { categoryPath, defaultVariant, productPath } from "@/lib/catalog/selectors";
-import { siteFaq } from "@/lib/content/site-faq";
+import { getSettings } from "@/lib/settings/repository";
+import { siteFaqItems } from "@/lib/settings/types";
 import { formatPrice } from "@/lib/utils/format";
 
 /** Généré au build, régénéré à chaque déploiement : toujours aligné sur le catalogue. */
@@ -12,8 +13,8 @@ export const dynamic = "force-static";
  * assistants IA (proposition de standard llmstxt.org).
  */
 export async function GET() {
-  const [categories, products] = await Promise.all([getCategories(), getAllProducts()]);
-  const { policies } = siteConfig;
+  const [categories, products, settings] = await Promise.all([getCategories(), getAllProducts(), getSettings()]);
+  const { policies, contact } = settings;
 
   const body = [
     `# ${siteConfig.name}`,
@@ -26,7 +27,7 @@ export async function GET() {
     `- Retours : ${policies.returnDays} jours, gratuits`,
     `- Garantie : ${policies.warrantyYears} ans, produits neufs`,
     `- Prix : TTC, en francs CFA (${siteConfig.currency})`,
-    `- Contact : ${siteConfig.contact.email}`,
+    `- Contact : ${contact.email}, ${contact.phone}`,
     "",
     "## Catégories",
     "",
@@ -44,7 +45,7 @@ export async function GET() {
     "",
     "## Questions fréquentes",
     "",
-    ...siteFaq.map((f) => `- ${f.question} ${f.answer}`),
+    ...siteFaqItems(settings).map((f) => `- ${f.question} ${f.answer}`),
     "",
     "## Optional",
     "",

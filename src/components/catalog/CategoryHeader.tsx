@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { DeviceIllustration } from "@/components/product/DeviceIllustration";
-import { siteConfig } from "@/config/site";
 import { defaultVariant, priceRange } from "@/lib/catalog/selectors";
+import { getSettings } from "@/lib/settings/repository";
 import type { Brand, Category, Product } from "@/lib/catalog/types";
 import { formatDate, formatPrice } from "@/lib/utils/format";
 import { frenchSpacing } from "@/lib/utils/typography";
@@ -20,13 +20,13 @@ interface CategoryHeaderProps {
  * En-tête d'une page catégorie : identité visuelle, chiffres clés lisibles d'un coup d'œil,
  * date de mise à jour (fraîcheur) et raccourcis par marque.
  */
-export function CategoryHeader({ category, tile, products, brands, page }: CategoryHeaderProps) {
+export async function CategoryHeader({ category, tile, products, brands, page }: CategoryHeaderProps) {
   const prices = products.flatMap((p) => Object.values(priceRange(p)));
   const minPrice = prices.length ? Math.min(...prices) : 0;
   const maxPrice = prices.length ? Math.max(...prices) : 0;
   const available = products.filter((p) => p.variants.some((v) => v.stock > 0)).length;
   const updatedAt = products.map((p) => p.updatedAt).sort().at(-1);
-  const { policies } = siteConfig;
+  const { policies, contact } = await getSettings();
 
   // Marques présentes dans la catégorie, de la plus représentée à la moins représentée.
   const brandCounts = brands
@@ -43,7 +43,7 @@ export function CategoryHeader({ category, tile, products, brands, page }: Categ
     { label: "À partir de", value: formatPrice(minPrice), hint: `jusqu'à ${formatPrice(maxPrice)}` },
     { label: "Disponibles", value: String(available), hint: `sur ${products.length} références` },
     { label: "Marques", value: String(brandCounts.length), hint: `garantie ${policies.warrantyYears} ans` },
-    { label: "Livraison", value: `${policies.shippingDays.min * 24} à ${policies.shippingDays.max * 24} h`, hint: `à ${siteConfig.contact.address.city}` },
+    { label: "Livraison", value: `${policies.shippingDays.min * 24} à ${policies.shippingDays.max * 24} h`, hint: `à ${contact.address.city}` },
   ];
 
   return (

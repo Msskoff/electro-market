@@ -1,6 +1,7 @@
 import { absoluteUrl, siteConfig } from "@/config/site";
-import { productImagePath, productPath } from "@/lib/catalog/selectors";
+import { primaryImage, productImagePath, productPath } from "@/lib/catalog/selectors";
 import type { Brand, Category, FaqItem, Product } from "@/lib/catalog/types";
+import type { StoreSettings } from "@/lib/settings/types";
 import { toDecimal } from "@/lib/utils/format";
 
 /**
@@ -10,10 +11,13 @@ import { toDecimal } from "@/lib/utils/format";
 
 type JsonLd = Record<string, unknown>;
 
+/** Valeurs de configuration (modifiables dans /admin) reprises dans les données structurées. */
+type StoreInfo = Pick<StoreSettings, "contact" | "policies" | "social">;
+
 const ORG_ID = `${siteConfig.url}/#organization`;
 const WEBSITE_ID = `${siteConfig.url}/#website`;
 
-export function organizationJsonLd(): JsonLd {
+export function organizationJsonLd(store: StoreInfo): JsonLd {
   return {
     "@context": "https://schema.org",
     "@type": "OnlineStore",
@@ -23,17 +27,17 @@ export function organizationJsonLd(): JsonLd {
     // PNG carré 512 px sur fond blanc : format recommandé par Google pour le logo d'entreprise.
     logo: absoluteUrl("/logo.png"),
     description: siteConfig.description,
-    email: siteConfig.contact.email,
-    telephone: siteConfig.contact.phone,
+    email: store.contact.email,
+    telephone: store.contact.phone,
     address: {
       "@type": "PostalAddress",
-      streetAddress: siteConfig.contact.address.street,
-      addressLocality: siteConfig.contact.address.city,
-      addressRegion: siteConfig.contact.address.region,
-      addressCountry: siteConfig.contact.address.country,
+      streetAddress: store.contact.address.street,
+      addressLocality: store.contact.address.city,
+      addressRegion: store.contact.address.region,
+      addressCountry: store.contact.address.country,
     },
-    sameAs: siteConfig.social,
-    hasMerchantReturnPolicy: returnPolicy(),
+    sameAs: store.social,
+    hasMerchantReturnPolicy: returnPolicy(store),
   };
 }
 
@@ -67,45 +71,47 @@ export function breadcrumbJsonLd(crumbs: Crumb[]): JsonLd {
   };
 }
 
-function returnPolicy(): JsonLd {
+function returnPolicy(store: StoreInfo): JsonLd {
   return {
     "@type": "MerchantReturnPolicy",
-    applicableCountry: siteConfig.contact.address.country,
+    applicableCountry: store.contact.address.country,
     returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-    merchantReturnDays: siteConfig.policies.returnDays,
+    merchantReturnDays: store.policies.returnDays,
     returnMethod: "https://schema.org/ReturnByMail",
     returnFees: "https://schema.org/FreeReturn",
   };
 }
 
-function shippingDetails(price: number): JsonLd {
-  const free = price >= siteConfig.policies.freeShippingThreshold;
+function shippingDetails(store: StoreInfo, price: number): JsonLd {
+  const free = price >= store.policies.freeShippingThreshold;
   return {
     "@type": "OfferShippingDetails",
     shippingRate: {
       "@type": "MonetaryAmount",
-      value: toDecimal(free ? 0 : siteConfig.policies.shippingCost),
+      value: toDecimal(free ? 0 : store.policies.shippingCost),
       currency: siteConfig.currency,
     },
     shippingDestination: {
       "@type": "DefinedRegion",
-      addressCountry: siteConfig.contact.address.country,
+      addressCountry: store.contact.address.country,
     },
     deliveryTime: {
       "@type": "ShippingDeliveryTime",
       handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 1, unitCode: "DAY" },
       transitTime: {
         "@type": "QuantitativeValue",
-        minValue: siteConfig.policies.shippingDays.min,
-        maxValue: siteConfig.policies.shippingDays.max,
+        minValue: store.policies.shippingDays.min,
+        maxValue: store.policies.shippingDays.max,
         unitCode: "DAY",
       },
     },
   };
 }
 
-export function productJsonLd(product: Product, brand: Brand, category: Category): JsonLd {
+export function productJsonLd(product: Product, brand: Brand, category: Category, store: StoreInfo): JsonLd {
   const url = absoluteUrl(productPath(product));
+  // Vraies photos (une par variante, sans doublon) puis le visuel généré, toujours disponible.
+  const photos = [...new Set(product.variants.map((v) => primaryImage(product, v)?.src).filter((s): s is string => !!s))];
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -113,7 +119,7 @@ export function productJsonLd(product: Product, brand: Brand, category: Category
     name: product.name,
     description: product.summary,
     url,
-    image: [absoluteUrl(productImagePath(product))],
+    image: [...photos.map((src) => (src.startsWith("http") ? src : absoluteUrl(src))), absoluteUrl(productImagePath(product))],
     brand: { "@type": "Brand", name: brand.name },
     category: category.name,
     ...(product.mpn ? { mpn: product.mpn } : {}),
@@ -137,8 +143,8 @@ export function productJsonLd(product: Product, brand: Brand, category: Category
         v.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
       seller: { "@id": ORG_ID },
-      shippingDetails: shippingDetails(v.price),
-      hasMerchantReturnPolicy: returnPolicy(),
+      shippingDetails: shippingDetails(store, v.price),
+      hasMerchantReturnPolicy: returnPolicy(store),
     })),
   };
 }

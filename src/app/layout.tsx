@@ -1,10 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { SiteFooter } from "@/components/layout/SiteFooter";
-import { SiteHeader } from "@/components/layout/SiteHeader";
-import { JsonLd } from "@/components/seo/JsonLd";
 import { siteConfig } from "@/config/site";
-import { t } from "@/lib/i18n/fr";
-import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/jsonld";
 import { cn } from "@/lib/utils/cn";
 import { jetbrainsMono, poppins } from "./fonts";
 import "./globals.css";
@@ -24,31 +19,17 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   // Thème clair uniquement pour l'instant (mode sombre retiré).
   colorScheme: "light",
-  themeColor: [
-    { color: "#121316" },
-  ],
+  themeColor: [{ color: "#121316" }],
 };
 
+/** Squelette HTML commun. En-tête, pied de page et JSON-LD : (shop)/layout.tsx ; l'administration a sa propre mise en page. */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={siteConfig.language}
       className={cn(poppins.variable, jetbrainsMono.variable, "antialiased")}
     >
-      <body className="flex min-h-dvh flex-col">
-        <a
-          href="#contenu"
-          className="sr-only z-50 rounded-md bg-accent px-4 py-2 text-on-accent focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
-        >
-          {t.nav.skipToContent}
-        </a>
-        <SiteHeader />
-        <main id="contenu" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
-        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
-      </body>
+      <body className="flex min-h-dvh flex-col">{children}</body>
     </html>
   );
 }

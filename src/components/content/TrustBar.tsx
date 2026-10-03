@@ -1,10 +1,9 @@
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { siteConfig } from "@/config/site";
+import { getSettings } from "@/lib/settings/repository";
+import type { StorePolicies } from "@/lib/settings/types";
 import { formatPrice } from "@/lib/utils/format";
 
-const { policies } = siteConfig;
-
-export const trustItems: { icon: IconName; title: string; text: string }[] = [
+const trustItems = (policies: StorePolicies): { icon: IconName; title: string; text: string }[] => [
   {
     icon: "truck",
     title: `Livraison ${policies.shippingDelay}`,
@@ -28,10 +27,11 @@ export const trustItems: { icon: IconName; title: string; text: string }[] = [
 ];
 
 /** Bandeau de réassurance — engagements vérifiables uniquement. */
-export function TrustBar() {
+export async function TrustBar() {
+  const { policies } = await getSettings();
   return (
     <ul className="grid grid-cols-2 gap-x-3 gap-y-5 rounded-xl border border-border bg-surface p-4 sm:gap-6 sm:p-6 lg:grid-cols-4 lg:gap-4 lg:p-8">
-      {trustItems.map((item) => (
+      {trustItems(policies).map((item) => (
         <li key={item.title} className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent sm:size-12">
             <Icon name={item.icon} size={22} />

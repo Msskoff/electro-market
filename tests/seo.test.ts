@@ -3,6 +3,7 @@ import { brands, categories, products } from "@/lib/catalog/data";
 import { defaultVariant, priceRange } from "@/lib/catalog/selectors";
 import { breadcrumbJsonLd, faqJsonLd, productJsonLd } from "@/lib/seo/jsonld";
 import { clampDescription } from "@/lib/seo/metadata";
+import { DEFAULT_SETTINGS } from "@/lib/settings/types";
 
 describe("catalogue", () => {
   it("chaque produit référence une catégorie et une marque existantes", () => {
@@ -31,7 +32,7 @@ describe("JSON-LD", () => {
   const category = categories.find((c) => c.slug === product.category)!;
 
   it("Product : une offre par variante, prix et disponibilité", () => {
-    const ld = productJsonLd(product, brand, category) as { offers: Record<string, unknown>[] };
+    const ld = productJsonLd(product, brand, category, DEFAULT_SETTINGS) as { offers: Record<string, unknown>[] };
     expect(ld.offers).toHaveLength(product.variants.length);
     expect(ld.offers[0]).toMatchObject({
       price: "458500",

@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/Icon";
 import { siteConfig } from "@/config/site";
 import { getCategories } from "@/lib/catalog/repository";
+import { getSettings } from "@/lib/settings/repository";
 import { categoryPath } from "@/lib/catalog/selectors";
 import { Logo } from "./Logo";
 
@@ -40,9 +41,8 @@ function FooterColumn({ title, links }: { title: string; links: { href: string; 
 }
 
 export async function SiteFooter() {
-  const categories = await getCategories();
+  const [categories, { contact }] = await Promise.all([getCategories(), getSettings()]);
   const year = new Date().getFullYear();
-  const { contact } = siteConfig;
 
   return (
     <footer className="mt-14 bg-inverse text-on-inverse sm:mt-20">

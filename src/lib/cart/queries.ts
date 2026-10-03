@@ -1,6 +1,6 @@
 import "server-only";
-import { siteConfig } from "@/config/site";
 import { findVariantsBySku } from "@/lib/catalog/repository";
+import { getSettings } from "@/lib/settings/repository";
 import { priceCart, type CartTotals } from "./pricing";
 import { readCurrentCart } from "./store";
 
@@ -11,5 +11,5 @@ import { readCurrentCart } from "./store";
 export async function getCart(): Promise<CartTotals> {
   const lines = await readCurrentCart();
   const lookup = await findVariantsBySku(lines.map((l) => l.sku));
-  return priceCart(lines, lookup, siteConfig.policies);
+  return priceCart(lines, lookup, (await getSettings()).policies);
 }

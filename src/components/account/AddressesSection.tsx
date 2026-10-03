@@ -27,7 +27,7 @@ export function AddressForm({ initial, onDone }: { initial?: Address; onDone: ()
       <Field idPrefix="adresse" name="label" label="Nom de l'adresse" placeholder="Domicile, Bureau…" required defaultValue={v?.label ?? initial?.label} error={state.errors?.label} />
       <Field idPrefix="adresse" name="phone" label="Téléphone sur place" type="tel" inputMode="tel" autoComplete="tel" required defaultValue={v?.phone ?? initial?.phone} error={state.errors?.phone} />
       <Field idPrefix="adresse" name="district" label="Quartier" placeholder="Bè, Tokoin, Agoè…" required defaultValue={v?.district ?? initial?.district} error={state.errors?.district} />
-      <Field idPrefix="adresse" name="city" label="Ville" required defaultValue={v?.city ?? initial?.city ?? siteConfig.contact.address.city} error={state.errors?.city} />
+      <Field idPrefix="adresse" name="city" label="Ville" required defaultValue={v?.city ?? initial?.city ?? siteConfig.defaultCity} error={state.errors?.city} />
       <Field
         idPrefix="adresse"
         name="landmark"
