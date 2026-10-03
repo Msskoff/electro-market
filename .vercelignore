@@ -1,0 +1,9 @@
+# Fichiers jamais envoyés lors d'un déploiement depuis la CLI Vercel
+.env*
+!.env.example
+node_modules
+.next
+.vercel
+.git
+coverage
+*.tsbuildinfo
