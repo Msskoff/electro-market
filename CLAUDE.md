@@ -140,6 +140,7 @@ Couleurs principales (thème clair) :
 | `--bg` / `--surface` / `--surface-2` | `#F5F6F8` / `#FFFFFF` / `#F1F3F6` | Fond gris clair, cartes, fonds de visuels |
 | `--text` / `--text-muted` | `#14161A` / `#5B616C` | Texte |
 | `--accent` / `--accent-strong` / `--accent-soft` | `#0B62C4` / `#094F9F` / `#E7F0FB` | Bleu vif : boutons, liens, actif |
+| `--brand-orange` / `--brand-navy` | `#FF5A1F` / `#1B1F3B` | **Couleurs du logo uniquement** (pictogramme, « Electro » / « Market ») |
 | `--inverse` / `--on-inverse` / `--on-inverse-muted` | `#121316` / `#FFFFFF` / `#B3B8C1` | Noir : bandeau haut, pied de page, bande conseil, accueil du compte |
 | `--hero-from` / `--hero-via` / `--hero-to` | `#D42A47` / `#A52D7C` / `#5523A8` | Dégradé du hero (texte blanc uniquement, ≥ 4,9:1 sur toute la hauteur) |
 | `--tile-peach/sand/sky/rose/lilac` | pastels | Pastilles de catégories, hero, encarts promo |
@@ -151,6 +152,10 @@ Couleurs principales (thème clair) :
 - Rayons : 6 / 10 / 16 / 24 px (`rounded-xl` pour les grandes cartes et sections).
 - **Thème sombre : retiré pour l'instant.** Site en thème clair uniquement (`colorScheme: "light"`), même si l'appareil du visiteur est en mode sombre. Pas de sélecteur de thème. Les anciennes valeurs sombres et `ThemeToggle` sont dans l'historique git (commit `fc278d2`) en cas de réactivation.
 - Tout contraste texte/fond respecte **WCAG AA** (vérifié pour toutes les paires ci-dessus en thème clair).
+
+### 5.2 bis Logo
+
+`components/layout/Logo.tsx` : pictogramme (étiquette de prix orange dont le « M » forme un chariot) redessiné en SVG d'après le logo officiel, + nom en texte réel « **Electro** » (orange) « **Market** » (bleu nuit ; blanc sur fond sombre avec `inverse`). Mêmes tracés dans `app/icon.svg` (favicon), `lib/seo/og.tsx` (images de partage) et `public/logo.png` (512 px, logo du schéma `Organization`). Le fichier image fourni par le client porte la coquille « ElectoMarket » : toujours écrire **ElectroMarket**.
 
 ### 5.3 Typographie
 

@@ -28,6 +28,10 @@
   --accent: #0b62c4;
   --accent-strong: #094f9f;
   --accent-soft: #e7f0fb;
+
+  /* Couleurs du logo (identité de marque) : réservées au logo, pas à l'interface. */
+  --brand-orange: #ff5a1f;
+  --brand-navy: #1b1f3b;
   --on-accent: #ffffff;
 
   /* Zones sombres (bandeau haut, pied de page, encarts) : noir */

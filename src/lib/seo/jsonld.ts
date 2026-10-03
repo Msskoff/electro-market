@@ -20,7 +20,8 @@ export function organizationJsonLd(): JsonLd {
     "@id": ORG_ID,
     name: siteConfig.name,
     url: siteConfig.url,
-    logo: absoluteUrl("/icon.svg"),
+    // PNG carré 512 px sur fond blanc : format recommandé par Google pour le logo d'entreprise.
+    logo: absoluteUrl("/logo.png"),
     description: siteConfig.description,
     email: siteConfig.contact.email,
     telephone: siteConfig.contact.phone,

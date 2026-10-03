@@ -34,23 +34,21 @@ export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInp
     >
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 14,
-              background: "#0B62C4",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 34,
-              fontWeight: 700,
-            }}
-          >
-            E
+          {/* Logo (mêmes tracés que LogoMark, couleurs en dur : pas de variables CSS ici). */}
+          <svg viewBox="0 0 432 270" width={90} height={56}>
+            <path d="M113 0H404a28 28 0 0 1 28 28V242a28 28 0 0 1-28 28H113L0 135Z" fill="#ff5a1f" />
+            <circle cx="96" cy="135" r="22" fill="#fff" />
+            <path d="M179 200V57l83 94 83-94v143" fill="none" stroke="#fff" strokeWidth="24" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="262" cy="151" r="15" fill="#fff" />
+            <circle cx="180" cy="224" r="33" fill="#fff" />
+            <circle cx="180" cy="224" r="17" fill="#1b1f3b" />
+            <circle cx="345" cy="224" r="33" fill="#fff" />
+            <circle cx="345" cy="224" r="17" fill="#1b1f3b" />
+          </svg>
+          <div style={{ display: "flex", fontSize: 40, fontWeight: 700, letterSpacing: -1 }}>
+            <span style={{ color: "#ff5a1f" }}>Electro</span>
+            <span style={{ color: "#1b1f3b" }}>Market</span>
           </div>
-          <div style={{ fontSize: 34, fontWeight: 700 }}>{siteConfig.name}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", maxWidth: visual ? 640 : 1000 }}>
           <div style={{ fontSize: 22, letterSpacing: 3, textTransform: "uppercase", color: "#0B62C4" }}>
