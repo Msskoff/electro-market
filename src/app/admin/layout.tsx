@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const initial = (firstName || user.email).charAt(0).toUpperCase();
 
   return (
-    <div className="min-h-dvh bg-surface-2 pb-20 lg:pb-0">
+    <div className="theme-admin min-h-dvh bg-surface-2 pb-20 lg:pb-0">
       <div className="mx-auto flex max-w-[1500px] gap-6 p-3 sm:p-5 lg:p-6">
         {/* Barre latérale (grand écran) */}
         <nav aria-label="Administration" className="sticky top-6 hidden h-[calc(100dvh-3rem)] w-[72px] shrink-0 flex-col items-center justify-between rounded-full bg-surface py-4 shadow-sm lg:flex">

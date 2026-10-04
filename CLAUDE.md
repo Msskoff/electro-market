@@ -135,7 +135,7 @@ supabase/migrations/                   # Migrations SQL appliquées au projet Su
 
 ### 5.1 Direction artistique
 
-**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance noir, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil noire, pied de page noir. Palette du logo : fond blanc / gris clair, **bleu nuit** pour les zones sombres, **orange ElectroMarket (foncé)** pour les actions (boutons en pilule), **carmin** pour les remises et surtitres d'offre, **hero en dégradé orange → bleu nuit**, encarts pastel (lavande, beige, gris-bleu), vert réservé à l'état « en stock ». Typographie Poppins (titres et texte), specs techniques en micro-étiquettes mono.
+**« Boutique de confiance, chaleureuse et soignée. »** Mise en page inspirée des grandes boutiques e-commerce : bandeau de réassurance noir, recherche centrale, menu « Toutes les catégories », hero en grande carte arrondie, pastilles rondes de catégories, sélection produits dans un panneau blanc, encarts promo pastel, bande de conseil noire, pied de page noir. Site public : fond blanc / gris clair, **noir** pour les zones sombres, **bleu vif** pour les actions (boutons en pilule), **rouge** pour les remises et surtitres d'offre, **hero en dégradé corail → violet**, encarts pastel (lavande, beige, gris-bleu), vert réservé à l'état « en stock ». Typographie Poppins (titres et texte), specs techniques en micro-étiquettes mono.
 
 À éviter absolument : carrousels automatiques, pop-ups agressifs, bannières clignotantes, fausses urgences (« plus que 2 h ! »), promotions ou avis inventés, look « marketplace discount » surchargé.
 
@@ -147,15 +147,16 @@ Couleurs principales (thème clair) :
 |---|---|---|
 | `--bg` / `--surface` / `--surface-2` | `#F5F6F8` / `#FFFFFF` / `#F1F3F6` | Fond gris clair, cartes, fonds de visuels |
 | `--text` / `--text-muted` | `#14161A` / `#5B616C` | Texte |
-| `--accent` / `--accent-strong` / `--accent-soft` | `#B53A0A` / `#8F2E08` / `#FFEDE5` | Orange de marque foncé : boutons, liens, actif (≥ 4,8:1 sur blanc, fond et toutes les tuiles) |
+| `--accent` / `--accent-strong` / `--accent-soft` | `#0B62C4` / `#094F9F` / `#E7F0FB` | Bleu vif : boutons, liens, actif |
 | `--brand-orange` / `--brand-navy` | `#FF5A1F` / `#1B1F3B` | **Couleurs du logo uniquement** (pictogramme, « Electro » / « Market ») |
-| `--inverse` / `--on-inverse` / `--on-inverse-muted` | `#1B1F3B` / `#FFFFFF` / `#B3B8C1` | Bleu nuit du logo : bandeau haut, pied de page, bande conseil, navigation admin |
-| `--hero-from` / `--hero-via` / `--hero-to` | `#C2410C` / `#8E2F45` / `#1B1F3B` | Dégradé du hero orange → bleu nuit (texte blanc uniquement, ≥ 5,2:1 sur toute la hauteur) |
+| `--inverse` / `--on-inverse` / `--on-inverse-muted` | `#121316` / `#FFFFFF` / `#B3B8C1` | Noir : bandeau haut, pied de page, bande conseil |
+| `--hero-from` / `--hero-via` / `--hero-to` | `#D42A47` / `#A52D7C` / `#5523A8` | Dégradé du hero corail → violet (texte blanc uniquement, ≥ 4,9:1 sur toute la hauteur) |
 | `--tile-peach/sand/sky/rose/lilac` | pastels | Pastilles de catégories, hero, encarts promo |
-| `--danger` | `#B5123E` | Remises (carmin, distinct de l'orange) : badge « -X % », prix remisé, surtitres d'offre (≥ 5,6:1 sur les tuiles) |
+| `--danger` | `#C41C28` | Remises : badge « -X % », prix remisé, surtitres d'offre (≥ 4,9:1 sur les tuiles) |
 | `--signal` / `--warning` | `#1F7A46` / `#A35C00` | Stock disponible (vert conservé : code d'état universel) / stock faible |
 | `--star` | `#F5A300` | Étoiles des avis (vérifiés uniquement) |
 
+- **Administration : thème orange du logo**, limité à `/admin` par la classe `.theme-admin` (fin de `tokens.css`) : accent `#B53A0A` / `#8F2E08` / `#FFEDE5`, inverse bleu nuit `#1B1F3B`, danger carmin `#B5123E`. Le site public garde le thème violet ci-dessus (décision du client, 2026-10-04).
 - Classes Tailwind correspondantes : `bg-accent`, `bg-inverse`, `text-on-inverse-muted`, `bg-tile-peach`, `text-danger`…
 - Rayons : 6 / 10 / 16 / 24 px (`rounded-xl` pour les grandes cartes et sections).
 - **Thème sombre : retiré pour l'instant.** Site en thème clair uniquement (`colorScheme: "light"`), même si l'appareil du visiteur est en mode sombre. Pas de sélecteur de thème. Les anciennes valeurs sombres et `ThemeToggle` sont dans l'historique git (commit `fc278d2`) en cas de réactivation.

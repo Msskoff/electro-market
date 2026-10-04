@@ -51,7 +51,7 @@ export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInp
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", maxWidth: visual ? 640 : 1000 }}>
-          <div style={{ fontSize: 22, letterSpacing: 3, textTransform: "uppercase", color: "#B53A0A" }}>
+          <div style={{ fontSize: 22, letterSpacing: 3, textTransform: "uppercase", color: "#0B62C4" }}>
             {eyebrow}
           </div>
           <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.05, marginTop: 16 }}>{title}</div>
