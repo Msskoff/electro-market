@@ -24,6 +24,21 @@ export function formatPrice(amount: number): string {
   return priceFormatter.format(amount / minorPerUnit);
 }
 
+/**
+ * Montant et devise séparés (« 7 350 000 » + « F CFA ») : pour les grands chiffres des
+ * tableaux de bord, où l'unité passe à la ligne et s'affiche plus petite.
+ */
+export function formatPriceParts(amount: number): { value: string; unit: string } {
+  const parts = priceFormatter.formatToParts(amount / minorPerUnit);
+  const unit = parts.find((p) => p.type === "currency")?.value ?? siteConfig.currency;
+  const value = parts
+    .filter((p) => p.type !== "currency")
+    .map((p) => p.value)
+    .join("")
+    .trim();
+  return { value, unit };
+}
+
 /** Valeur décimale attendue par schema.org (« 458500 » en XOF, « 699.00 » en EUR). */
 export function toDecimal(amount: number): string {
   return (amount / minorPerUnit).toFixed(fractionDigits);

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { StockToggle } from "@/components/admin/StockToggle";
 import { AdminCard, AdminPageHeader } from "@/components/admin/ui";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import { BigNumber } from "@/components/admin/charts";
 import { orderDate, StatusBadge } from "@/components/orders/OrderBits";
 import { getDashboard } from "@/lib/admin/queries";
 import { getSalesOverview } from "@/lib/orders/queries";
@@ -32,7 +33,7 @@ function Stat({ icon, label, value, hint, href, tone = "neutral" }: { icon: Icon
       </span>
       <span className="min-w-0">
         <span className="block text-sm text-muted">{label}</span>
-        <span className="block text-h2 font-bold tabular leading-tight">{value}</span>
+        <BigNumber value={value} />
         <span className="block truncate text-xs text-muted">{hint}</span>
       </span>
     </Link>
@@ -77,7 +78,7 @@ export default async function AdminDashboard() {
         <Stat icon="clock" label="Stock faible" value={String(d.lowStock.length)} hint="Une variante à 5 unités ou moins" href="/admin/produits?statut=faible" tone={d.lowStock.length ? "warn" : "neutral"} />
         <Link href="/admin/clients" className="flex flex-col justify-between rounded-xl bg-gradient-to-br from-hero-from via-hero-via to-hero-to p-5 text-on-inverse shadow-sm transition-shadow hover:shadow-md">
           <span className="text-sm text-on-inverse/85">Paniers en cours</span>
-          <span className="text-h2 font-bold tabular">{d.activeCarts}</span>
+          <BigNumber value={d.activeCarts} />
           <span className="text-xs text-on-inverse/85">
             {d.cartItems} article(s) · {d.customerCount} client(s) inscrit(s)
           </span>
@@ -171,7 +172,7 @@ export default async function AdminDashboard() {
                 Statistiques
               </Link>
             </div>
-            <p className="mt-2 text-h2 font-bold tabular">{formatPrice(sales.revenue30)}</p>
+            <BigNumber value={sales.revenue30} money className="mt-2" />
             <p className="text-sm text-muted">{sales.orders30} commande(s), hors annulées</p>
             <h3 className="mt-5 text-sm font-semibold">À traiter</h3>
             {sales.toProcess.length === 0 ? (

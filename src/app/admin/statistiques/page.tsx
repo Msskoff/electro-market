@@ -74,13 +74,13 @@ export default async function StatsPage({ searchParams }: PageProps<"/admin/stat
         </AdminCard>
       )}
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 2xl:grid-cols-6">
         <Kpi label="Visiteurs" value={num(t.visitors)} delta={delta(t.visitors, t.prev_visitors)} />
         <Kpi label="Pages vues" value={num(t.pageviews)} delta={delta(t.pageviews, t.prev_pageviews)} hint={t.visitors ? `${(t.pageviews / t.visitors).toFixed(1)} par visite` : undefined} />
         <Kpi label="Commandes" value={num(t.orders)} delta={delta(t.orders, t.prev_orders)} />
-        <Kpi label="Chiffre d'affaires" value={formatPrice(t.revenue)} delta={delta(t.revenue, t.prev_revenue)} hint="hors annulées" />
+        <Kpi label="Chiffre d'affaires" value={t.revenue} money delta={delta(t.revenue, t.prev_revenue)} hint="hors annulées" />
         <Kpi label="Taux de conversion" value={`${conv} %`} delta={prevConv ? Math.round(((conv - prevConv) / prevConv) * 100) : null} hint="commandes / visiteurs" />
-        <Kpi label="Panier moyen" value={basket ? formatPrice(basket) : "—"} delta={basket ? delta(basket, prevBasket) : undefined} />
+        <Kpi label="Panier moyen" value={basket || "—"} money={basket > 0} delta={basket ? delta(basket, prevBasket) : undefined} />
       </div>
 
       {notes.length > 0 && (

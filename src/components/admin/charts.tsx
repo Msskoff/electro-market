@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
-import { formatPrice } from "@/lib/utils/format";
+import { formatPrice, formatPriceParts } from "@/lib/utils/format";
 
 /**
  * Graphiques du tableau de bord : SVG et HTML rendus côté serveur (aucune bibliothèque,
@@ -24,11 +24,25 @@ export function Delta({ value, inverse = false }: { value: number | null; invers
   );
 }
 
-export function Kpi({ label, value, delta, hint }: { label: string; value: string; delta?: number | null; hint?: string }) {
+/**
+ * Grand chiffre d'un tableau de bord. Taille adaptée à la carte, jamais de débordement :
+ * pour un montant, la devise est plus petite et peut passer à la ligne.
+ */
+export function BigNumber({ value, money, className }: { value: string | number; money?: boolean; className?: string }) {
+  const parts = money ? formatPriceParts(Number(value)) : { value: String(value), unit: "" };
   return (
-    <div className="rounded-xl bg-surface p-5 shadow-sm">
+    <span className={cn("block min-w-0 text-h3 font-bold leading-tight tabular wrap-break-word sm:text-h2", className)}>
+      {parts.value}
+      {parts.unit && <span className="ml-1 inline-block text-sm font-semibold opacity-70">{parts.unit}</span>}
+    </span>
+  );
+}
+
+export function Kpi({ label, value, money, delta, hint }: { label: string; value: string | number; money?: boolean; delta?: number | null; hint?: string }) {
+  return (
+    <div className="min-w-0 rounded-xl bg-surface p-4 shadow-sm sm:p-5">
       <p className="text-sm text-muted">{label}</p>
-      <p className="mt-1 text-h2 font-bold leading-tight tabular">{value}</p>
+      <BigNumber value={value} money={money} className="mt-1" />
       <p className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
         {delta !== undefined && <Delta value={delta} />}
         {hint}
