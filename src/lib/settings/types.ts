@@ -102,7 +102,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
     returnDays: 30,
     warrantyYears: 2,
   },
-  demoMode: true,
+  demoMode: false,
   heroSlides: [
     {
       categorySlug: "smartphones",

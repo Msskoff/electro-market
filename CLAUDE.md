@@ -96,12 +96,11 @@ src/
     seo/       # JsonLd
   config/site.ts                       # Identité, URL, politiques commerciales (source unique)
   lib/
-    catalog/   # types.ts, data.ts + demo-generator.ts (SOURCE DE L'IMPORT INITIAL ET DONNÉES DE TEST uniquement), repository.ts (seul accès aux données : lit Supabase), search.ts (normalisation + pertinence, partagé serveur/navigateur), selectors.ts, pagination.ts
+    catalog/   # types.ts, repository.ts (seul accès aux données : lit Supabase), search.ts (normalisation + pertinence, partagé serveur/navigateur), selectors.ts, pagination.ts
     cart/      # lines.ts (logique pure SANS Zod, importable côté navigateur), schema.ts (schémas Zod, serveur), pricing.ts, actions.ts (Server Actions), queries.ts, client.ts
     seo/       # metadata.ts (buildMetadata), jsonld.ts, og.tsx
     settings/  # types.ts (StoreSettings, DEFAULT_SETTINGS, variables de FAQ), repository.ts (getSettings, cache « settings »)
     admin/     # session.ts (requireAdmin), queries.ts, actions.ts (Server Actions), schemas.ts (Zod), revalidate.ts, product-form.ts
-    content/   # site-faq.ts, hero-slides.ts (diapositives du hero + vidéos)
     account/   # schema.ts (Zod : profil, adresses, téléphone +228), actions.ts (Server Actions), queries.ts
     auth/      # schema.ts (Zod + messages d'erreur), actions.ts (inscription, connexion, déconnexion, mot de passe, suppression), session.ts (getSessionUser, requireUser), redirect.ts (safeNextPath)
     supabase/  # server.ts (client serveur), proxy.ts (updateSession), database.types.ts (types générés)
@@ -110,14 +109,14 @@ src/
   styles/tokens.css                    # Design tokens (thème clair)
 app/admin/                             # Administration (réservée à la table admins) : tableau de bord, produits, catégories, marques, configuration, clients
 components/admin/                      # AdminNav, SaveBar + useDraftEditor (brouillon → publier, statut), ProductEditor, ImagesEditor, CategoryEditor, BrandManager, SettingsEditor, StockToggle, fields
-tests/                                 # Tests Vitest
+tests/                                 # Tests Vitest (+ fixtures/ : catalogue fictif)
 scripts/image-info.mjs                 # Préparation des photos produit (npm run image:info)
 supabase/migrations/                   # Migrations SQL appliquées au projet Supabase (source de vérité du schéma)
 ```
 
 ### Règles d'architecture
 
-- Les pages et composants n'importent **jamais** `lib/catalog/data.ts` (source de l'import initial + données de test) : uniquement `repository.ts`, qui lit Supabase.
+- Les pages et composants lisent le catalogue uniquement via `repository.ts` (Supabase). Le catalogue fictif de l'import initial ne sert plus qu'aux tests : `tests/fixtures/` (`catalog.ts`, `demo-generator.ts`).
 - **Contenu modifiable = base de données.** Catalogue (`products`, `categories`, `brands`) et configuration (`site_settings` : contact, livraison, retours, garantie, réseaux, bandeau démo, hero, FAQ du site) se lisent via `repository.ts` et `getSettings()`. `config/site.ts` ne garde que le fixe (nom, URL, langue, devise, indexation).
 - **Brouillon puis publier.** Toute modification de l'admin est d'abord un brouillon (table `drafts`, invisible du public), puis « Publier » appelle une fonction SQL transactionnelle (`publish_product`, `publish_category`, `publish_settings`) et `refreshPublicSite()` (vide le cache « catalog » / « settings » et régénère les pages statiques, l'index de recherche, le sitemap, `/llms.txt`). Exceptions immédiates : bascule En stock / Rupture, marques.
 - Les pages produit / catégorie sont générées à la demande (`dynamicParams = true`) : un produit publié est en ligne sans redéploiement.
@@ -204,7 +203,7 @@ JetBrains Mono (`font-mono`, chargée à la demande) reste réservée aux codes 
 ### 5.4 Composants clés
 
 - **En-tête :** bandeau de réassurance (`bg-inverse`) → logo + `SearchForm` (GET `/recherche`, fonctionne sans JS ; avec JS, suggestions instantanées en combobox ARIA dès 2 caractères : catégories, 6 produits, « Voir tous les résultats » ; index `/api/suggestions` chargé une fois au focus puis filtré localement, mêmes règles que `/recherche` via `lib/catalog/search.ts` — insensible aux accents, synonymes « téléphone », « pc »… dans `CATEGORY_SYNONYMS`) + panier → navigation avec `CategoryMenu` (`<details>`, refermé à la navigation) et `NavLink` (onglet actif souligné ; chaque lien porte une icône décorative — maison, téléphone, ordinateur, aide — à côté de son libellé, toujours affiché ; icône bleue sur la rubrique active).
-- **Hero immersif (`components/home/hero/`) :** deux diapositives par catégorie (4 au total) (`lib/content/hero-slides.ts`), liée à un produit réel ; textes marketing fidèles à la fiche. Grand écran : média à droite, dégradé `inverse` à gauche sous le texte. Petit écran : média plein cadre, texte superposé en bas. Navigation volontaire uniquement : chevrons pleins épais, onglets, flèches du clavier, glissement tactile — **jamais de défilement automatique**. `video` (mp4/webm + poster) lue si fournie, sinon scène animée vectorielle (`HeroScene`). Seul `h1` de l'accueil : l'intitulé fixe en haut du hero.
+- **Hero immersif (`components/home/hero/`) :** deux diapositives par catégorie (4 au total) (configurables dans `/admin/configuration`, onglet Accueil), liée à un produit réel ; textes marketing fidèles à la fiche. Grand écran : média à droite, dégradé `inverse` à gauche sous le texte. Petit écran : média plein cadre, texte superposé en bas. Navigation volontaire uniquement : chevrons pleins épais, onglets, flèches du clavier, glissement tactile — **jamais de défilement automatique**. `video` (mp4/webm + poster) lue si fournie, sinon scène animée vectorielle (`HeroScene`). Seul `h1` de l'accueil : l'intitulé fixe en haut du hero.
 - **Accueil (`components/home/`) :** `HeroShowcase`, `CategoryCircles`, sélection en `ProductGrid`, `PromoTiles`, `ReviewsSection`, `HelpBand`, FAQ, `TrustBar`.
 - **ProductCard :** visuel sur fond `surface-2`, badge « -X % » si remise réelle, marque, nom, 2–3 specs en micro-étiquettes mono, prix (corail si remisé), état du stock (point + texte), bouton rond `QuickAddButton` (ajoute la variante par défaut, posé au-dessus du lien étiré).
 - **En-tête de catégorie (`CategoryHeader`) :** sur petit écran, seul le `h1` reste visible (bandeau, chiffres, introduction et illustration masqués ; l'introduction reste dans le HTML). À partir de 640 px : bandeau à la teinte de la catégorie (`categoryTile`, identique à sa pastille d'accueil), date de mise à jour (`<time>`), chiffres clés en `<dl>` (prix d'entrée, disponibles, marques, livraison — tous calculés, jamais saisis), illustration de deux produits réels, raccourcis « par marque » vers `/recherche?q=…&categorie=…` (`rel="nofollow"`, page `noindex`). Liste : `h2` « N références » puis cartes en `h3`.
@@ -405,7 +404,7 @@ Valeurs centralisées dans `src/config/site.ts`.
 
 **Déploiement :** Vercel, projet `electro-market` (espace « Hubert's projects »), relié au dépôt GitHub `Msskoff/electro-market`. Chaque push sur `main` = déploiement de production. Démo client : https://electro-market-one.vercel.app — non indexée tant que `SITE_INDEXING` n'est pas `true` (à n'activer qu'au lancement réel, avec le vrai catalogue).
 
-**Catalogue de démonstration :** 2 catégories (smartphones, ordinateurs portables) ; 4 fiches rédigées + 196 produits générés par `demo-generator.ts`, **importés dans Supabase le 2026-10-03** (sommes de contrôle vérifiées) et désormais modifiables depuis `/admin`. Tout est fictif et signalé par le bandeau « Démo » : à remplacer par la base réelle avant lancement. Marquées « À VALIDER » : frais de livraison (2 000 F CFA), seuil de gratuité (50 000 F CFA), délai (24–48 h à Lomé), retours (30 j), garantie (2 ans), adresse et téléphone.
+**Catalogue de démonstration :** 2 catégories (smartphones, ordinateurs portables) ; 4 fiches rédigées + 196 produits générés (générateur : `tests/fixtures/demo-generator.ts`), **importés dans Supabase le 2026-10-03** (sommes de contrôle vérifiées) et désormais modifiables depuis `/admin`. Tout est fictif : à remplacer par le vrai catalogue avant l'ouverture à l'indexation (décision du client le 2026-10-04 : produits gardés pour l'instant, bandeau « Démo » retiré, `SITE_INDEXING` pas encore activé). Marquées « À VALIDER » : frais de livraison (2 000 F CFA), seuil de gratuité (50 000 F CFA), délai (24–48 h à Lomé), retours (30 j), garantie (2 ans), adresse et téléphone.
 
 **Administration :** `/admin`, premier administrateur = compte du propriétaire (attribué en SQL le 2026-10-03). Autre administrateur : `insert into public.admins (user_id) select id from auth.users where email = '…';`
 

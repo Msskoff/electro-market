@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { brands, categories, products } from "@/lib/catalog/data";
+import { brands, categories, products } from "./fixtures/catalog";
 import { defaultVariant, priceRange } from "@/lib/catalog/selectors";
 import { breadcrumbJsonLd, faqJsonLd, productJsonLd } from "@/lib/seo/jsonld";
 import { clampDescription } from "@/lib/seo/metadata";

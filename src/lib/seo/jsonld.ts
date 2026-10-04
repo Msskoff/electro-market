@@ -177,26 +177,3 @@ export function faqJsonLd(items: FaqItem[]): JsonLd | null {
     })),
   };
 }
-
-export function articleJsonLd(input: {
-  title: string;
-  description: string;
-  path: string;
-  author: string;
-  publishedAt: string;
-  updatedAt: string;
-}): JsonLd {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: input.title,
-    description: input.description,
-    url: absoluteUrl(input.path),
-    mainEntityOfPage: absoluteUrl(input.path),
-    inLanguage: siteConfig.language,
-    datePublished: input.publishedAt,
-    dateModified: input.updatedAt,
-    author: { "@type": "Person", name: input.author },
-    publisher: { "@id": ORG_ID },
-  };
-}

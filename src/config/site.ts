@@ -33,8 +33,6 @@ export const siteConfig = {
    */
 } as const;
 
-export type SiteConfig = typeof siteConfig;
-
 export function absoluteUrl(path = "/"): string {
   return `${siteConfig.url}${path.startsWith("/") ? path : `/${path}`}`;
 }

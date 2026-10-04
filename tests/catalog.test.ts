@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { brands, categories, products } from "@/lib/catalog/data";
-import { DEMO_PRODUCTS_PER_CATEGORY, generateDemoProducts } from "@/lib/catalog/demo-generator";
+import { brands, categories, products } from "./fixtures/catalog";
+import { DEMO_PRODUCTS_PER_CATEGORY, generateDemoProducts } from "./fixtures/demo-generator";
 import { skuSchema } from "@/lib/cart/schema";
 
 describe("catalogue de démonstration", () => {

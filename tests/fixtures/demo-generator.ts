@@ -10,7 +10,7 @@
  * cohérents avec la fiche, mais ne remplacent pas des descriptions rédigées.
  * À supprimer dès que la base de données réelle est branchée.
  */
-import type { Brand, DeviceKind, FaqItem, Product, SpecGroup, Variant } from "./types";
+import type { Brand, DeviceKind, FaqItem, Product, SpecGroup, Variant } from "@/lib/catalog/types";
 
 export const DEMO_PRODUCTS_PER_CATEGORY = 100;
 

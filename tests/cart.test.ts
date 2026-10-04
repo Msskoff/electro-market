@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { products } from "@/lib/catalog/data";
+import { products } from "./fixtures/catalog";
 import { priceCart } from "@/lib/cart/pricing";
 import { MAX_QTY_PER_LINE, addLine, countItems, parseCart, setLineQty } from "@/lib/cart/schema";
 

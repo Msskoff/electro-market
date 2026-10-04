@@ -106,7 +106,6 @@ export const productSchema = z
   });
 
 export type ProductInput = z.input<typeof productSchema>;
-export type ProductData = z.output<typeof productSchema>;
 
 export const categorySchema = z.object({
   slug: slugSchema,

@@ -1,14 +1,10 @@
 /**
- * ⚠️ DONNÉES DE DÉMONSTRATION — marques et produits FICTIFS.
- *
- * Ce fichier sert uniquement à faire tourner le MVP. Il doit être remplacé par
- * la base de données (PostgreSQL) avec vos vrais produits, caractéristiques
- * vérifiées et prix réels. Ne jamais publier ces données en production.
- *
- * Seul `repository.ts` a le droit d'importer ce fichier.
+ * Données de TEST — marques et produits FICTIFS (catalogue de démonstration importé
+ * dans Supabase le 2026-10-03). Utilisées uniquement par les tests Vitest :
+ * le site lit le catalogue dans la base (lib/catalog/repository.ts).
  */
 import { demoBrands, generateDemoProducts } from "./demo-generator";
-import type { Brand, Category, Product } from "./types";
+import type { Brand, Category, Product } from "@/lib/catalog/types";
 
 export const brands: Brand[] = [
   { slug: "aurion", name: "Aurion" },
