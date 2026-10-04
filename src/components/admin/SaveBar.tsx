@@ -66,7 +66,7 @@ export function SaveBar({
   extra?: ReactNode;
 }) {
   return (
-    <div className="sticky bottom-16 z-30 mt-6 lg:bottom-4">
+    <div className="sticky bottom-20 z-30 mt-6 lg:bottom-4">
       <div className="flex flex-col gap-2 rounded-xl bg-surface p-2.5 shadow-lg ring-1 ring-border sm:gap-3 sm:p-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
         <SaveStatus status={status} />
         <div className="flex items-center gap-1.5 sm:flex-wrap sm:gap-2">
