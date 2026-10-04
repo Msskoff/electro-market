@@ -182,7 +182,7 @@ export function HeroShowcase({ slides }: { slides: ShowcaseSlide[] }) {
       {/* Intitulé fixe de la page (seul h1) */}
       <Container className="pointer-events-none absolute inset-x-0 top-0 z-20 pt-6 lg:pt-8">
         <h1 className="eyebrow max-w-[80%] font-sans text-on-inverse sm:max-w-none">
-          ElectroMarket · Boutique d&apos;électronique à Lomé
+          ElectronikTogo · Boutique d&apos;électronique à Lomé
         </h1>
       </Container>
 

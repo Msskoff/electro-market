@@ -1,4 +1,4 @@
-# CLAUDE.md — Boutique e-commerce d'appareils électroniques
+# CLAUDE.md — ElectronikTogo, boutique e-commerce d'appareils électroniques
 
 Ce fichier guide Claude (et tout développeur) sur ce projet. Le lire en entier avant toute modification. En cas de conflit entre une demande ponctuelle et ce fichier, demander confirmation.
 
@@ -164,7 +164,7 @@ Couleurs principales (thème clair) :
 
 ### 5.2 bis Logo
 
-`components/layout/Logo.tsx` : pictogramme (étiquette de prix orange dont le « M » forme un chariot) redessiné en SVG d'après le logo officiel, + nom en texte réel « **Electro** » (orange) « **Market** » (bleu nuit ; blanc sur fond sombre avec `inverse`). Mêmes tracés dans `app/icon.svg` (favicon), `lib/seo/og.tsx` (images de partage) et `public/logo.png` (512 px, logo du schéma `Organization`). Le fichier image fourni par le client porte la coquille « ElectoMarket » : toujours écrire **ElectroMarket**.
+`components/layout/Logo.tsx` : pictogramme (étiquette de prix orange dont le « M » forme un chariot) redessiné en SVG d'après le logo officiel, + nom en texte réel « **Electronik** » (orange) « **Togo** » (bleu nuit ; blanc sur fond sombre avec `inverse`). Mêmes tracés dans `app/icon.svg` (favicon), `lib/seo/og.tsx` (images de partage) et `public/logo.png` (512 px, logo du schéma `Organization`). **Nom de la boutique : ElectronikTogo** (changé le 2026-10-04, ex-ElectroMarket ; source unique `siteConfig.name`). Le pictogramme « M » vient de l'ancien logo, conservé en attendant un nouveau logo. Les identifiants techniques (projet Supabase et Vercel `electromarket` / `electro-market`, dépôt, nom du paquet) ne changent pas.
 
 ### 5.3 Typographie
 
@@ -391,7 +391,7 @@ Une tâche est terminée seulement si :
 ## 14. Paramètres à compléter
 
 ```
-NOM_BOUTIQUE=ElectroMarket
+NOM_BOUTIQUE=ElectronikTogo
 DOMAINE=
 PAYS_DE_VENTE=TG            # Togo — lancement à Lomé
 LOCALE=fr-TG

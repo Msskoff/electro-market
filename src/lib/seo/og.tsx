@@ -46,8 +46,8 @@ export function renderOgImage({ eyebrow, title, subtitle, price, visual }: OgInp
             <circle cx="345" cy="224" r="17" fill="#1b1f3b" />
           </svg>
           <div style={{ display: "flex", fontSize: 40, fontWeight: 700, letterSpacing: -1 }}>
-            <span style={{ color: "#ff5a1f" }}>Electro</span>
-            <span style={{ color: "#1b1f3b" }}>Market</span>
+            <span style={{ color: "#ff5a1f" }}>Electronik</span>
+            <span style={{ color: "#1b1f3b" }}>Togo</span>
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", maxWidth: visual ? 640 : 1000 }}>

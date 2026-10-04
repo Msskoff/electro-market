@@ -1,5 +1,5 @@
 /*
- * Design tokens ElectroMarket — source unique des couleurs.
+ * Design tokens ElectronikTogo — source unique des couleurs.
  * Les composants n'utilisent JAMAIS de couleur en dur : uniquement ces variables
  * (exposées à Tailwind via `@theme inline` dans globals.css).
  *
@@ -63,7 +63,7 @@
 }
 
 /*
- * Administration (/admin) : orange ElectroMarket foncé + bleu nuit du logo.
+ * Administration (/admin) : orange ElectronikTogo foncé + bleu nuit du logo.
  * Appliqué par la classe .theme-admin sur la racine de app/admin/layout.tsx ;
  * le site public garde le thème ci-dessus (bleu, noir, hero corail → violet).
  * #B53A0A : ≥ 4,8:1 sur blanc et sur le fond ; texte blanc dessus 5,9:1.

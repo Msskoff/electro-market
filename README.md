@@ -1,4 +1,4 @@
-# ElectroMarket — boutique e-commerce d'électronique (MVP)
+# ElectronikTogo — boutique e-commerce d'électronique (MVP)
 
 MVP Next.js 16 / Tailwind v4 / TypeScript strict, pensé pour le **SEO** et la **visibilité dans les assistants IA**.
 Les règles du projet sont dans [`CLAUDE.md`](./CLAUDE.md).

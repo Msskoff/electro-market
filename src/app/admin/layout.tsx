@@ -7,7 +7,7 @@ import { requireAdmin } from "@/lib/admin/session";
 import { signOut } from "@/lib/auth/actions";
 
 export const metadata: Metadata = {
-  title: { default: "Administration", template: "%s – Administration ElectroMarket" },
+  title: { default: "Administration", template: "%s – Administration ElectronikTogo" },
   robots: { index: false, follow: false },
 };
 
@@ -26,7 +26,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         {/* Barre latérale (grand écran) */}
         <nav aria-label="Administration" className="sticky top-6 hidden h-[calc(100dvh-3rem)] w-[72px] shrink-0 flex-col items-center justify-between rounded-full bg-surface py-4 shadow-sm lg:flex">
           <div className="flex flex-col items-center gap-6">
-            <Link href="/admin" aria-label="Tableau de bord ElectroMarket">
+            <Link href="/admin" aria-label="Tableau de bord ElectronikTogo">
               <LogoMark height={26} />
             </Link>
             <AdminSideNav />

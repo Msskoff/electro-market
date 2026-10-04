@@ -4,10 +4,10 @@
  * l'administration (contact, politiques commerciales…) est dans lib/settings.
  */
 export const siteConfig = {
-  name: "ElectroMarket",
+  name: "ElectronikTogo",
   tagline: "L'électronique choisie, testée, expliquée.",
   description:
-    "ElectroMarket est une boutique en ligne basée à Lomé (Togo), spécialisée en smartphones et ordinateurs portables, avec fiches techniques détaillées et conseils d'achat.",
+    "ElectronikTogo est une boutique en ligne basée à Lomé (Togo), spécialisée en smartphones et ordinateurs portables, avec fiches techniques détaillées et conseils d'achat.",
   /** URL publique : variable explicite, sinon domaine de production Vercel, sinon local. */
   url: (
     process.env.NEXT_PUBLIC_SITE_URL ??

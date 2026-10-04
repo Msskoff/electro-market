@@ -10,7 +10,7 @@ import { buildMetadata } from "@/lib/seo/metadata";
 
 export const metadata = buildMetadata({
   title: "Connexion",
-  description: "Connectez-vous à votre compte ElectroMarket.",
+  description: "Connectez-vous à votre compte ElectronikTogo.",
   path: "/connexion",
   noindex: true,
 });

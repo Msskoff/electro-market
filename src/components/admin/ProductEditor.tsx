@@ -95,7 +95,7 @@ export function ProductEditor({
   const category = categories.find((c) => c.slug === p.category);
   const brand = brands.find((b) => b.slug === p.brand);
   const prices = p.variants.map((v) => v.price).filter((n) => n > 0);
-  const seoTitle = `${p.name} ${p.highlights[0] ?? ""}`.trim() + " – ElectroMarket";
+  const seoTitle = `${p.name} ${p.highlights[0] ?? ""}`.trim() + " – ElectronikTogo";
   const publicUrl = `/${p.category}/${p.slug || slugify(p.name)}`;
   const errorCount = Object.keys(errors).length;
 
@@ -354,7 +354,7 @@ export function ProductEditor({
 
           <div className="rounded-xl bg-surface p-5 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted">Aperçu dans Google</p>
-            <p className="mt-3 truncate text-xs text-signal">electromarket{publicUrl}</p>
+            <p className="mt-3 truncate text-xs text-signal">electroniktogo{publicUrl}</p>
             <p className={cn("mt-0.5 text-base font-medium leading-snug text-accent", seoTitle.length > 60 && "text-danger")}>{seoTitle}</p>
             <p className="mt-1 line-clamp-3 text-sm text-muted">{p.summary || "Le résumé du produit apparaîtra ici."}</p>
             <p className={cn("mt-2 text-xs", seoTitle.length > 60 ? "text-danger" : "text-muted")}>Titre : {seoTitle.length}/60 caractères</p>

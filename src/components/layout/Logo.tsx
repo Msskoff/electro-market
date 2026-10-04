@@ -3,7 +3,7 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Pictogramme ElectroMarket : étiquette de prix orange dont le « M » forme un chariot.
+ * Pictogramme ElectronikTogo : étiquette de prix orange dont le « M » forme un chariot.
  * Redessiné en SVG d'après le logo officiel (net à toutes les tailles, ~1 Ko).
  * Couleurs : --brand-orange / --brand-navy (tokens.css). Proportions 432 × 270.
  */
@@ -39,9 +39,9 @@ export function LogoMark({ height = 32, className }: { height?: number; classNam
 }
 
 /**
- * Logo complet : pictogramme + « Electro » (orange) « Market » (bleu nuit).
+ * Logo complet : pictogramme + « Electronik » (orange) « Togo » (bleu nuit).
  * Le nom est du vrai texte (lisible par les robots, net, sans image à charger).
- * `inverse` pour les fonds sombres : « Market » passe en blanc.
+ * `inverse` pour les fonds sombres : « Togo » passe en blanc.
  */
 export function Logo({ inverse = false, className }: { inverse?: boolean; className?: string }) {
   return (
@@ -52,8 +52,8 @@ export function Logo({ inverse = false, className }: { inverse?: boolean; classN
     >
       <LogoMark height={30} className="sm:h-[34px] sm:w-[54px]" />
       <span aria-hidden className="text-xl font-bold leading-none tracking-tight sm:text-2xl">
-        <span className="text-brand-orange">Electro</span>
-        <span className={inverse ? "text-on-inverse" : "text-brand-navy"}>Market</span>
+        <span className="text-brand-orange">Electronik</span>
+        <span className={inverse ? "text-on-inverse" : "text-brand-navy"}>Togo</span>
       </span>
     </Link>
   );
