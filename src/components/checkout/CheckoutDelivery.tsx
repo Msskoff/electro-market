@@ -12,8 +12,15 @@ import { cn } from "@/lib/utils/cn";
  * Choix de l'adresse de livraison au moment de la commande : un toucher pour choisir,
  * ajout d'une adresse sans quitter la page (enregistrée aussi dans le compte).
  */
-export function CheckoutDelivery({ addresses }: { addresses: Address[] }) {
-  const [selected, setSelected] = useState(addresses.find((a) => a.isDefault)?.id ?? addresses[0]?.id);
+export function CheckoutDelivery({
+  addresses,
+  selected,
+  onSelect,
+}: {
+  addresses: Address[];
+  selected: string | undefined;
+  onSelect: (id: string) => void;
+}) {
   const [adding, setAdding] = useState(addresses.length === 0);
 
   return (
@@ -37,7 +44,7 @@ export function CheckoutDelivery({ addresses }: { addresses: Address[] }) {
                       name="adresse"
                       value={a.id}
                       checked={checked}
-                      onChange={() => setSelected(a.id)}
+                      onChange={() => onSelect(a.id)}
                       className="mt-1 size-5 shrink-0 accent-accent"
                     />
                     <span className="min-w-0">

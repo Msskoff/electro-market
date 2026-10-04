@@ -2,7 +2,10 @@ import Link from "next/link";
 import { StockToggle } from "@/components/admin/StockToggle";
 import { AdminCard, AdminPageHeader } from "@/components/admin/ui";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import { orderDate, StatusBadge } from "@/components/orders/OrderBits";
 import { getDashboard } from "@/lib/admin/queries";
+import { getSalesOverview } from "@/lib/orders/queries";
+import { adminStatusLabel } from "@/lib/orders/status";
 import { requireAdmin } from "@/lib/admin/session";
 import { formatPrice } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
@@ -38,7 +41,7 @@ function Stat({ icon, label, value, hint, href, tone = "neutral" }: { icon: Icon
 
 export default async function AdminDashboard() {
   const { supabase, firstName } = await requireAdmin();
-  const d = await getDashboard(supabase);
+  const [d, sales] = await Promise.all([getDashboard(supabase), getSalesOverview(supabase)]);
 
   // Répartition des produits en ligne par gamme de prix (données réelles).
   const buckets = [
@@ -160,12 +163,36 @@ export default async function AdminDashboard() {
 
         <div className="grid gap-4">
           <AdminCard aria-labelledby="ventes-title">
-            <h2 id="ventes-title" className="text-h3 font-semibold">
-              Ventes
-            </h2>
-            <p className="mt-2 text-sm text-muted">
-              Le paiement n&apos;est pas encore branché : les commandes et le chiffre d&apos;affaires apparaîtront ici dès la mise en service.
-            </p>
+            <div className="flex items-baseline justify-between gap-2">
+              <h2 id="ventes-title" className="text-h3 font-semibold">
+                Ventes (30 jours)
+              </h2>
+              <Link href="/admin/statistiques" className="text-sm font-semibold text-accent hover:underline">
+                Statistiques
+              </Link>
+            </div>
+            <p className="mt-2 text-h2 font-bold tabular">{formatPrice(sales.revenue30)}</p>
+            <p className="text-sm text-muted">{sales.orders30} commande(s), hors annulées</p>
+            <h3 className="mt-5 text-sm font-semibold">À traiter</h3>
+            {sales.toProcess.length === 0 ? (
+              <p className="mt-2 rounded-lg bg-signal-soft p-3 text-sm text-signal">Aucune commande en attente.</p>
+            ) : (
+              <ul className="mt-2 divide-y divide-border">
+                {sales.toProcess.map((o) => (
+                  <li key={o.id}>
+                    <Link href={`/admin/commandes/${o.number}`} className="flex flex-wrap items-center justify-between gap-2 py-2.5 hover:text-accent">
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold">
+                          {o.number} · {formatPrice(o.total)}
+                        </span>
+                        <span className="text-xs text-muted">{orderDate(o.created_at)}</span>
+                      </span>
+                      <StatusBadge status={o.status} label={adminStatusLabel[o.status]} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </AdminCard>
           <AdminCard className="flex flex-col items-center text-center" aria-labelledby="secu-title">
             <span className="flex size-14 items-center justify-center rounded-full bg-accent-soft text-accent">

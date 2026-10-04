@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/Container";
 import { getAccount } from "@/lib/account/queries";
 import { requireUser } from "@/lib/auth/session";
 import { getCart } from "@/lib/cart/queries";
+import { listMyOrders } from "@/lib/orders/queries";
 import { t } from "@/lib/i18n/fr";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { formatPrice } from "@/lib/utils/format";
@@ -18,7 +19,7 @@ export const metadata = buildMetadata({
 
 export default async function AccountPage({ searchParams }: PageProps<"/compte">) {
   const user = await requireUser("/compte");
-  const [{ profile, addresses }, cart, params] = await Promise.all([getAccount(user.id), getCart(), searchParams]);
+  const [{ profile, addresses }, cart, orders, params] = await Promise.all([getAccount(user.id), getCart(), listMyOrders(), searchParams]);
   const notice = params["mot-de-passe"] === "modifie" ? "Votre mot de passe a été modifié." : undefined;
 
   return (
@@ -32,6 +33,7 @@ export default async function AccountPage({ searchParams }: PageProps<"/compte">
           profile={profile}
           addresses={addresses}
           notice={notice}
+          orders={orders}
           cart={{
             itemCount: cart.itemCount,
             total: formatPrice(cart.total),

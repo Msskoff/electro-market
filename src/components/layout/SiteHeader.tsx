@@ -13,11 +13,12 @@ import { NavLink } from "./NavLink";
 import { SearchForm } from "./SearchForm";
 
 export async function SiteHeader() {
-  const [categories, { policies, demoMode }] = await Promise.all([getCategories(), getSettings()]);
+  const [categories, { policies, demoMode, payment }] = await Promise.all([getCategories(), getSettings()]);
+  const cod = payment.methods.some((m) => m.id === "cod" && m.enabled);
   const topBarItems: { icon: IconName; text: string }[] = [
     { icon: "truck", text: `Livraison ${policies.shippingDelay}` },
     { icon: "rotate", text: `Retours sous ${policies.returnDays} jours` },
-    { icon: "lock", text: "Paiement sécurisé" },
+    { icon: "wallet", text: cod ? "Paiement à la livraison" : "Paiement mobile money" },
   ];
   const menuItems = [
     ...categories.map((c) => ({ href: categoryPath(c.slug), label: c.name, icon: kindIcon[c.kind] })),

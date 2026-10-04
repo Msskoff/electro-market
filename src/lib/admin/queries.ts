@@ -94,6 +94,8 @@ export async function listAdminProducts(db: Db): Promise<AdminProductRow[]> {
 export interface ProductForEdit {
   /** Contenu à éditer : le brouillon s'il existe, sinon la version en ligne. */
   data: Product;
+  /** Stock de référence (voir stockBase dans schemas.ts). */
+  stockBase: Record<string, number>;
   state: PublishState;
   inStock: boolean;
   draftSavedAt: string | null;
@@ -108,8 +110,12 @@ export async function getProductForEdit(db: Db, id: string): Promise<ProductForE
     db.from("drafts").select("data, updated_at").eq("entity", "product").eq("key", id).maybeSingle(),
   ]);
   if (!pub.data && !draft.data) return null;
+  const live = pub.data ? ((pub.data.data as unknown as Product).variants ?? []) : [];
+  const draftBase = (draft.data?.data as { stockBase?: Record<string, number> } | undefined)?.stockBase;
   return {
     data: (draft.data?.data ?? pub.data!.data) as unknown as Product,
+    // Brouillon existant : sa référence d'origine ; sinon le stock en ligne actuel.
+    stockBase: draftBase ?? Object.fromEntries(live.map((v) => [v.sku, v.stock])),
     state: pub.data ? (draft.data ? "published-with-draft" : "published") : "draft-only",
     inStock: pub.data?.in_stock ?? true,
     draftSavedAt: draft.data?.updated_at ?? null,

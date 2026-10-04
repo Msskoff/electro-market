@@ -1,3 +1,4 @@
+import { TrackEvent } from "@/components/analytics/Analytics";
 import Link from "next/link";
 import { SearchForm } from "@/components/layout/SearchForm";
 import { ProductGrid } from "@/components/product/ProductGrid";
@@ -28,6 +29,7 @@ export default async function SearchPage({ searchParams }: PageProps<"/recherche
   return (
     <Container className="py-12">
       <h1 className="text-h1">{t.search.title}</h1>
+      {query && <TrackEvent key={`${query}-${category?.slug ?? ""}`} t="search" q={query.slice(0, 80)} n={results.length} />}
       <SearchForm defaultValue={query} category={category?.slug} className="mt-6 max-w-xl" />
 
       {category && (

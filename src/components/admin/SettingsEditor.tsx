@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { discardSettingsDraft, publishSettings, saveSettingsDraft } from "@/lib/admin/actions";
 import type { PublishState } from "@/lib/admin/queries";
-import { FAQ_VARIABLES, HERO_TONES, renderFaqText, type HeroSlide, type StoreSettings } from "@/lib/settings/types";
+import { FAQ_VARIABLES, HERO_TONES, renderFaqText, type HeroSlide, type PaymentMethodConfig, type StoreSettings } from "@/lib/settings/types";
 import { cn } from "@/lib/utils/cn";
 import { AddButton, FaqList, FormSection, IconButton, IntInput, MoneyInput, move, SelectInput, StringList, TextArea, TextInput, Toggle } from "./fields";
 import { SaveBar } from "./SaveBar";
@@ -12,6 +12,7 @@ import { useDraftEditor } from "./useDraftEditor";
 const tabs = [
   { id: "boutique", label: "Boutique et contact" },
   { id: "livraison", label: "Livraison et garanties" },
+  { id: "paiement", label: "Paiement" },
   { id: "accueil", label: "Accueil (hero)" },
   { id: "faq", label: "FAQ du site" },
 ] as const;
@@ -41,12 +42,14 @@ export function SettingsEditor({
   const setContact = (patch: Partial<StoreSettings["contact"]>) => setValue((prev) => ({ ...prev, contact: { ...prev.contact, ...patch } }));
   const setAddress = (patch: Partial<StoreSettings["contact"]["address"]>) => setContact({ address: { ...s.contact.address, ...patch } });
   const setPolicies = (patch: Partial<StoreSettings["policies"]>) => setValue((prev) => ({ ...prev, policies: { ...prev.policies, ...patch } }));
+  const setMethod = (i: number, patch: Partial<PaymentMethodConfig>) =>
+    setValue((prev) => ({ ...prev, payment: { methods: prev.payment.methods.map((m, j) => (j === i ? { ...m, ...patch } : m)) } }));
   const setSlide = (i: number, patch: Partial<HeroSlide>) => setValue((prev) => ({ ...prev, heroSlides: prev.heroSlides.map((x, j) => (j === i ? { ...x, ...patch } : x)) }));
 
   // Onglets portant une erreur : signalés par une pastille.
   const tabHasError = (id: string) =>
     Object.keys(errors).some((k) =>
-      id === "boutique" ? k.startsWith("contact") || k.startsWith("social") : id === "livraison" ? k.startsWith("policies") : id === "accueil" ? k.startsWith("heroSlides") : k.startsWith("faq"),
+      id === "boutique" ? k.startsWith("contact") || k.startsWith("social") : id === "livraison" ? k.startsWith("policies") : id === "paiement" ? k.startsWith("payment") : id === "accueil" ? k.startsWith("heroSlides") : k.startsWith("faq"),
     );
 
   return (
@@ -111,6 +114,41 @@ export function SettingsEditor({
               </div>
               <IntInput label="Jours pour retourner un produit" value={s.policies.returnDays} onChange={(v) => setPolicies({ returnDays: v })} error={e("policies.returnDays")} />
               <IntInput label="Garantie (années)" value={s.policies.warrantyYears} onChange={(v) => setPolicies({ warrantyYears: v })} error={e("policies.warrantyYears")} />
+            </div>
+          </FormSection>
+        )}
+
+        {tab === "paiement" && (
+          <FormSection
+            id="paiement"
+            title="Moyens de paiement"
+            description="Proposés au client à la dernière étape de la commande. Mobile money : le client voit le numéro, paie, puis dépose une capture du SMS de confirmation ; vous validez la commande dans Commandes."
+          >
+            {e("payment.methods") && <p className="mb-3 text-sm font-semibold text-danger">{e("payment.methods")}</p>}
+            <div className="flex flex-col gap-4">
+              {s.payment.methods.map((m, i) => (
+                <fieldset key={m.id} className="rounded-lg border border-border p-4">
+                  <legend className="px-1 text-sm font-semibold">{m.label || m.id}</legend>
+                  <Toggle label={`Proposer « ${m.label} »`} checked={m.enabled} onChange={(v) => setMethod(i, { enabled: v })} />
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    <TextInput label="Nom affiché au client" value={m.label} onChange={(v) => setMethod(i, { label: v })} error={e(`payment.methods.${i}.label`)} />
+                    {m.id !== "cod" && (
+                      <>
+                        <TextInput
+                          label="Numéro à créditer"
+                          type="tel"
+                          value={m.number}
+                          onChange={(v) => setMethod(i, { number: v })}
+                          error={e(`payment.methods.${i}.number`)}
+                          hint="Affiché au client quand il choisit ce moyen."
+                        />
+                        <TextInput label="Nom du titulaire" value={m.accountName} onChange={(v) => setMethod(i, { accountName: v })} error={e(`payment.methods.${i}.accountName`)} hint="Le client le voit à l'écran de confirmation de son opérateur." />
+                      </>
+                    )}
+                    <TextArea label="Marche à suivre" value={m.instructions} onChange={(v) => setMethod(i, { instructions: v })} error={e(`payment.methods.${i}.instructions`)} rows={3} maxLength={500} className="sm:col-span-2" />
+                  </div>
+                </fieldset>
+              ))}
             </div>
           </FormSection>
         )}

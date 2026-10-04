@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils/cn";
 
 export const adminNavItems: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin", label: "Tableau de bord", icon: "grid" },
+  { href: "/admin/commandes", label: "Commandes", icon: "receipt" },
+  { href: "/admin/statistiques", label: "Statistiques", icon: "chart" },
   { href: "/admin/produits", label: "Produits", icon: "package" },
   { href: "/admin/categories", label: "Catégories", icon: "layers" },
   { href: "/admin/marques", label: "Marques", icon: "tag" },
@@ -52,11 +54,11 @@ export function AdminSideNav() {
 export function AdminBottomNav() {
   const pathname = usePathname();
   return (
-    <ul className="grid grid-cols-6">
+    <ul className="no-scrollbar flex overflow-x-auto">
       {adminNavItems.map((item) => {
         const active = isActive(pathname, item.href);
         return (
-          <li key={item.href}>
+          <li key={item.href} className="min-w-[4.5rem] flex-1">
             <Link
               href={item.href}
               aria-current={active ? "page" : undefined}

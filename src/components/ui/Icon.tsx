@@ -46,6 +46,11 @@ const paths = {
   arrowUp: "M12 19V5m-6 6 6-6 6 6",
   arrowDown: "M12 5v14m6-6-6 6-6-6",
   upload: "M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4",
+  copy: "M9 9h10v11H9zM5 15V4h10",
+  chart: "M4 20V4m0 16h16M8 16v-4m4 4V8m4 8v-6",
+  receipt: "M6 3h12v18l-3-2-3 2-3-2-3 2V3Zm3 5h6m-6 4h6m-6 4h3",
+  wallet: "M4 7h15a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a2 2 0 0 1 2-2h11v3m0 7h.01",
+  funnel: "M3 5h18l-7 8v6l-4-2v-4L3 5Z",
 } as const;
 
 export type IconName = keyof typeof paths;

@@ -1,3 +1,4 @@
+import { PageviewTracker } from "@/components/analytics/Analytics";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -22,6 +23,7 @@ export default async function ShopLayout({ children }: LayoutProps<"/">) {
       </main>
       <SiteFooter />
       <JsonLd data={[organizationJsonLd(settings), websiteJsonLd()]} />
+      <PageviewTracker />
     </>
   );
 }

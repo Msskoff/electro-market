@@ -4,6 +4,10 @@ import { FormAlert } from "@/components/forms/FormAlert";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import type { Address, Profile } from "@/lib/account/schema";
+import type { OrderSummary } from "@/lib/orders/queries";
+import { customerStatusLabel } from "@/lib/orders/status";
+import { formatPrice } from "@/lib/utils/format";
+import { orderDate, StatusBadge } from "@/components/orders/OrderBits";
 import { signOut } from "@/lib/auth/actions";
 import { AddressesSection } from "./AddressesSection";
 import { DeleteAccount } from "./DeleteAccount";
@@ -43,19 +47,21 @@ export function AccountView({
   profile,
   addresses,
   cart,
+  orders,
   notice,
 }: {
   email: string;
   profile: Profile;
   addresses: Address[];
   cart: CartSummary;
+  orders: OrderSummary[];
   notice?: string;
 }) {
   const initials = `${profile.firstName[0] ?? ""}${profile.lastName[0] ?? ""}`.toUpperCase();
   const complete = Boolean(profile.firstName && profile.lastName && profile.phone);
 
   const overview = [
-    { label: "Commandes", value: "0", href: "#commandes" },
+    { label: "Commandes", value: String(orders.length), href: "#commandes" },
     { label: "Panier", value: `${cart.itemCount} article${cart.itemCount > 1 ? "s" : ""}`, href: "#panier" },
     { label: "Adresses", value: String(addresses.length), href: "#adresses" },
     { label: "Profil", value: complete ? "Complet" : "À compléter", href: "#profil" },
@@ -123,15 +129,30 @@ export function AccountView({
         </Section>
 
         <Section id="commandes" title="Mes commandes" icon="package">
-          <div className="flex flex-col items-start gap-3">
-            <p className="text-muted">
-              Aucune commande pour l&apos;instant. Le paiement en ligne sera activé prochainement : vos commandes et leur
-              suivi de livraison apparaîtront ici.
-            </p>
-            <ButtonLink href="/smartphones" variant="secondary" size="sm">
-              Découvrir les produits
-            </ButtonLink>
-          </div>
+          {orders.length === 0 ? (
+            <div className="flex flex-col items-start gap-3">
+              <p className="text-muted">Aucune commande pour l&apos;instant. Vos commandes et leur suivi de livraison apparaîtront ici.</p>
+              <ButtonLink href="/smartphones" variant="secondary" size="sm">
+                Découvrir les produits
+              </ButtonLink>
+            </div>
+          ) : (
+            <ul className="divide-y divide-border">
+              {orders.map((o) => (
+                <li key={o.id}>
+                  <Link href={`/compte/commandes/${o.number}`} className="flex flex-wrap items-center justify-between gap-2 py-3 hover:text-accent">
+                    <span className="min-w-0">
+                      <span className="block font-semibold">{o.number}</span>
+                      <span className="text-sm text-muted">
+                        {orderDate(o.created_at, false)} · {o.itemCount} article{o.itemCount > 1 ? "s" : ""} · {formatPrice(o.total)}
+                      </span>
+                    </span>
+                    <StatusBadge status={o.status} label={customerStatusLabel[o.status]} />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </Section>
 
         <Section id="panier" title="Mon panier" icon="cart">

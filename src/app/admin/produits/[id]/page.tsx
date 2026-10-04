@@ -23,7 +23,7 @@ export default async function EditProductPage({ params }: PageProps<"/admin/prod
       {/* key : une nouvelle version (après publication ou abandon) recharge l'éditeur. */}
       <ProductEditor
         key={`${id}-${product.draftSavedAt ?? product.publishedAt}`}
-        initial={toEditable(product.data)}
+        initial={toEditable(product.data, product.stockBase)}
         isNew={false}
         state={product.state}
         draftSavedAt={product.draftSavedAt}

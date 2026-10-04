@@ -27,11 +27,11 @@ Chaque décision technique ou visuelle doit servir au moins un de ces trois obje
 | Composants | Composants maison (+ Radix UI pour l'accessibilité des primitives) | Design distinctif, pas de look « kit UI » |
 | Base de données | **PostgreSQL** (Supabase) : catalogue, configuration, brouillons, comptes. Lecture publique via `repository.ts` / `lib/settings` (cache Next étiqueté) | Tout le contenu modifiable depuis `/admin` |
 | Authentification | **Supabase Auth** — e-mail + mot de passe (projet `electromarket`, région Paris `eu-west-3`) | Comptes clients ; admin à venir |
-| Paiement | Prestataire configurable via `PAYMENT_PROVIDER` (Stripe, PayPal, ou passerelle locale) | Adapter au pays de vente |
+| Paiement | **Moov Money (Flooz), Mixx by Yas (ex-T-Money) et paiement à la livraison**, configurés dans `/admin/configuration` (numéros, libellés, activation). Mobile money : le client paie au numéro affiché puis dépose une preuve, l'admin valide | Usages du Togo, sans prestataire ni frais |
 | Images | `next/image`, formats AVIF/WebP, CDN | Performance (LCP) |
 | Recherche | Postgres full-text (puis Meilisearch/Algolia si le catalogue grossit) | Recherche produit rapide |
 | Hébergement | Vercel (ou équivalent edge) | ISR, CDN, preview deployments |
-| Analytics | Solution respectueuse de la vie privée (Plausible / Vercel Analytics) + Google Search Console + Bing Webmaster Tools | Suivi SEO sans bandeau cookie lourd |
+| Analytics | **Mesure maison anonyme, sans cookie** (`lib/analytics`, table `analytics_events`, `/admin/statistiques`) + Google Search Console + Bing Webmaster Tools | Décisions sans bandeau de consentement ni données personnelles |
 | Tests | Vitest (unitaire), Playwright (E2E), Lighthouse CI | Qualité et non-régression SEO/perf |
 
 **Règle :** aucun contenu indexable (fiche produit, catégorie, FAQ) ne doit dépendre du JavaScript client pour s'afficher. Tout est rendu côté serveur.
@@ -50,9 +50,10 @@ npm run typecheck      # next typegen + tsc --noEmit
 npm run test           # tests unitaires (Vitest)
 npm run check          # lint + typecheck + test (à lancer avant chaque commit)
 npm run image:info -- <fichiers>  # photo produit : dimensions, miniature floue, alertes de poids/taille
+npm run test:e2e       # Playwright sur le build local (npm run build avant) ; scénarios connectés si E2E_EMAIL / E2E_PASSWORD (compte de TEST)
 ```
 
-À ajouter avec les étapes suivantes : `test:e2e` (Playwright), `lighthouse`, `db:migrate`, `db:seed`.
+À ajouter avec les étapes suivantes : `lighthouse`, `db:migrate`, `db:seed`.
 
 Avant de déclarer une tâche terminée : `npm run check` et `npm run build` doivent passer.
 
@@ -80,6 +81,8 @@ src/
       connexion/, inscription/, mot-de-passe-oublie/, reinitialiser-mot-de-passe/  # Authentification (noindex)
     auth/callback/route.ts           # Retour des liens e-mail (échange de code PKCE → session)
     api/suggestions/route.ts           # Index JSON statique des suggestions de recherche
+    api/evenement/route.ts             # Réception des événements d'audience anonymes (204)
+    (shop)/compte/commandes/[numero]/  # Suivi d'une commande + dépôt de la preuve de paiement
     sitemap.ts · robots.ts · llms.txt/route.ts · partage.png/route.tsx · icon.svg · not-found.tsx
   proxy.ts                           # Proxy Next.js 16 (ex-middleware) : rafraîchit la session, pages privées uniquement
   components/
@@ -100,7 +103,9 @@ src/
     cart/      # lines.ts (logique pure SANS Zod, importable côté navigateur), schema.ts (schémas Zod, serveur), pricing.ts, actions.ts (Server Actions), queries.ts, client.ts
     seo/       # metadata.ts (buildMetadata), jsonld.ts, og.tsx
     settings/  # types.ts (StoreSettings, DEFAULT_SETTINGS, variables de FAQ), repository.ts (getSettings, cache « settings »)
-    admin/     # session.ts (requireAdmin), queries.ts, actions.ts (Server Actions), schemas.ts (Zod), revalidate.ts, product-form.ts
+    admin/     # session.ts (requireAdmin), queries.ts, actions.ts (Server Actions), schemas.ts (Zod), revalidate.ts, product-form.ts, analytics.ts (statistiques)
+    orders/    # status.ts (statuts, libellés, actions possibles — neutre), actions.ts (commander, preuve, annuler, suivi admin), queries.ts
+    analytics/ # events.ts (track() navigateur, sendBeacon), server.ts (visiteur anonyme du jour, provenance, appareil, recordEvent)
     account/   # schema.ts (Zod : profil, adresses, téléphone +228), actions.ts (Server Actions), queries.ts
     auth/      # schema.ts (Zod + messages d'erreur), actions.ts (inscription, connexion, déconnexion, mot de passe, suppression), session.ts (getSessionUser, requireUser), redirect.ts (safeNextPath)
     supabase/  # server.ts (client serveur), proxy.ts (updateSession), database.types.ts (types générés)
@@ -108,7 +113,7 @@ src/
     utils/     # cn, format (prix en unité mineure de la devise, dates)
   styles/tokens.css                    # Design tokens (thème clair)
 app/admin/                             # Administration (réservée à la table admins) : tableau de bord, produits, catégories, marques, configuration, clients
-components/admin/                      # AdminNav, SaveBar + useDraftEditor (brouillon → publier, statut), ProductEditor, ImagesEditor, CategoryEditor, BrandManager, SettingsEditor, StockToggle, fields
+components/admin/                      # charts.tsx (graphiques SVG), OrderActions, AdminNav, SaveBar + useDraftEditor (brouillon → publier, statut), ProductEditor, ImagesEditor, CategoryEditor, BrandManager, SettingsEditor, StockToggle, fields
 tests/                                 # Tests Vitest (+ fixtures/ : catalogue fictif)
 scripts/image-info.mjs                 # Préparation des photos produit (npm run image:info)
 supabase/migrations/                   # Migrations SQL appliquées au projet Supabase (source de vérité du schéma)
@@ -207,10 +212,12 @@ JetBrains Mono (`font-mono`, chargée à la demande) reste réservée aux codes 
 - **Accueil (`components/home/`) :** `HeroShowcase`, `CategoryCircles`, sélection en `ProductGrid`, `PromoTiles`, `ReviewsSection`, `HelpBand`, FAQ, `TrustBar`.
 - **ProductCard :** visuel sur fond `surface-2`, badge « -X % » si remise réelle, marque, nom, 2–3 specs en micro-étiquettes mono, prix (corail si remisé), état du stock (point + texte), bouton rond `QuickAddButton` (ajoute la variante par défaut, posé au-dessus du lien étiré).
 - **En-tête de catégorie (`CategoryHeader`) :** sur petit écran, seul le `h1` reste visible (bandeau, chiffres, introduction et illustration masqués ; l'introduction reste dans le HTML). À partir de 640 px : bandeau à la teinte de la catégorie (`categoryTile`, identique à sa pastille d'accueil), date de mise à jour (`<time>`), chiffres clés en `<dl>` (prix d'entrée, disponibles, marques, livraison — tous calculés, jamais saisis), illustration de deux produits réels, raccourcis « par marque » vers `/recherche?q=…&categorie=…` (`rel="nofollow"`, page `noindex`). Liste : `h2` « N références » puis cartes en `h3`.
-- **Espace client (`/compte`, `components/account/`) :** réservé aux clients connectés (`requireUser` → `/connexion?suite=/compte`). Rassemble profil (prénom, nom, téléphone +228 ; e-mail du compte en lecture seule), adresses de livraison (quartier, ville, point de repère, téléphone, adresse par défaut ; 10 max), commandes (vide tant que le paiement n'est pas branché), panier, modification du mot de passe, déconnexion et **suppression définitive du compte**. Données dans Supabase (tables `profiles`, `addresses`), lues/écrites par Server Actions validées par Zod, protégées par RLS.
-- **Parcours d'achat (principe : le plus simple possible) :** navigation, recherche et panier **sans compte** (panier en cookie). L'identification n'est demandée qu'au clic sur « Valider mon panier » : `/commande` redirige vers `/connexion?suite=/commande`, écran « Plus qu'une étape » avec deux choix (« J'ai déjà un compte » / « Je suis nouveau client »), panier conservé, retour automatique à la commande (y compris via le lien d'activation e-mail). Repère `CheckoutSteps` : Panier → Identification → Livraison et paiement. `/commande` : choix de l'adresse en un toucher ou ajout sur place, récapitulatif recalculé côté serveur ; paiement affiché « bientôt disponible » (pas de prestataire, pas de tests E2E).
+- **Espace client (`/compte`, `components/account/`) :** réservé aux clients connectés (`requireUser` → `/connexion?suite=/compte`). Rassemble profil (prénom, nom, téléphone +228 ; e-mail du compte en lecture seule), adresses de livraison (quartier, ville, point de repère, téléphone, adresse par défaut ; 10 max), commandes (liste + suivi `/compte/commandes/[numero]`), panier, modification du mot de passe, déconnexion et **suppression définitive du compte**. Données dans Supabase (tables `profiles`, `addresses`), lues/écrites par Server Actions validées par Zod, protégées par RLS.
+- **Parcours d'achat (principe : le plus simple possible) :** navigation, recherche et panier **sans compte** (panier en cookie). L'identification n'est demandée qu'au clic sur « Valider mon panier » : `/commande` redirige vers `/connexion?suite=/commande`, écran « Plus qu'une étape » avec deux choix (« J'ai déjà un compte » / « Je suis nouveau client »), panier conservé, retour automatique à la commande (y compris via le lien d'activation e-mail). Repère `CheckoutSteps` : Panier → Identification → Livraison et paiement. `/commande` (`CheckoutForm`) : adresse en un toucher ou ajout sur place, moyen de paiement (au choix d'un mobile money : numéro à créditer, titulaire, montant exact, bouton Copier), précision de livraison, « Valider la commande ».
+- **Commandes (`lib/orders/`, tables `orders`, `order_items`, `payment_proofs`, `order_events`) :** `place_order` (SQL, SECURITY DEFINER) recalcule prix et livraison depuis le catalogue en ligne, **réserve le stock** (décrément dans la transaction, verrou par produit) et refuse si le total affiché a changé ; numéro `ET-1001…`. Mobile money → « En attente de paiement » ; suivi `/compte/commandes/[numero]` : numéro + montant à copier, **dépôt de la preuve** (capture du SMS, image allégée dans le navigateur ou PDF, référence, montant, date ; bucket PRIVÉ `preuves`, dossier du client) → « Preuve à vérifier ». Paiement à la livraison → directement « À expédier ». Statuts : awaiting_payment → payment_review → to_ship → shipped → delivered, ou cancelled (stock rendu par `restock_order`). Le client annule tant que rien n'est payé ni expédié ; l'admin valide ou refuse une preuve (message obligatoire au client), expédie, livre, annule (`admin_update_order`, transitions vérifiées en base). L'historique survit à la suppression du compte (`user_id` → null, coordonnées figées). **Stock et brouillons** : l'éditeur garde le stock vu à l'ouverture (`stockBase`) ; `publish_product` n'applique que l'écart saisi, les ventes faites entre-temps ne sont jamais écrasées.
+- **Statistiques (`/admin/statistiques`, `lib/analytics`, `components/admin/charts.tsx`) :** mesure anonyme sans cookie ni stockage : visiteur = SHA-256(sel secret `ANALYTICS_SALT` + jour + IP + navigateur) tronqué, renouvelé chaque jour ; robots (et Playwright) ignorés ; rien enregistré en développement ni avec `ANALYTICS_DISABLED=1` (machine locale). Événements : pages vues (`PageviewTracker` dans `(shop)/layout`, provenance = 1re page), fiche produit et recherche (`TrackEvent`), ajout au panier et commande (côté serveur, `after()`). Envoi `navigator.sendBeacon` → `/api/evenement` (Zod, 60/min/visiteur, toujours 204). Agrégats en une requête SQL `admin_analytics(from, to)` (+ période précédente) : indicateurs avec variation, courbe visiteurs/commandes, **entonnoir** (visiteurs → fiche → panier → commande → paiement confirmé), produits consultés / vendus / « intérêt sans achat », provenance, appareils, moyens de paiement, recherches (sans résultat en rouge), pages, heures d'affluence, constats automatiques. Graphiques SVG rendus côté serveur, sans bibliothèque.
 - **Authentification (`/connexion`, `/inscription`, `/mot-de-passe-oublie`, `/reinitialiser-mot-de-passe`) :** e-mail + mot de passe (8 caractères min.), messages d'erreur en français qui ne révèlent jamais si une adresse a un compte, retour après connexion limité aux chemins internes (`safeNextPath`), liens e-mail via `/auth/callback` (PKCE). Toutes `noindex`.
-- **Administration (`/admin`) :** réservée aux comptes de la table `admins` (non connecté → connexion ; client ordinaire → 404). Mise en page propre (pas d'en-tête boutique) : pilule d'icônes verticale à gauche (barre basse sur mobile), titre + recherche en haut, cartes blanches sur fond gris clair. Pages : tableau de bord (chiffres réels uniquement : produits en ligne, ruptures, stocks faibles, brouillons en attente, paniers en cours, clients ; « Ventes » vide tant que le paiement n'est pas branché), produits (recherche, filtres, bascule de stock par ligne), éditeur de produit (tous les champs, variantes, photos, caractéristiques, FAQ, aperçu Google, suppression), catégories, marques, configuration (onglets), clients (lecture seule). **Barre d'actions `SaveBar`** : statut toujours visible et annoncé (`role="status"`) — Modifications non enregistrées → Enregistrement… → Brouillon enregistré (pas en ligne) → Mise en ligne… → En ligne, ou message d'erreur ; boutons « Enregistrer le brouillon » (Ctrl+S), « Publier », « Annuler les modifications », « Voir en ligne » ; alerte si on quitte avec des modifications non enregistrées. Photos : compressées dans le navigateur (WebP, ≤ 2 000 px, miniature floue), envoyées dans le bucket public `produits` (nom de fichier unique).
+- **Administration (`/admin`) :** réservée aux comptes de la table `admins` (non connecté → connexion ; client ordinaire → 404). Mise en page propre (pas d'en-tête boutique) : pilule d'icônes verticale à gauche (barre basse sur mobile), titre + recherche en haut, cartes blanches sur fond gris clair. Pages : tableau de bord (chiffres réels uniquement : produits en ligne, ruptures, stocks faibles, brouillons en attente, paniers en cours, clients, ventes 30 jours et commandes à traiter), commandes (onglets par statut, fiche avec preuves en lien signé 10 min, Appeler / WhatsApp), statistiques, produits (recherche, filtres, bascule de stock par ligne), éditeur de produit (tous les champs, variantes, photos, caractéristiques, FAQ, aperçu Google, suppression), catégories, marques, configuration (onglets, dont Paiement), clients (lecture seule). **Barre d'actions `SaveBar`** : statut toujours visible et annoncé (`role="status"`) — Modifications non enregistrées → Enregistrement… → Brouillon enregistré (pas en ligne) → Mise en ligne… → En ligne, ou message d'erreur ; boutons « Enregistrer le brouillon » (Ctrl+S), « Publier », « Annuler les modifications », « Voir en ligne » ; alerte si on quitte avec des modifications non enregistrées. Photos : compressées dans le navigateur (WebP, ≤ 2 000 px, miniature floue), envoyées dans le bucket public `produits` (nom de fichier unique).
 - **Avis (`ReviewsSection`) :** n'affiche RIEN tant que `getVerifiedReviews()` est vide. Jamais d'avis d'exemple.
 - **Newsletter :** remplacée par `HelpBand` tant qu'aucun service d'e-mailing n'est branché (pas de formulaire factice).
 - **Fiche produit :** galerie à gauche, bloc d'achat collant à droite (prix, variantes, stock, délai de livraison, garantie, CTA), puis description, **tableau de caractéristiques**, contenu de la boîte, FAQ, avis.
@@ -333,7 +340,7 @@ Les assistants IA citent les sources claires, factuelles, structurées et à jou
 ## 9. Sécurité et conformité
 
 - Aucun secret dans le code : variables d'environnement uniquement (`.env.local`, jamais commité). Tenir `.env.example` à jour.
-- Paiement : jamais de données de carte stockées ni transitant par nos serveurs ; utiliser les pages/composants hébergés du prestataire.
+- Paiement : mobile money hors site (le client paie depuis son téléphone) ; aucune donnée de carte. Preuves de paiement : bucket privé `preuves` (dépôt dans son dossier, lecture propriétaire ou admin), fichiers vérifiés par signature binaire, 3,5 Mo max. Si une passerelle de paiement en ligne est ajoutée : pages hébergées du prestataire, jamais de carte sur nos serveurs.
 - Validation de toutes les entrées côté serveur (Zod). Prix et totaux **toujours recalculés côté serveur**.
 - Politique de sécurité de contenu (CSP), en-têtes de sécurité, protection CSRF sur les mutations, limitation de débit sur les API publiques.
 - Conformité à la législation applicable sur les données personnelles (RGPD / loi locale) : consentement pour les traceurs non essentiels, page de politique de confidentialité, droit d'accès/suppression.
@@ -396,7 +403,7 @@ PAYS_DE_VENTE=TG            # Togo — lancement à Lomé
 LOCALE=fr-TG
 NEXT_PUBLIC_CURRENCY=XOF    # franc CFA, 0 décimale
 LANGUES=fr
-PAYMENT_PROVIDER=
+PAIEMENT=moov,mixx,cod     # configurés dans /admin/configuration (onglet Paiement)
 TRANSPORTEURS=
 ```
 

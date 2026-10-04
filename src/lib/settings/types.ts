@@ -42,6 +42,23 @@ export interface StoreContact {
   address: { street: string; city: string; region: string; country: string };
 }
 
+/** Moyens de paiement proposés à la commande (identifiants fixes, libellés modifiables). */
+export type PaymentMethodId = "moov" | "mixx" | "cod";
+export const PAYMENT_METHOD_IDS: PaymentMethodId[] = ["moov", "mixx", "cod"];
+
+export interface PaymentMethodConfig {
+  id: PaymentMethodId;
+  enabled: boolean;
+  /** Nom affiché au client : « Moov Money (Flooz) ». */
+  label: string;
+  /** Numéro marchand à créditer (mobile money uniquement). */
+  number: string;
+  /** Nom du titulaire affiché au client pour qu'il vérifie avant d'envoyer. */
+  accountName: string;
+  /** Marche à suivre affichée au client. */
+  instructions: string;
+}
+
 export interface StoreSettings {
   contact: StoreContact;
   /** Profils de réseaux sociaux (URL complètes), repris dans le schéma Organization. */
@@ -55,6 +72,7 @@ export interface StoreSettings {
    * pour rester à jour quand la configuration change : voir FAQ_VARIABLES.
    */
   faq: FaqItem[];
+  payment: { methods: PaymentMethodConfig[] };
 }
 
 /** Variables utilisables dans les réponses de la FAQ du site. */
@@ -103,6 +121,35 @@ export const DEFAULT_SETTINGS: StoreSettings = {
     warrantyYears: 2,
   },
   demoMode: false,
+  // Mobile money désactivé tant que le numéro marchand n'est pas renseigné dans /admin/configuration.
+  payment: {
+    methods: [
+      {
+        id: "moov",
+        enabled: false,
+        label: "Moov Money (Flooz)",
+        number: "",
+        accountName: "",
+        instructions: "Envoyez le montant exact au numéro ci-dessous depuis votre compte Moov Money, puis déposez la capture du SMS de confirmation (date, référence et montant visibles).",
+      },
+      {
+        id: "mixx",
+        enabled: false,
+        label: "Mixx by Yas (ex-T-Money)",
+        number: "",
+        accountName: "",
+        instructions: "Envoyez le montant exact au numéro ci-dessous depuis votre compte Mixx by Yas, puis déposez la capture du SMS de confirmation (date, référence et montant visibles).",
+      },
+      {
+        id: "cod",
+        enabled: true,
+        label: "Paiement à la livraison",
+        number: "",
+        accountName: "",
+        instructions: "Payez en espèces ou par mobile money au livreur, à la réception de votre commande.",
+      },
+    ],
+  },
   heroSlides: [
     {
       categorySlug: "smartphones",

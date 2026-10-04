@@ -1,3 +1,4 @@
+import { TrackEvent } from "@/components/analytics/Analytics";
 import { notFound } from "next/navigation";
 import { Faq } from "@/components/content/Faq";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -149,6 +150,7 @@ export default async function ProductPage({ params }: PageProps<"/[categorie]/[s
       </Container>
 
       <JsonLd data={productJsonLd(product, brand, category, settings)} />
+      <TrackEvent key={product.id} t="product_view" pid={product.id} />
     </div>
   );
 }

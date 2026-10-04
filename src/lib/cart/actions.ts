@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { recordFromRequest } from "@/lib/analytics/server";
 import { z } from "zod";
 import { findVariantsBySku } from "@/lib/catalog/repository";
 import { addLine, countItems, quantitySchema, setLineQty, skuSchema } from "./schema";
@@ -24,6 +26,7 @@ export async function addToCart(input: { sku: string; qty: number }): Promise<Ca
   const next = addLine(await readCurrentCart(), sku, Math.min(qty, match.variant.stock));
   await writeCurrentCart(next);
   revalidatePath("/panier");
+  recordFromRequest(await headers(), { type: "add_to_cart", product_id: match.product.id });
   return { ok: true, count: countItems(next) };
 }
 

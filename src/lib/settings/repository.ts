@@ -1,7 +1,7 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
 import { createPublicClient } from "@/lib/supabase/public";
-import { DEFAULT_SETTINGS, type StoreSettings } from "./types";
+import { DEFAULT_SETTINGS, type PaymentMethodConfig, type StoreSettings } from "./types";
 
 /**
  * Configuration PUBLIÉE de la boutique (table site_settings), mise en cache par Next.js
@@ -10,12 +10,18 @@ import { DEFAULT_SETTINGS, type StoreSettings } from "./types";
  */
 export const SETTINGS_TAG = "settings";
 
+/** Toujours les 3 moyens, dans l'ordre ; les valeurs enregistrées priment. */
+function mergePaymentMethods(saved: Partial<PaymentMethodConfig>[] | undefined): PaymentMethodConfig[] {
+  return DEFAULT_SETTINGS.payment.methods.map((def) => ({ ...def, ...saved?.find((m) => m.id === def.id) }));
+}
+
 export function withDefaults(data: Partial<StoreSettings> | null | undefined): StoreSettings {
   const d = data ?? {};
   return {
     ...DEFAULT_SETTINGS,
     ...d,
     contact: { ...DEFAULT_SETTINGS.contact, ...d.contact, address: { ...DEFAULT_SETTINGS.contact.address, ...d.contact?.address } },
+    payment: { methods: mergePaymentMethods(d.payment?.methods) },
     policies: {
       ...DEFAULT_SETTINGS.policies,
       ...d.policies,
@@ -30,6 +36,6 @@ export const getSettings = unstable_cache(
     if (error) throw new Error(`Lecture de la configuration impossible : ${error.message}`);
     return withDefaults(data?.data as Partial<StoreSettings> | undefined);
   },
-  ["settings-v1"],
+  ["settings-v2"],
   { tags: [SETTINGS_TAG] },
 );

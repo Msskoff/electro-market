@@ -29,9 +29,10 @@ export function emptyProduct(category: Category | undefined, brand: Brand | unde
 }
 
 /** Produit de la base → valeur éditable (le libellé de variante est recalculé à l'enregistrement). */
-export function toEditable(p: Product): ProductInput {
+export function toEditable(p: Product, stockBase?: Record<string, number>): ProductInput {
   return {
     ...p,
+    stockBase,
     variants: p.variants.map((v) => ({
       sku: v.sku,
       option: v.option ?? "",

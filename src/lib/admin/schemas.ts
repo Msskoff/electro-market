@@ -96,6 +96,11 @@ export const productSchema = z
     featured: z.boolean().optional(),
     releasedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date au format AAAA-MM-JJ."),
     updatedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    /**
+     * Stock en ligne vu à l'ouverture de l'éditeur (par SKU). À la publication, seul
+     * l'écart saisi est appliqué : les ventes faites entre-temps ne sont pas écrasées.
+     */
+    stockBase: z.record(z.string(), z.number().int().min(0)).optional(),
   })
   .superRefine((p, ctx) => {
     const seen = new Set<string>();
@@ -159,6 +164,26 @@ export const settingsSchema = z.object({
   demoMode: z.boolean(),
   heroSlides: z.array(heroSlideSchema).min(1, "Au moins une diapositive.").max(8),
   faq: faqSchema,
+  payment: z.object({
+    methods: z
+      .array(
+        z
+          .object({
+            id: z.enum(["moov", "mixx", "cod"]),
+            enabled: z.boolean(),
+            label: text(2, 60, "Le nom affiché"),
+            number: z.string().trim().max(30),
+            accountName: z.string().trim().max(60),
+            instructions: text(10, 500, "La marche à suivre"),
+          })
+          .refine((m) => m.id === "cod" || !m.enabled || /^\+?[0-9 ]{8,20}$/.test(m.number), {
+            path: ["number"],
+            message: "Numéro obligatoire pour activer ce moyen (ex. +228 99 00 00 00).",
+          }),
+      )
+      .length(3)
+      .refine((ms) => ms.some((m) => m.enabled), { message: "Activez au moins un moyen de paiement." }),
+  }),
 });
 
 /** Erreurs Zod → { "variants.0.price": "message" } (affichées à côté des champs). */
